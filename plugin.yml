@@ -1,0 +1,23 @@
+version: 0.1A
+author: Cirno
+name: ImgMap
+main: cirno.Nineball
+
+commands:
+ map:
+  description: Replaces the current item in hand with a map.
+  usage: map [imgurl]
+ restoremap:
+  description: Restores the original map renderer.
+  usage: restoremap
+
+permission:
+ imgmap.*:
+  description: Allows complete control over ImgMap.
+  children:
+   imgmap.render: true
+   imgmap.restoremap: true
+ imgmap.render:
+  description: Allows the given person to render maps globally.
+ imgmap.restoremap:
+  description: Allows the given person to revert to the default map globally.

@@ -8,7 +8,9 @@ public class Nineball extends JavaPlugin {
 
 	protected DataSaver ds;
 	protected CommanderCirno cc;
-	
+	protected static ThreadGroup tg = new ThreadGroup("Cirno Group");
+	protected static SlideshowThreadGroup sr = new SlideshowThreadGroup("SlideshowRenderers");
+
 	public void onEnable(){
 		try {
 			ds = new DataSaver(this);
@@ -22,7 +24,8 @@ public class Nineball extends JavaPlugin {
 		}
 	}
 
-
-
-	
+	public void onDisable(){
+		sr.stopRunning();
+		tg.interrupt();
+	}
 }

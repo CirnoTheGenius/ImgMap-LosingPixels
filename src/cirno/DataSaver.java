@@ -13,12 +13,12 @@ import org.bukkit.map.MapView;
 
 public class DataSaver {
 
-	Nineball root;
+	Nineball cirno;
 	boolean FileSafeForUse;
 
 	public DataSaver(Nineball r){
 		try {
-			root = r;
+			cirno = r;
 			initializeFile();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -26,8 +26,8 @@ public class DataSaver {
 	}
 
 	public void initializeFile() throws IOException{
-		File f = new File(root.getDataFolder().getAbsoluteFile(), "\\MapData.list");
-		File folder = new File(root.getDataFolder().getAbsoluteFile().getAbsolutePath());
+		File f = new File(cirno.getDataFolder().getAbsoluteFile(), "\\MapData.list");
+		File folder = new File(cirno.getDataFolder().getAbsoluteFile().getAbsolutePath());
 		if(!folder.exists()){
 			folder.mkdir();
 		}
@@ -38,17 +38,17 @@ public class DataSaver {
 	}
 
 	public void setGlobalMaps(){
-		new Thread(){
+		new Thread(cirno.tg, "Global Map Updator"){
 			public void run(){
-				for(short i=0; i < 65536; i++){
+				for(long i=0; i < 65536; i++){
 					if(FileSafeForUse == false){
 						break;
 					}
-					MapView map = Bukkit.getServer().getMap(i);
-					String url = getMapData(i);
+					MapView map = Bukkit.getServer().getMap((short)i);
+					String url = getMapData((int)i);
 					if(url != null && !url.isEmpty()){
 						try { map.removeRenderer(map.getRenderers().get(0)); } catch(Exception e){}
-						map.addRenderer(new ImgRenderer(url));
+						map.addRenderer(new ImgRenderer(url, cirno));
 					}
 				}
 			}
@@ -60,7 +60,7 @@ public class DataSaver {
 			boolean found = false;
 			//WSTFGL. Tactical failure inbound! Prepare for blindness!
 			ArrayList<String> tempArray = new ArrayList<String>();
-			BufferedReader eyes = new BufferedReader(new FileReader(root.getDataFolder().getAbsoluteFile() + "\\MapData.list"));
+			BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "\\MapData.list"));
 			String l;
 
 			while((l = eyes.readLine()) != null){
@@ -78,7 +78,7 @@ public class DataSaver {
 			}
 			eyes.close();
 			FileSafeForUse = false;
-			BufferedWriter typewriter = new BufferedWriter(new FileWriter(root.getDataFolder().getAbsoluteFile() + "\\MapData.list", false));
+			BufferedWriter typewriter = new BufferedWriter(new FileWriter(cirno.getDataFolder().getAbsoluteFile() + "\\MapData.list", false));
 			for(String line : tempArray){
 				typewriter.write(line);
 			}
@@ -93,7 +93,7 @@ public class DataSaver {
 	public String getMapData(int id){
 		if(FileSafeForUse){
 			try {
-				BufferedReader eyes = new BufferedReader(new FileReader(root.getDataFolder().getAbsoluteFile() + "\\MapData.list"));
+				BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "\\MapData.list"));
 				String l;
 				while((l = eyes.readLine()) != null){
 					if(l.startsWith(String.valueOf(id))){

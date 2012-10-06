@@ -1,27 +1,38 @@
 package cirno;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class TimerThread extends Thread {
 
-	long waitTime;
-	boolean finished;
-	
-	public TimerThread(long waitTime){
+	int waitTime;
+
+	AtomicBoolean finished = new AtomicBoolean(false);
+
+	public TimerThread(int waitTime){
 		this.waitTime = waitTime;
 	}
 
-	public TimerThread time(long waitTime){
-		try {
-			this.wait(waitTime);
-			this.finished = true;
+	@Override
+	public void run(){
+		System.out.print("[Debugging ImgMap] Started waiting");
+		time(waitTime);
+	}
+
+	public void time(long waitTime){
+		if(finished.get() == false) try {
+			System.out.print("[Debugging ImgMap] Waiting");
+			sleep(waitTime);
+			System.out.print("[Debugging ImgMap] Wait complete.");
+			finished.set(true);
+			System.out.print("[Debugging ImgMap] Set 'finished' to true.");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
-		return this;
+		}		
 	}
-	
-	
-	public void reset(long waitTime){
+
+
+	public void reset(int waitTime){
 		this.waitTime = waitTime;
-		this.finished = false;
+		finished.set(false);
 	}
 }

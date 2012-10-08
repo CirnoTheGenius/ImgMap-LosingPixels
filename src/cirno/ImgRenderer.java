@@ -28,7 +28,6 @@ public class ImgRenderer extends MapRenderer{
 		// Check if url is nothing and if the image is already rendered
 		// Note that this flagRender var is local , so it does not affect other images
 		if(URL != null && flagRender == false){
-			System.out.println("cat");
 			cirno.getServer().getScheduler().scheduleAsyncDelayedTask(cirno, new Runnable() {
 				public void run() {
 					try{
@@ -39,7 +38,6 @@ public class ImgRenderer extends MapRenderer{
 					}
 				}
 			});
-			System.out.println("cats");
 			flagRender = true;
 		}
 	}

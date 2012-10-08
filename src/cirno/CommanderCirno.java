@@ -3,12 +3,20 @@ package cirno;
 import java.net.URL;
 import java.util.ArrayList;
 
+import net.minecraft.server.EntityHuman;
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.Item;
+import net.minecraft.server.World;
+import net.minecraft.server.WorldMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.map.CraftMapView;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
@@ -89,11 +97,23 @@ public class CommanderCirno implements CommandExecutor {
 		}
 
 		if(command.getName().equalsIgnoreCase("restoremap") && (sender.hasPermission("imgmap.clear") || sender.isOp())){
-			ItemStack item = cirno.getServer().getPlayer(sender.getName()).getItemInHand();	
+			/*ItemStack item = cirno.getServer().getPlayer(sender.getName()).getItemInHand();	
 			if(item.getType() == Material.MAP && normalrender != null){
 				MapView map = Bukkit.getServer().getMap(item.getDurability());
 				try{ map.removeRenderer(map.getRenderers().get(0));  }catch(Exception e){}
 				map.addRenderer(normalrender);
+				return true;
+			} else {
+				cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.RED + "[ImgMap] Could not restore the normal rendering!");
+				return true;
+			}*/
+			ItemStack item = cirno.getServer().getPlayer(sender.getName()).getItemInHand();	
+			if(item.getType() == Material.MAP){
+				MapView map = Bukkit.getServer().getMap(item.getDurability());
+				map.getRenderers().clear();
+				net.minecraft.server.ItemStack item2 = new net.minecraft.server.ItemStack(new CirnoItem(cirno.getServer().getPlayer(sender.getName()).getItemInHand().getTypeId()));
+		        WorldMap worldmap = (WorldMap)((net.minecraft.server.World)((CraftWorld)cirno.getServer().getPlayer(sender.getName()).getWorld()).getHandle()).a(WorldMap.class, "map_" + item2.getData());
+				map.addRenderer(new RegularRenderer((CraftMapView)map, new WorldMap("map_" + item.getData())));
 				return true;
 			} else {
 				cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.RED + "[ImgMap] Could not restore the normal rendering!");

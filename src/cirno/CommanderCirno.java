@@ -3,8 +3,6 @@ package cirno;
 import java.net.URL;
 import java.util.ArrayList;
 
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Item;
 import net.minecraft.server.World;
 import net.minecraft.server.WorldMap;
@@ -54,9 +52,11 @@ public class CommanderCirno implements CommandExecutor {
 			if(sender.hasPermission("imgmap.render") || sender.isOp()){
 				if(!(args.length >= 1)){
 					sender.sendMessage(ChatColor.RED + "[ImgMap] That commands requires an argument! Eg. /map example.com/img.jpg");
+					return true;
 				}
 				if(!(sender instanceof Player)){
-					return false;
+					sender.sendMessage(ChatColor.RED + "[ImgMap] You must be a player!");
+					return true;
 				}
 				ItemStack item = cirno.getServer().getPlayer(sender.getName()).getItemInHand();
 				MapView map;
@@ -65,9 +65,6 @@ public class CommanderCirno implements CommandExecutor {
 				if(item.getType() == Material.MAP){
 					map = Bukkit.getServer().getMap(item.getDurability());
 					map.getRenderers().clear();
-					/*if(map.getRenderers().get(0).getClass() != SlideshowRenderer.class || map.getRenderers().get(0).getClass() != ImgRenderer.class){
-						normalrender = map.getRenderers().get(0);
-					}*/
 				} else {
 					cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "[ImgMap] That isn't a map item!");
 					return true;
@@ -87,8 +84,8 @@ public class CommanderCirno implements CommandExecutor {
 						map.addRenderer(new ImgRenderer(args[0], cirno));
 						ds.setMapData(item.getDurability(), args[0]);
 						cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.GREEN + "[ImgMap] Now rendering " + args[0]);	
+						return true;
 					}
-					return true;
 				}
 			} else {
 				sender.sendMessage(ChatColor.RED + "Cirno sad. Cirno want you to access command, but Cirno cannot let you. Cirno will leak tears :'(");
@@ -97,23 +94,15 @@ public class CommanderCirno implements CommandExecutor {
 		}
 
 		if(command.getName().equalsIgnoreCase("restoremap") && (sender.hasPermission("imgmap.clear") || sender.isOp())){
-			/*ItemStack item = cirno.getServer().getPlayer(sender.getName()).getItemInHand();	
-			if(item.getType() == Material.MAP && normalrender != null){
-				MapView map = Bukkit.getServer().getMap(item.getDurability());
-				try{ map.removeRenderer(map.getRenderers().get(0));  }catch(Exception e){}
-				map.addRenderer(normalrender);
-				return true;
-			} else {
-				cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.RED + "[ImgMap] Could not restore the normal rendering!");
-				return true;
-			}*/
 			ItemStack item = cirno.getServer().getPlayer(sender.getName()).getItemInHand();	
 			if(item.getType() == Material.MAP){
 				MapView map = Bukkit.getServer().getMap(item.getDurability());
 				map.getRenderers().clear();
-				net.minecraft.server.ItemStack item2 = new net.minecraft.server.ItemStack(new CirnoItem(cirno.getServer().getPlayer(sender.getName()).getItemInHand().getTypeId()));
-		        WorldMap worldmap = (WorldMap)((net.minecraft.server.World)((CraftWorld)cirno.getServer().getPlayer(sender.getName()).getWorld()).getHandle()).a(WorldMap.class, "map_" + item2.getData());
-				map.addRenderer(new RegularRenderer((CraftMapView)map, new WorldMap("map_" + item.getData())));
+				net.minecraft.server.ItemStack item2 = new net.minecraft.server.ItemStack(Item.MAP);
+				item2.setData(item.getData().getData());
+				WorldMap worldmap = (WorldMap)((World)((CraftWorld) cirno.getServer().getPlayer(sender.getName()).getWorld()).getHandle()).a(WorldMap.class, "map_" + item2.getData());
+				map.addRenderer(new RegularRenderer((CraftMapView)map, worldmap));
+				ds.delMapData(map.getId());
 				return true;
 			} else {
 				cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.RED + "[ImgMap] Could not restore the normal rendering!");

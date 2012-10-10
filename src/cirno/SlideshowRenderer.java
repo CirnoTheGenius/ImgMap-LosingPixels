@@ -18,22 +18,20 @@ public class SlideshowRenderer extends MapRenderer {
 	boolean flagRender = false;
 	Nineball cirno;
 	final int waitTime;
-	boolean running = false;
 
 	public SlideshowRenderer(ArrayList<URL> url, int waitTime, Nineball cirno){
 		URLs = url;
 		this.waitTime = waitTime;
 		this.cirno = cirno;
-		running = true;
 	}
 
 	@Override
 	public void render(MapView map, final MapCanvas canvas, final Player player) {
 		try{
 			if(!URLs.isEmpty() && flagRender == false){
-				new Thread(cirno.tg, "Slideshow Renderer"){
+				new CirnoThread(cirno.tg, "Slideshow Renderer"){
 					public void run(){
-						if(running)try {
+						if(running) try {
 							for(int i=0; i < URLs.size(); i++){
 								canvas.drawImage(0, 0, resizeImage(ImageIO.read(URLs.get(i))));
 								sleep(waitTime*1000);
@@ -43,7 +41,7 @@ public class SlideshowRenderer extends MapRenderer {
 						} catch (Throwable e) {
 							e.printStackTrace();
 						} else {
-							
+							this.stopRunning();
 						}
 					}
 				}.start();

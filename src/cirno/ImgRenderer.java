@@ -25,8 +25,6 @@ public class ImgRenderer extends MapRenderer{
 
 	@Override
 	public void render(MapView map, final MapCanvas canvas, final Player player) {
-		// Check if url is nothing and if the image is already rendered
-		// Note that this flagRender var is local , so it does not affect other images
 		if(URL != null && flagRender == false){
 			cirno.getServer().getScheduler().scheduleAsyncDelayedTask(cirno, new Runnable() {
 				public void run() {

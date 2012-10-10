@@ -6,10 +6,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Nineball extends JavaPlugin {
 
+	/*
+	 * Good shall prevail. Evil sucks.
+	 */
+	
 	protected DataSaver ds;
 	protected CommanderCirno cc;
-	protected static ThreadGroup tg = new ThreadGroup("Cirno Group");
-	protected static SlideshowThreadGroup sr = new SlideshowThreadGroup("SlideshowRenderers");
+	protected CirnoThreadGroup tg = new CirnoThreadGroup("Cirno Group");
 
 	public void onEnable(){
 		try {
@@ -25,7 +28,6 @@ public class Nineball extends JavaPlugin {
 	}
 
 	public void onDisable(){
-		sr.stopRunning();
-		tg.interrupt();
+		tg.stopRunning();
 	}
 }

@@ -109,6 +109,47 @@ public class CommanderCirno implements CommandExecutor {
 				return true;
 			}
 		}
+
+		if(command.getName().equalsIgnoreCase("imap") || command.getName().equalsIgnoreCase("imgmap")){
+			if(args[0].equalsIgnoreCase("reload")){
+				cirno.saveConfig();
+				cirno.reloadConfig();
+				sender.sendMessage(ChatColor.GREEN + "[ImgMap] Reloaded configuration!");
+			} else if(args[0].equalsIgnoreCase("config")){
+				if(args[1].equalsIgnoreCase("LoadImgOnStartup")){
+					if(args[2].isEmpty()){
+						sender.sendMessage(ChatColor.GREEN + "[ImgMap] Load Images on Startup? : " + cirno.getConfig().getBoolean("LoadImgOnStartup"));
+					} else {
+						if(args[2].equalsIgnoreCase("yes") || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("y")){
+							cirno.getConfig().set("LoadImgOnStartup", true);
+						} else if(args[2].equalsIgnoreCase("no") || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("n")){
+							cirno.getConfig().set("LoadImgOnStartup", false);
+						}
+					}
+				} else if(args[1].equalsIgnoreCase("perm")){
+					if(!args[2].isEmpty()){
+						sender.sendMessage(ChatColor.GREEN + "[ImgMap] Permament Map IDs");
+						String[] maps = {};
+						cirno.getConfig().getList("PermMaps").toArray(maps);
+						for(int i=0; i < 10; i++){
+							if(maps.length > 0){
+								sender.sendMessage(maps[i] + " : " + ds.getMapData(i));
+							} else {
+								sender.sendMessage(ChatColor.RED + "No permament maps set!");
+							}
+						}
+					} else try {
+						int id = Integer.valueOf(args[2]);
+
+					} catch (NumberFormatException nfe){
+
+					}
+
+				} else if(args[1].equalsIgnoreCase("")){
+
+				}
+			}
+		}
 		return true;
 	}
 

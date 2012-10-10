@@ -24,7 +24,7 @@ public class DataSaver {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void initializeFile() throws IOException{
 		File f = new File(cirno.getDataFolder().getAbsoluteFile(), "/MapData.list");
 		File folder = new File(cirno.getDataFolder().getAbsoluteFile().getAbsolutePath());

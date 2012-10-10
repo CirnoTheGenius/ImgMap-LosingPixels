@@ -16,6 +16,7 @@ public class Nineball extends JavaPlugin {
 
 	public void onEnable(){
 		try {
+			saveDefaultConfig();
 			ds = new DataSaver(this);
 			ds.initializeFile();
 			ds.setGlobalMaps();

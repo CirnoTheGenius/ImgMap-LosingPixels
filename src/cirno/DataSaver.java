@@ -24,7 +24,7 @@ public class DataSaver {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void initializeFile() throws IOException{
 		File f = new File(cirno.getDataFolder().getAbsoluteFile(), "/MapData.list");
 		File folder = new File(cirno.getDataFolder().getAbsoluteFile().getAbsolutePath());
@@ -38,24 +38,26 @@ public class DataSaver {
 	}
 
 	public void setGlobalMaps(){
-		new CirnoThread(cirno.tg, "Global Map Updator"){
-			public void run(){
-				for(long i=0; i < 65536; i++){
-					if(running){
-						if(FileSafeForUse == false){
-							this.stopRunning();
-							break;
-						}
-						MapView map = Bukkit.getServer().getMap((short)i);
-						String url = getMapData((int)i);
-						if(url != null && !url.isEmpty()){
-							map.getRenderers().clear();
-							map.addRenderer(new ImgRenderer(url, cirno));
+		if(cirno.getConfig().getBoolean("LoadImgOnStartup")){
+			new CirnoThread(cirno.tg, "Global Map Updator"){
+				public void run(){
+					for(long i=0; i < 65536; i++){
+						if(running){
+							if(FileSafeForUse == false){
+								this.stopRunning();
+								break;
+							}
+							MapView map = Bukkit.getServer().getMap((short)i);
+							String url = getMapData((int)i);
+							if(url != null && !url.isEmpty() && cirno.getConfig().getList("PermMaps").contains(i)){
+								map.getRenderers().clear();
+								map.addRenderer(new ImgRenderer(url, cirno));
+							}
 						}
 					}
 				}
-			}
-		}.start();
+			}.start();
+		}
 	}
 
 	public void setMapData(int id, String url){

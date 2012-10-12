@@ -10,6 +10,12 @@ commands:
  restoremap:
   description: Restores the original map renderer.
   usage: restoremap
+ imgmap:
+  description: Shows the help
+  usage: imgmap
+ imap:
+  description: Shows the help
+  usage: imap
 
 permission:
  imgmap.*:

@@ -23,12 +23,15 @@ public class Nineball extends JavaPlugin {
 			cc = new CommanderCirno(this);
 			getCommand("map").setExecutor(cc);
 			getCommand("restoremap").setExecutor(cc);
+			getCommand("imgmap").setExecutor(cc);
+			getCommand("imap").setExecutor(cc);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void onDisable(){
+		saveConfig();
 		tg.stopRunning();
 	}
 }

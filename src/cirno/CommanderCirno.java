@@ -13,6 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.map.CraftMapRenderer;
 import org.bukkit.craftbukkit.map.CraftMapView;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -79,11 +80,23 @@ public class CommanderCirno implements CommandExecutor {
 					map.addRenderer(new SlideshowRenderer(urls, Integer.valueOf(args[args.length - 1]), cirno));
 					return true;
 				} else {
+					if(args[0].equalsIgnoreCase("perm")){
+						if(checkForImgType(args[1], sender)){
+							map.addRenderer(new ImgRenderer(args[1], cirno));
+							if(cirno.getConfig().getBoolean("MapsDefaultPermament")){
+								ds.setMapData(item.getDurability(), args[1]);	
+							}
+
+							cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.GREEN + "[ImgMap] Now rendering " + args[1]);	
+							return true;
+						}
+					}
 					if(checkForImgType(args[0], sender)){
 						map.addRenderer(new ImgRenderer(args[0], cirno));
 						if(cirno.getConfig().getBoolean("MapsDefaultPermament")){
 							ds.setMapData(item.getDurability(), args[0]);	
 						}
+
 						cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.GREEN + "[ImgMap] Now rendering " + args[0]);	
 						return true;
 					}
@@ -102,7 +115,7 @@ public class CommanderCirno implements CommandExecutor {
 				net.minecraft.server.ItemStack item2 = new net.minecraft.server.ItemStack(Item.MAP);
 				item2.setData(item.getData().getData());
 				WorldMap worldmap = (WorldMap)((World)((CraftWorld) cirno.getServer().getPlayer(sender.getName()).getWorld()).getHandle()).a(WorldMap.class, "map_" + item2.getData());
-				map.addRenderer(new RegularRenderer((CraftMapView)map, worldmap));
+				map.addRenderer(new CraftMapRenderer((CraftMapView)map, worldmap));
 				ds.delMapData(map.getId());
 				return true;
 			} else {
@@ -110,88 +123,6 @@ public class CommanderCirno implements CommandExecutor {
 				return true;
 			}
 		}
-
-		if(command.getName().equalsIgnoreCase("imap") || command.getName().equalsIgnoreCase("imgmap")){
-			if(args.length <= 0){
-				sender.sendMessage(ChatColor.GREEN + "[ImgMap] Version " + cirno.isInitialized());
-				return true;
-			}
-			if(args[0].equalsIgnoreCase("reload")){
-				cirno.saveConfig();
-				cirno.reloadConfig();
-				sender.sendMessage(ChatColor.GREEN + "[ImgMap] Reloaded configuration!");
-			} else if(args[0].equalsIgnoreCase("config")){
-				if(args.length == 1){
-					sender.sendMessage("ImgMap by Cirno");
-					sender.sendMessage("Version 1.0");
-					return true;
-				} else if(args[1].equalsIgnoreCase("LoadImgOnStartup")){
-					if(args.length == 2){
-						sender.sendMessage(ChatColor.GREEN + "[ImgMap] Load Images on Startup? : " + cirno.getConfig().getBoolean("LoadImgOnStartup"));
-					} else {
-						if(args[2].equalsIgnoreCase("yes") || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("y")){
-							sender.sendMessage(ChatColor.GREEN + "[ImgMap] Set LoadImgOnStartup to true");
-							cirno.getConfig().set("LoadImgOnStartup", true);
-							cirno.saveConfig();
-						} else if(args[2].equalsIgnoreCase("no") || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("n")){
-							sender.sendMessage(ChatColor.GREEN + "[ImgMap] Set LoadImgOnStartup to false");
-							cirno.getConfig().set("LoadImgOnStartup", false);
-							cirno.saveConfig();
-						}
-					}
-				} else if(args[1].equalsIgnoreCase("MapsDefaultPermament")){
-					if(args.length == 2){
-						sender.sendMessage(ChatColor.GREEN + "[ImgMap] Maps are defaulted to be permament? : " + cirno.getConfig().getBoolean("MapsDefaultPermament"));
-					} else {
-						if(args[2].equalsIgnoreCase("yes") || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("y")){
-							sender.sendMessage(ChatColor.GREEN + "[ImgMap] Set MapsDefaultPermament to true");
-							cirno.getConfig().set("MapsDefaultPermament", true);
-							cirno.saveConfig();
-						} else if(args[2].equalsIgnoreCase("no") || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("n")){
-							sender.sendMessage(ChatColor.GREEN + "[ImgMap] Set MapsDefaultPermament to false");
-							cirno.getConfig().set("MapsDefaultPermament", false);
-							cirno.saveConfig();
-						}
-					}
-				} else if(args[1].equalsIgnoreCase("perm")){
-					if(args.length == 2){
-						sender.sendMessage(ChatColor.GREEN + "[ImgMap] Permament Map IDs");
-						Integer[] maps = cirno.getConfig().getList("PermMaps").toArray(new Integer[0]);;
-						for(int i=0; i < (maps.length < 10 ? maps.length : 10); i++){
-							if(maps.length > 0){
-								sender.sendMessage(maps[i] + " : " + ds.getMapData(i));
-							} else {
-								sender.sendMessage(ChatColor.RED + "No permament maps set!");
-							}
-						}
-					} else if(args.length == 3){
-						ArrayList<Integer> l = new ArrayList<Integer>();
-						for(int i=0; i < cirno.getConfig().getList("PermMaps").size(); i++){
-							l.add(Integer.valueOf(String.valueOf(cirno.getConfig().getList("PermMaps").get(i))));
-						}
-						try {
-							if(l.contains(Integer.valueOf(args[2]))){
-								l.remove(Integer.valueOf(args[2]));
-								cirno.getConfig().set("PermMaps", l);
-								cirno.saveConfig();
-							} else {
-								l.add(Integer.valueOf(args[2]));
-								cirno.getConfig().set("PermMaps", l);
-								cirno.saveConfig();
-							}	
-						} catch (NumberFormatException nfe){
-							sender.sendMessage(ChatColor.RED + "[ImgMap] Not a valid number!");
-						}
-					}
-				}
-			}
-		} else if(args[1].equalsIgnoreCase("")){
-
-		}
-
 		return true;
 	}
-
-
-
 }

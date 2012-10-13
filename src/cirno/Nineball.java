@@ -10,9 +10,10 @@ public class Nineball extends JavaPlugin {
 	 * Good shall prevail. Evil sucks.
 	 */
 	
-	protected DataSaver ds;
-	protected CommanderCirno cc;
-	protected CirnoThreadGroup tg = new CirnoThreadGroup("Cirno Group");
+	private DataSaver ds;
+	private CommanderCirno cc;
+	private GeneralDaiyousei gd;
+	public CirnoThreadGroup tg = new CirnoThreadGroup("Cirno Group");
 
 	public void onEnable(){
 		try {
@@ -21,10 +22,11 @@ public class Nineball extends JavaPlugin {
 			ds.initializeFile();
 			ds.setGlobalMaps();
 			cc = new CommanderCirno(this);
+			gd = new GeneralDaiyousei(this);
 			getCommand("map").setExecutor(cc);
 			getCommand("restoremap").setExecutor(cc);
-			getCommand("imgmap").setExecutor(cc);
-			getCommand("imap").setExecutor(cc);
+			getCommand("imgmap").setExecutor(gd);
+			getCommand("imap").setExecutor(gd);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

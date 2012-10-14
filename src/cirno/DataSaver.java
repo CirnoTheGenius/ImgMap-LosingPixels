@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.map.MapView;
@@ -38,26 +39,32 @@ public class DataSaver {
 	}
 
 	public void setGlobalMaps(){
-		if(cirno.getConfig().getBoolean("LoadImgOnStartup")){
-			new CirnoThread(cirno.tg, "Global Map Updator"){
-				public void run(){
+		cirno.tg.addToList(new CirnoThread(cirno.tg, "Global Map Updator"){
+			public void run(){
+				HashMap<Integer, String> data = getMapDataAsArray();
+				while(running){
 					for(long i=0; i < 65536; i++){
-						if(running){
-							if(FileSafeForUse == false){
-								this.stopRunning();
-								break;
-							}
-							MapView map = Bukkit.getServer().getMap((short)i);
-							String url = getMapData((int)i);
-							if(url != null && !url.isEmpty() && cirno.getConfig().getList("PermMaps").contains(i)){
-								map.getRenderers().clear();
-								map.addRenderer(new ImgRenderer(url, cirno));
-							}
+						if(FileSafeForUse == false){
+							this.stopRunning();
+							break;
+						}
+						MapView map = Bukkit.getServer().getMap((short)i);
+						String url = null;
+						if(data.containsKey(i)){
+							url = getMapData((int)i);
+						}
+						if(url != null && !url.isEmpty()){
+							map.getRenderers().clear();
+							map.addRenderer(new ImgRenderer(url, cirno));
 						}
 					}
+					System.out.println("Finished doing global maps stuff.");
+					break;
 				}
-			}.start();
-		}
+			}
+		});
+
+		cirno.tg.start();
 	}
 
 	public void setMapData(int id, String url){
@@ -136,6 +143,65 @@ public class DataSaver {
 				}
 				eyes.close();
 				return null;
+			} catch (IOException e){
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
+	}
+
+	public int countMaps(){
+		int i = 0;
+		if(FileSafeForUse){
+			try {
+				BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
+				String l;
+				while((l = eyes.readLine()) != null){
+					i++;
+				}
+				eyes.close();
+				return 0;
+			} catch (IOException e){
+				e.printStackTrace();
+				return 0;
+			}
+		}
+		return i;
+	}
+
+	public Integer[] countMapsArray(){
+		Integer[] i = {};
+		if(FileSafeForUse){
+			try {
+				BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
+				String l;
+				int ln = 0;
+				while((l = eyes.readLine()) != null){
+					ln++;
+					i[ln] = Integer.valueOf(l.split(" > ")[0]);
+				}
+				eyes.close();
+				return null;
+			} catch (IOException e){
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return i;
+	}
+
+	public HashMap<Integer, String> getMapDataAsArray(){
+		if(FileSafeForUse){
+			HashMap<Integer, String> data = new HashMap<Integer, String>();
+			try {
+				BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
+				String l;
+				while((l = eyes.readLine()) != null){
+					data.put(Integer.valueOf(l.split(" > ")[0].trim()), l.split(" > ")[1].trim());
+				}
+				eyes.close();
+				return data;
 			} catch (IOException e){
 				e.printStackTrace();
 				return null;

@@ -20,4 +20,10 @@ public class CirnoThreadGroup extends ThreadGroup {
 		}
 	}
 	
+	public void start() {
+		for(CirnoThread ct : threads){
+			ct.start();
+		}
+	}
+	
 }

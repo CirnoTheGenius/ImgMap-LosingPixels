@@ -28,8 +28,8 @@ public class ImgRenderer extends MapRenderer{
 	public void render(MapView map, final MapCanvas canvas, final Player player) {
 		if(URL != null && flagRender == false){
 			cirno.getServer().getScheduler().scheduleAsyncDelayedTask(cirno, new Runnable() {
-				public void run() {
-					try{
+				public void run(){
+					try {
 						canvas.drawImage(0, 0, resizeImage(ImageIO.read(new URL(URL))));
 					} catch(Exception e){
 						player.sendMessage(ChatColor.RED + "[ImgMap] Failed to read image!");

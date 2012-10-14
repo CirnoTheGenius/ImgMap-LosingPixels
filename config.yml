@@ -1,4 +1,2 @@
-#stuff.
-LoadImgOnStartup: true
+#Should I make maps default permament?
 MapsDefaultPermament: false
-PermMaps:

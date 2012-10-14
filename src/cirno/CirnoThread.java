@@ -15,7 +15,7 @@ public class CirnoThread extends Thread {
 	@Override
 	public void start(){
 		this.running = true;
-		this.run();
+		super.start();
 	}
 	
 }

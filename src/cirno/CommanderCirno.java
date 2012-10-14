@@ -83,15 +83,11 @@ public class CommanderCirno implements CommandExecutor {
 					if(args[0].equalsIgnoreCase("perm")){
 						if(checkForImgType(args[1], sender)){
 							map.addRenderer(new ImgRenderer(args[1], cirno));
-							if(cirno.getConfig().getBoolean("MapsDefaultPermament")){
-								ds.setMapData(item.getDurability(), args[1]);	
-							}
-
+							ds.setMapData(item.getDurability(), args[1]);	
 							cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.GREEN + "[ImgMap] Now rendering " + args[1]);	
 							return true;
 						}
-					}
-					if(checkForImgType(args[0], sender)){
+					} else if(checkForImgType(args[0], sender)){
 						map.addRenderer(new ImgRenderer(args[0], cirno));
 						if(cirno.getConfig().getBoolean("MapsDefaultPermament")){
 							ds.setMapData(item.getDurability(), args[0]);	

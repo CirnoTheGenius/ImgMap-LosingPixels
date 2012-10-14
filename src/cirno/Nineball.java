@@ -16,6 +16,7 @@ public class Nineball extends JavaPlugin {
 	public CirnoThreadGroup tg = new CirnoThreadGroup("Cirno Group");
 
 	public void onEnable(){
+		tg.stopRunning();
 		try {
 			saveDefaultConfig();
 			ds = new DataSaver(this);

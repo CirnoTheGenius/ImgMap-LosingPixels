@@ -40,27 +40,24 @@ public class DataSaver {
 
 	public void setGlobalMaps(){
 		cirno.tg.addToList(new CirnoThread(cirno.tg, "Global Map Updator"){
+			@SuppressWarnings("deprecation")
 			public void run(){
 				HashMap<Integer, String> data = getMapDataAsArray();
-				while(running){
-					for(long i=0; i < 65536; i++){
-						if(FileSafeForUse == false){
-							this.stopRunning();
-							break;
-						}
-						MapView map = Bukkit.getServer().getMap((short)i);
-						String url = null;
-						if(data.containsKey(i)){
-							url = getMapData((int)i);
-						}
+				for(long i=0; i < 65536; i++){
+					if(FileSafeForUse == false || running == false){
+						break;
+					}
+					MapView map = Bukkit.getServer().getMap((short)i);
+					String url = null;
+					if(data.containsKey((int)i)){
+						url = getMapData((int)i);
 						if(url != null && !url.isEmpty()){
 							map.getRenderers().clear();
 							map.addRenderer(new ImgRenderer(url, cirno));
 						}
 					}
-					System.out.println("Finished doing global maps stuff.");
-					break;
 				}
+				stop();
 			}
 		});
 
@@ -161,7 +158,7 @@ public class DataSaver {
 					i++;
 				}
 				eyes.close();
-				return 0;
+				return i;
 			} catch (IOException e){
 				e.printStackTrace();
 				return 0;
@@ -170,8 +167,8 @@ public class DataSaver {
 		return i;
 	}
 
-	public Integer[] countMapsArray(){
-		Integer[] i = {};
+	public ArrayList<Integer> countMapsArray(){
+		ArrayList<Integer> i = new ArrayList<Integer>();
 		if(FileSafeForUse){
 			try {
 				BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
@@ -179,10 +176,10 @@ public class DataSaver {
 				int ln = 0;
 				while((l = eyes.readLine()) != null){
 					ln++;
-					i[ln] = Integer.valueOf(l.split(" > ")[0]);
+					i.add(Integer.valueOf(l.split(" > ")[0].trim()));
 				}
 				eyes.close();
-				return null;
+				return i;
 			} catch (IOException e){
 				e.printStackTrace();
 				return null;

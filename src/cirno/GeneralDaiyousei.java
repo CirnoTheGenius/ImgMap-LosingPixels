@@ -1,5 +1,7 @@
 package cirno;
 
+import java.util.ArrayList;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,7 +34,7 @@ public class GeneralDaiyousei implements CommandExecutor {
 					sender.sendMessage(ChatColor.GREEN + "[ImgMap] Reloaded configuration!");
 					return true;
 				} else if(args[0].equalsIgnoreCase("config")){
-					if(args.length == 2){
+					if(args.length == 1){
 						sender.sendMessage(ChatColor.RED + "[ImgMap] Requires another argument!");
 						sender.sendMessage(ChatColor.RED + "[ImgMap] Avaliable arguments: MapsDefaultPermament, perm");
 						return true;
@@ -56,13 +58,13 @@ public class GeneralDaiyousei implements CommandExecutor {
 					} else if(args[1].equalsIgnoreCase("perm")){
 						if(args.length == 2){
 							sender.sendMessage(ChatColor.GREEN + "[ImgMap] Permament Map IDs");
-							Integer[] maps = ds.countMapsArray();
-							for(int i=0; i < (ds.countMaps() < 10 ? ds.countMaps() : 10); i++){
-								if(maps.length > 0){
-									sender.sendMessage(maps[i] + " : " + ds.getMapData(i));
-								} else {
-									sender.sendMessage(ChatColor.RED + "No permament maps set!");
+							ArrayList<Integer> maps = ds.countMapsArray();
+							if(maps.size() > 0){
+								for(int i=0; i < (ds.countMaps() < 10 ? ds.countMaps() : 10); i++){
+									sender.sendMessage(ChatColor.YELLOW + new String(maps.get(i) + " : " + ds.getMapData(i)));
 								}
+							} else {
+								sender.sendMessage(ChatColor.RED + "No permament maps set!");
 							}
 							return true;
 						}

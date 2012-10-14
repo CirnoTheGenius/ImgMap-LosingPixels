@@ -92,7 +92,6 @@ public class CommanderCirno implements CommandExecutor {
 						if(cirno.getConfig().getBoolean("MapsDefaultPermament")){
 							ds.setMapData(item.getDurability(), args[0]);	
 						}
-
 						cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.GREEN + "[ImgMap] Now rendering " + args[0]);	
 						return true;
 					}

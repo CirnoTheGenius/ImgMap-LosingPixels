@@ -15,8 +15,8 @@ public class CirnoThreadGroup extends ThreadGroup {
 	}
 	
 	public void stopRunning(){
-		for(int i=0; i < threads.size(); i++){
-			threads.get(i).running = false;
+		for(CirnoThread ct : threads){
+			ct.running = false;
 		}
 	}
 	
@@ -25,5 +25,4 @@ public class CirnoThreadGroup extends ThreadGroup {
 			ct.start();
 		}
 	}
-	
 }

@@ -109,7 +109,7 @@ public class CommanderCirno implements CommandExecutor {
 				map.getRenderers().clear();
 				net.minecraft.server.ItemStack item2 = new net.minecraft.server.ItemStack(Item.MAP);
 				item2.setData(item.getData().getData());
-				WorldMap worldmap = (WorldMap)((World)((CraftWorld) cirno.getServer().getPlayer(sender.getName()).getWorld()).getHandle()).a(WorldMap.class, "map_" + item2.getData());
+				WorldMap worldmap = (WorldMap)((World)((CraftWorld)cirno.getServer().getPlayer(sender.getName()).getWorld()).getHandle()).a(WorldMap.class, "map_" + item2.getData());
 				map.addRenderer(new CraftMapRenderer((CraftMapView)map, worldmap));
 				ds.delMapData(map.getId());
 				return true;

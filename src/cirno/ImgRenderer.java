@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
+import org.bukkit.map.MapCursorCollection;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
@@ -27,6 +28,8 @@ public class ImgRenderer extends MapRenderer{
 	@Override
 	public void render(MapView map, final MapCanvas canvas, final Player player) {
 		if(URL != null && flagRender == false){
+			MapCursorCollection cursors = canvas.getCursors();
+			while(cursors.size() > 0){ cursors.removeCursor(cursors.getCursor(0)); }
 			cirno.getServer().getScheduler().scheduleAsyncDelayedTask(cirno, new Runnable() {
 				public void run(){
 					try {

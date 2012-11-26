@@ -68,17 +68,22 @@ public class GeneralDaiyousei implements CommandExecutor {
 							}
 							return true;
 						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "[ImgMap] Invalid argument!");
+						sender.sendMessage(ChatColor.RED + "[ImgMap] Avaliable arguments: MapsDefaultPermament, perm");
+						return true;
 					}
 				} /*Dummy command.*/ else if(args[0].equalsIgnoreCase("cirno")){
 					cirno.getServer().broadcastMessage(ChatColor.BLUE + "[Cirno] Eye'm the strongest!");
 					return true;
 				} else {
 					sender.sendMessage(ChatColor.RED + "[ImgMap] Invalid argument!");
-					sender.sendMessage(ChatColor.RED + "[ImgMap] Avaliable arguments: LoadImgOnStartup, MapsDefaultPermament, perm");
+					sender.sendMessage(ChatColor.RED + "[ImgMap] Avaliable arguments: config");
 					return true;
 				}
 			} else {
 				sender.sendMessage(ChatColor.RED + "[ImgMap] You don't have permission!");
+				return true;
 			}
 		}
 		return false;

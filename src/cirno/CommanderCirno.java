@@ -20,6 +20,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import Renderers.ImgRenderer;
+import Renderers.SlideshowRenderer;
+
 public class CommanderCirno implements CommandExecutor {
 
 	Nineball cirno;
@@ -39,7 +42,7 @@ public class CommanderCirno implements CommandExecutor {
 			return true;
 		}
 		for(String urls : Formats){
-			if(url.endsWith(urls))
+			if(url.toLowerCase().endsWith(urls))
 				return true;
 		}
 		cirno.getServer().getPlayer(s.getName()).sendMessage(ChatColor.RED + "[ImgMap] Image format not supported!");
@@ -64,7 +67,9 @@ public class CommanderCirno implements CommandExecutor {
 
 				if(item.getType() == Material.MAP){
 					map = Bukkit.getServer().getMap(item.getDurability());
-					map.getRenderers().clear();
+					for(MapRenderer r : map.getRenderers()){
+						map.removeRenderer(r);
+					}
 				} else {
 					cirno.getServer().getPlayer(sender.getName()).sendMessage(ChatColor.RED + "" + ChatColor.ITALIC + "[ImgMap] That isn't a map item!");
 					return true;
@@ -105,6 +110,7 @@ public class CommanderCirno implements CommandExecutor {
 		if(command.getName().equalsIgnoreCase("restoremap") && (sender.hasPermission("imgmap.clear") || sender.isOp())){
 			ItemStack item = cirno.getServer().getPlayer(sender.getName()).getItemInHand();	
 			if(item.getType() == Material.MAP){
+				//Probably the most blinding spot ever. NMS code mixed with Bukkit API.
 				MapView map = Bukkit.getServer().getMap(item.getDurability());
 				map.getRenderers().clear();
 				net.minecraft.server.ItemStack item2 = new net.minecraft.server.ItemStack(Item.MAP);

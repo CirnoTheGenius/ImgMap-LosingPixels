@@ -1,8 +1,15 @@
-package cirno;
+package Threading;
+
 
 public class CirnoThread extends Thread {
-
-	boolean running;
+	
+	/**
+	 * 
+	 * A safer version of threads by Cirno.
+	 * 
+	 */
+	
+	protected boolean running;
 	
 	public CirnoThread(CirnoThreadGroup tg, String string) {
 		super(tg, string);

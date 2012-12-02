@@ -1,6 +1,7 @@
-package cirno;
+package Threading;
 
 import java.util.ArrayList;
+
 
 public class CirnoThreadGroup extends ThreadGroup {
 

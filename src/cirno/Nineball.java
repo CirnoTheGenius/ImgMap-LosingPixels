@@ -3,6 +3,8 @@ package cirno;
 import java.io.IOException;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import Threading.CirnoThreadGroup;
+
 
 public class Nineball extends JavaPlugin {
 

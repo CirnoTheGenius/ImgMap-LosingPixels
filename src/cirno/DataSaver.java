@@ -12,6 +12,9 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.map.MapView;
 
+import Renderers.ImgRenderer;
+import Threading.CirnoThread;
+
 public class DataSaver {
 
 	Nineball cirno;

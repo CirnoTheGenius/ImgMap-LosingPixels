@@ -1,28 +1,18 @@
 package Threading;
 
-
-public class CirnoThread extends Thread {
-	
-	/**
-	 * 
-	 * A safer version of threads by Cirno.
-	 * 
-	 */
-	
+public class CirnoThread extends Thread{
 	protected boolean running;
-	
-	public CirnoThread(CirnoThreadGroup tg, String string) {
-		super(tg, string);
+
+	public CirnoThread(String string){
+		super(string);
 	}
-	
+
 	public void stopRunning(){
 		this.running = false;
 	}
-	
-	@Override
+
 	public void start(){
 		this.running = true;
 		super.start();
 	}
-	
 }

@@ -8,90 +8,89 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.map.MapView;
 
-import Renderers.ImgRenderer;
+import Rendering.ImgRenderer;
 import Threading.CirnoThread;
 
+
+//Dear god, the "wonderful" file API for MapData.
 public class DataSaver {
 
-	Nineball cirno;
+	Nineball Main;
 	boolean FileSafeForUse;
 
-	public DataSaver(Nineball r){
+	public DataSaver(Nineball main){
+		this.Main = main;
+		initializeFile();
+	}
+
+	public void initializeFile(){
 		try {
-			cirno = r;
-			initializeFile();
-		} catch (IOException e) {
+			File f = new File(Main.getDataFolder().getAbsoluteFile(), "/MapData.list");
+			File folder = new File(Main.getDataFolder().getAbsoluteFile().getAbsolutePath());
+			if (!folder.exists()) {
+				folder.mkdir();
+			}
+			if (!f.exists()) {
+				f.createNewFile();
+			}
+			this.FileSafeForUse = true;	  
+		} catch (IOException e){
 			e.printStackTrace();
 		}
 	}
 
-	public void initializeFile() throws IOException{
-		File f = new File(cirno.getDataFolder().getAbsoluteFile(), "/MapData.list");
-		File folder = new File(cirno.getDataFolder().getAbsoluteFile().getAbsolutePath());
-		if(!folder.exists()){
-			folder.mkdir();
-		}
-		if(!f.exists()){
-			f.createNewFile();
-		}
-		FileSafeForUse = true;
-	}
-
-	public void setGlobalMaps(){
-		cirno.tg.addToList(new CirnoThread(cirno.tg, "Global Map Updator"){
+	public void setGlobalMaps() {
+		Main.getCThreadGroup().addToList(new CirnoThread("Global Map Updator"){
 			@SuppressWarnings("deprecation")
 			public void run(){
-				HashMap<Integer, String> data = getMapDataAsArray();
-				for(long i=0; i < 65536; i++){
-					if(FileSafeForUse == false || running == false){
+				HashMap<Long, String> data = DataSaver.this.getMapDataAsArray();
+				for (long i = 0L; i < 65536L; i += 1L) {
+					if (!DataSaver.this.FileSafeForUse || !this.running){
 						break;
 					}
 					MapView map = Bukkit.getServer().getMap((short)i);
 					String url = null;
-					if(data.containsKey((int)i)){
-						url = getMapData((int)i);
-						if(url != null && !url.isEmpty()){
+					if (data.containsKey(i)){
+						url = DataSaver.this.getMapData((int)i);
+						if ((url != null) && (!url.isEmpty())) {
 							map.getRenderers().clear();
-							map.addRenderer(new ImgRenderer(url, cirno));
+							map.addRenderer(new ImgRenderer(url, Main));
 						}
 					}
 				}
 				stop();
 			}
 		});
-
-		cirno.tg.start();
+		Main.getCThreadGroup().start();
 	}
 
 	public void setMapData(int id, String url){
 		try {
 			boolean found = false;
-			//WSTFGL. Tactical failure inbound! Prepare for blindness!
-			ArrayList<String> tempArray = new ArrayList<String>();
-			BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
-			String l;
 
-			while((l = eyes.readLine()) != null){
+			ArrayList<String> tempArray = new ArrayList<String>();
+			BufferedReader eyes = new BufferedReader(new FileReader(Main.getDataFolder().getAbsoluteFile() + "/MapData.list"));
+			String l;
+			while ((l = eyes.readLine()) != null){
 				String[] line = l.split(" > ");
-				if(line[0].equalsIgnoreCase(String.valueOf(id))){
+				if (line[0].equalsIgnoreCase(String.valueOf(id))) {
 					found = true;
 					tempArray.add(line[0] + " > " + url);
 				} else {
 					tempArray.add(l);
 				}
 			}
-
-			if(!found){
+			if (!found){
 				tempArray.add(id + " > " + url);
 			}
+			
 			eyes.close();
-			FileSafeForUse = false;
-			BufferedWriter typewriter = new BufferedWriter(new FileWriter(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list", false));
-			for(String line : tempArray){
+			this.FileSafeForUse = false;
+			BufferedWriter typewriter = new BufferedWriter(new FileWriter(Main.getDataFolder().getAbsoluteFile() + "/MapData.list", false));
+			for (String line : tempArray) {
 				typewriter.write(line + "\n");
 			}
 			typewriter.close();
@@ -101,24 +100,24 @@ public class DataSaver {
 		}
 	}
 
-
-	public void delMapData(int id){
+	public void delMapData(int id)
+	{
 		try {
 			ArrayList<String> tempArray = new ArrayList<String>();
-			BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
+			BufferedReader eyes = new BufferedReader(new FileReader(Main.getDataFolder().getAbsoluteFile() + "/MapData.list"));
 			String l;
-
-			while((l = eyes.readLine()) != null){
+			while ((l = eyes.readLine()) != null)
+			{
 				String[] line = l.split(" > ");
-				if(!line[0].equalsIgnoreCase(String.valueOf(id))){
+				if (!line[0].equalsIgnoreCase(String.valueOf(id))) {
 					tempArray.add(l);
 				}
 			}
 
 			eyes.close();
-			FileSafeForUse = false;
-			BufferedWriter typewriter = new BufferedWriter(new FileWriter(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list", false));
-			for(String line : tempArray){
+			this.FileSafeForUse = false;
+			BufferedWriter typewriter = new BufferedWriter(new FileWriter(Main.getDataFolder().getAbsoluteFile() + "/MapData.list", false));
+			for (String line : tempArray) {
 				typewriter.write(line);
 			}
 			typewriter.close();
@@ -128,22 +127,21 @@ public class DataSaver {
 		}
 	}
 
-
-
-	public String getMapData(int id){
-		if(FileSafeForUse){
+	public String getMapData(int id)
+	{
+		if (this.FileSafeForUse) {
 			try {
-				BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
+				BufferedReader eyes = new BufferedReader(new FileReader(Main.getDataFolder().getAbsoluteFile() + "/MapData.list"));
 				String l;
-				while((l = eyes.readLine()) != null){
-					if(l.startsWith(String.valueOf(id))){
+				while ((l = eyes.readLine()) != null){
+					if (l.startsWith(String.valueOf(id))) {
 						eyes.close();
 						return l.split(" > ")[1].trim();
 					}
 				}
 				eyes.close();
 				return null;
-			} catch (IOException e){
+			} catch (IOException e) {
 				e.printStackTrace();
 				return null;
 			}
@@ -151,18 +149,17 @@ public class DataSaver {
 		return null;
 	}
 
-	public int countMaps(){
+	public int countMaps() {
 		int i = 0;
-		if(FileSafeForUse){
+		if (this.FileSafeForUse) {
 			try {
-				BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
-				String l;
-				while((l = eyes.readLine()) != null){
+				BufferedReader eyes = new BufferedReader(new FileReader(Main.getDataFolder().getAbsoluteFile() + "/MapData.list"));
+				while (eyes.readLine() != null){
 					i++;
 				}
 				eyes.close();
 				return i;
-			} catch (IOException e){
+			} catch (IOException e) {
 				e.printStackTrace();
 				return 0;
 			}
@@ -170,41 +167,38 @@ public class DataSaver {
 		return i;
 	}
 
-	public ArrayList<Integer> countMapsArray(){
+	public ArrayList<Integer> countMapsArray() {
 		ArrayList<Integer> i = new ArrayList<Integer>();
-		if(FileSafeForUse){
+		if (this.FileSafeForUse) {
 			try {
-				BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
+				BufferedReader eyes = new BufferedReader(new FileReader(Main.getDataFolder().getAbsoluteFile() + "/MapData.list"));
 				String l;
-				int ln = 0;
-				while((l = eyes.readLine()) != null){
-					ln++;
+				while ((l = eyes.readLine()) != null)
+				{
 					i.add(Integer.valueOf(l.split(" > ")[0].trim()));
 				}
 				eyes.close();
-				return i;
-			} catch (IOException e){
+			} catch (IOException e) {
 				e.printStackTrace();
-				return null;
 			}
 		}
 		return i;
 	}
 
-	public HashMap<Integer, String> getMapDataAsArray(){
-		if(FileSafeForUse){
-			HashMap<Integer, String> data = new HashMap<Integer, String>();
+	public HashMap<Long, String> getMapDataAsArray() {
+		if (this.FileSafeForUse) {
+			HashMap<Long, String> data = new HashMap<Long, String>();
 			try {
-				BufferedReader eyes = new BufferedReader(new FileReader(cirno.getDataFolder().getAbsoluteFile() + "/MapData.list"));
+				BufferedReader eyes = new BufferedReader(new FileReader(Main.getDataFolder().getAbsoluteFile() + "/MapData.list"));
 				String l;
-				while((l = eyes.readLine()) != null){
-					data.put(Integer.valueOf(l.split(" > ")[0].trim()), l.split(" > ")[1].trim());
+				while ((l = eyes.readLine()) != null)
+				{
+					data.put(Long.valueOf(l.split(" > ")[0].trim()), l.split(" > ")[1].trim());
 				}
 				eyes.close();
 				return data;
-			} catch (IOException e){
+			} catch (IOException e) {
 				e.printStackTrace();
-				return null;
 			}
 		}
 		return null;

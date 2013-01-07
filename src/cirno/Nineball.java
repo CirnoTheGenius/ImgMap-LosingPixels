@@ -1,42 +1,38 @@
 package cirno;
 
-import java.io.IOException;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import Threading.CirnoThreadGroup;
 
+import CommandListeners.CommanderCirno;
+import CommandListeners.GeneralDaiyousei;
 
 public class Nineball extends JavaPlugin {
-
-	/*
-	 * Good shall prevail. Evil sucks.
-	 */
-	
-	private DataSaver ds;
+	public DataSaver ds;
 	private CommanderCirno cc;
 	private GeneralDaiyousei gd;
-	public CirnoThreadGroup tg = new CirnoThreadGroup("Cirno Group");
+	private CirnoThreadGroup tg = new CirnoThreadGroup("Cirno Group");
 
-	public void onEnable(){
+	public void onEnable() {
 		tg.stopRunning();
-		try {
-			saveDefaultConfig();
-			ds = new DataSaver(this);
-			ds.initializeFile();
-			ds.setGlobalMaps();
-			cc = new CommanderCirno(this);
-			gd = new GeneralDaiyousei(this);
-			getCommand("map").setExecutor(cc);
-			getCommand("restoremap").setExecutor(cc);
-			getCommand("imgmap").setExecutor(gd);
-			getCommand("imap").setExecutor(gd);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		saveDefaultConfig();
+		this.ds = new DataSaver(this);
+		this.ds.initializeFile();
+		this.ds.setGlobalMaps();
+		this.cc = new CommanderCirno(this);
+		this.gd = new GeneralDaiyousei(this);
+		getCommand("map").setExecutor(this.cc);
+		getCommand("restoremap").setExecutor(this.cc);
+		getCommand("imgmap").setExecutor(this.gd);
+		getCommand("imap").setExecutor(this.gd);
 	}
 
 	public void onDisable(){
 		saveConfig();
 		tg.stopRunning();
+	}
+	
+	public CirnoThreadGroup getCThreadGroup(){
+		return tg;
 	}
 }

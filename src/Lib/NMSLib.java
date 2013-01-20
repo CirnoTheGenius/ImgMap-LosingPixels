@@ -1,10 +1,10 @@
 package Lib;
 
-import org.bukkit.craftbukkit.v1_4_6.CraftWorld;
+import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
 
-import net.minecraft.server.v1_4_6.Item;
-import net.minecraft.server.v1_4_6.ItemStack;
-import net.minecraft.server.v1_4_6.WorldMap;
+import net.minecraft.server.v1_4_R1.Item;
+import net.minecraft.server.v1_4_R1.ItemStack;
+import net.minecraft.server.v1_4_R1.WorldMap;
 
 
 public class NMSLib {

@@ -1,6 +1,6 @@
 package CommandListeners;
 
-import net.minecraft.server.v1_4_6.WorldMap;
+import net.minecraft.server.v1_4_R1.WorldMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,9 +8,9 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_4_6.CraftWorld;
-import org.bukkit.craftbukkit.v1_4_6.map.CraftMapRenderer;
-import org.bukkit.craftbukkit.v1_4_6.map.CraftMapView;
+import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_4_R1.map.CraftMapRenderer;
+import org.bukkit.craftbukkit.v1_4_R1.map.CraftMapView;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -141,7 +141,7 @@ public class CommanderCirno implements CommandExecutor {
 
 			//Hooray! NMS! Making notes for what does what.
 			//Initialize a new map from NMS code.
-			net.minecraft.server.v1_4_6.ItemStack newMap = new net.minecraft.server.v1_4_6.ItemStack(net.minecraft.server.v1_4_6.Item.MAP);
+			net.minecraft.server.v1_4_R1.ItemStack newMap = new net.minecraft.server.v1_4_R1.ItemStack(net.minecraft.server.v1_4_R1.Item.MAP);
 			//Setting the map ID to the current map's ID.
 			newMap.setData(item.getData().getData());
 			//Initialize the new WorldMap

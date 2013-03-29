@@ -9,9 +9,15 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 public class ImageUtils {
-
-	public static Image resizeImage(String s){
+	
+	/**
+	 * Resizes the image to a 128x128 image.
+	 * @param s - The URL
+	 * @return
+	 */
+	public static Image resizeImage(final String s){
 		BufferedImage resizedImage = new BufferedImage(128, 128, 2);
+
 		try {
 			BufferedImage originalImage = ImageIO.read(new URL(s));
 			Graphics2D g = resizedImage.createGraphics();
@@ -22,7 +28,8 @@ public class ImageUtils {
 		} catch (IOException e){
 			e.printStackTrace();
 		}
+
 		return resizedImage;
 	}
-	
+
 }

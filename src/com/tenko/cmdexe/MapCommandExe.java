@@ -1,5 +1,8 @@
 package com.tenko.cmdexe;
 
+import java.io.IOException;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,20 +11,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
+import org.bukkit.map.MapView.Scale;
 
 import com.tenko.ImgMap;
 import com.tenko.rendering.ImageRenderer;
+import com.tenko.utils.DataUtils;
 import com.tenko.utils.PlayerUtils;
 import com.tenko.utils.URLUtils;
 
 public class MapCommandExe implements CommandExe {
 	
-	public MapCommandExe(CommandSender cs, String[] args){
+	/**
+	 * "/map" command
+	 * @param cs - Command sender.
+	 * @param args - Arguments.
+	 * @throws IOException
+	 */
+	public MapCommandExe(CommandSender cs, String[] args) throws IOException{
 		Execute(cs, args);
 	}
-	
+
 	@Override
-	public void Execute(CommandSender cs, String[] args) {
+	public void Execute(CommandSender cs, String[] args) throws IOException {
 		Player thePlayer = PlayerUtils.resolveToPlayer(cs);
 		ItemStack equipped = thePlayer.getItemInHand();
 
@@ -41,8 +52,14 @@ public class MapCommandExe implements CommandExe {
 			viewport.removeRenderer(mr);
 		}
 		
-		viewport.addRenderer(new ImageRenderer(ImgMap.getPlugin(), args[0]));
+		viewport.setScale(Scale.FARTHEST);
+		viewport.addRenderer(new ImageRenderer(args[0]));
 		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + args[0]);
+		
+		if(ArrayUtils.contains(args, "-p")){
+			DataUtils.replaceOrWrite(ImgMap.getList(), equipped.getDurability(), args[0]);
+			cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
+		}
 	}
 
 	@Override

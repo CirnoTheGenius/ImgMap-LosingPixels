@@ -6,11 +6,19 @@ import org.bukkit.entity.Player;
 import com.tenko.utils.PlayerUtils;
 
 public class ImgMapCommandExe implements CommandExe {
-
+	
+	/**
+	 * "/imap" and "/imgmap" command. Nothing really.
+	 * @param cs - Command sender.
+	 * @param args - Arguments.
+	 */
 	public ImgMapCommandExe(CommandSender cs, String[] args){
 		Execute(cs, args);
 	}
-
+	
+	/**
+	 * TODO: Add in settings and options.
+	 */
 	@Override
 	public void Execute(CommandSender cs, String[] args){
 		Player plyr = PlayerUtils.resolveToPlayer(cs);

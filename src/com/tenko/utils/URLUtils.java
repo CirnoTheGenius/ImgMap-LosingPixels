@@ -5,8 +5,17 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * URLUtils used in ImgMap for content-type checking.
+ * @author Tsunko
+ */
 public class URLUtils {
-
+	
+	/**
+	 * Checks to see if the image is a proper type. Currently uses Content-types.
+	 * @param s - The URL to try to check.
+	 * @return
+	 */
 	public static boolean compatibleImage(String s){
 		try {
 			String contentType = getContentType(new URL(s));
@@ -20,7 +29,13 @@ public class URLUtils {
 		}
 		return false;
 	}
-
+	
+	/**
+	 * Gets the content type. Do not use outside of this class. No point.
+	 * @param theURL - The URL object.
+	 * @return A string featuring the content-type.
+	 * @throws IOException
+	 */
 	private final static String getContentType(URL theURL) throws IOException {
 		HttpURLConnection con = (HttpURLConnection)theURL.openConnection();
 		con.setRequestMethod("HEAD");

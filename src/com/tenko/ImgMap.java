@@ -28,7 +28,14 @@ public class ImgMap extends JavaPlugin {
 	 * Command handler for all the commands.
 	 */
 	private CommanderCirno cc = new CommanderCirno();
-
+	
+	/**
+	 * Ignore this. I use this to test the utils and functions.
+	 */
+	public static void main(String[] args){
+	
+	}
+	
 	/**
 	 * Let's start it!
 	 * Get chance and luck!
@@ -36,7 +43,7 @@ public class ImgMap extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		pl = this;
-
+		
 		//Setting executors
 		getCommand("map").setExecutor(cc);
 
@@ -57,6 +64,10 @@ public class ImgMap extends JavaPlugin {
 
 		//Rewriting all of the IO map data loading. It was crappy as hell.
 		try {
+			DataUtils.checkDataFolder();
+			DataUtils.checkFolder("SlideshowData");
+			DataUtils.checkFile("Maps.list");
+			
 			for(String s : DataUtils.getLines(getList())){
 				String url = s.substring(s.indexOf(":")+1, s.length());
 				short id = Short.valueOf(s.substring(0, s.indexOf(":")));
@@ -72,7 +83,6 @@ public class ImgMap extends JavaPlugin {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 		
 	}
 	
@@ -90,5 +100,9 @@ public class ImgMap extends JavaPlugin {
 	 */
 	public static File getList(){
 		return new File(ImgMap.getPlugin().getDataFolder(), "Maps.list");
+	}
+	
+	public static File getSlideshowFile(int id){
+		return new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/", String.valueOf(id + ".slideshow"));
 	}
 }

@@ -23,32 +23,66 @@ public class DataUtils {
 	 * Checks to make sure the data folder exists.
 	 * @throws IOException
 	 */
-	public static void checkFolder() throws IOException {
+	public static void checkDataFolder() throws IOException {
 		ImgMap.getPlugin().getDataFolder().mkdir();
 	}
 	
+	public static void checkFolder(String s) throws IOException {
+		new File(ImgMap.getPlugin().getDataFolder() + "/"+s+"/").mkdir(); 
+	}
+	
 	/**
-	 * Creates a new file via createNewFile().
+	 * Checks a file via createNewFile().
 	 * @param s - The name of the file to be created (Will be located under /plugins/ImgMap/)
 	 * @return
 	 * @throws IOException
 	 */
-	public static File createFile(String s) throws IOException {
+	public static File checkFile(String s) throws IOException {
 		File f = new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath(), s);
 		f.createNewFile();
 		return f;
 	}
 	
 	/**
-	 * Never use this directly. Just calls BufferedWriter to write a line and then create a new line, then closes the stream. Always appends.
-	 * @param f
-	 * @param s
+	 * Checks a file in the given directory via createNewFile().
+	 * @param s - The name of the file to be created.
+	 * @param dir - The directory the file is located in (Will be inside of /plugins/ImgMap/)
+	 * @return
+	 * @throws IOException
+	 */
+	public static File checkFile(String s, String dir) throws IOException {
+		File f = new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/"+dir+"/", s);
+		f.createNewFile();
+		return f;
+	}
+	
+	/**
+	 * Never use this outside. Just calls BufferedWriter to write a line and then create a new line, then closes the stream. Always appends.
+	 * @param f - The file.
+	 * @param s - The string.
 	 * @throws IOException
 	 */
 	private static void write(File f, String s) throws IOException {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
 		bw.write(s);
 		bw.newLine();
+		bw.close();
+	}
+	
+	/**
+	 * Writes an entire array to the given file.
+	 * @param f - The file.
+	 * @param s - The string array.
+	 * @throws IOException
+	 */
+	public static void writeArray(File f, String[] s) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
+		
+		for(String l : s){
+			bw.write(l);
+			bw.newLine();
+		}
+		
 		bw.close();
 	}
 

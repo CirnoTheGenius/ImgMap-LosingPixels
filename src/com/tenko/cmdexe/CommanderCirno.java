@@ -18,14 +18,24 @@ public class CommanderCirno implements CommandExecutor {
 			if(c.getName().equalsIgnoreCase("imgmap") || c.getName().equalsIgnoreCase("imap")){
 				new ImgMapCommandExe(cs, args);
 				return true;
-			} else if(c.getName().equalsIgnoreCase("map")){
+			} 
+			else if(c.getName().equalsIgnoreCase("map")){
 				if(args.length < 1){
 					cs.sendMessage(ChatColor.RED + "[ImgMap] Not enough arguments!");
 					return false;
 				}
 				new MapCommandExe(cs, args);
 				return true;
-			} else if(c.getName().equalsIgnoreCase("restoremap") || c.getName().equalsIgnoreCase("rmap")){
+			} 
+			else if(c.getName().equalsIgnoreCase("smap")){
+				if(args.length < 2){
+					cs.sendMessage(ChatColor.RED + "[ImgMap] Not enough arguments!");
+					return false;
+				}
+				new SlideshowCommandExe(cs, args);
+				return true;
+			} 
+			else if(c.getName().equalsIgnoreCase("restoremap") || c.getName().equalsIgnoreCase("rmap")){
 				new RestoreMapCommandExe(cs, args);
 				return true;
 			}

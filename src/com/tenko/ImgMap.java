@@ -10,6 +10,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.tenko.cmdexe.CommanderCirno;
 import com.tenko.rendering.ImageRenderer;
+import com.tenko.threading.MapThreadGroup;
+import com.tenko.threading.SlideshowThread;
 import com.tenko.utils.DataUtils;
 
 /**
@@ -30,6 +32,11 @@ public class ImgMap extends JavaPlugin {
 	private CommanderCirno cc = new CommanderCirno();
 	
 	/**
+	 * Slideshow threading group.
+	 */
+	private final static MapThreadGroup group = new MapThreadGroup();
+	
+	/**
 	 * Ignore this. I use this to test the utils and functions.
 	 */
 	public static void main(String[] args){
@@ -46,7 +53,8 @@ public class ImgMap extends JavaPlugin {
 		
 		//Setting executors
 		getCommand("map").setExecutor(cc);
-
+		getCommand("smap").setExecutor(cc);
+		
 		getCommand("imap").setExecutor(cc);
 		getCommand("imgmap").setExecutor(cc);
 
@@ -55,7 +63,8 @@ public class ImgMap extends JavaPlugin {
 
 		//Usage
 		getCommand("map").setUsage(ChatColor.BLUE + "Usage: /map <url>");
-
+		getCommand("smap").setUsage(ChatColor.BLUE + "Usage: /smap <time> <url1> [url2] [url3] and so on.");
+		
 		getCommand("imap").setUsage(ChatColor.BLUE + "Usage: /imap");
 		getCommand("imgmap").setUsage(ChatColor.BLUE + "Usage: /imgmap");
 
@@ -86,6 +95,14 @@ public class ImgMap extends JavaPlugin {
 		
 	}
 	
+	public void onDisable(){
+		Thread[] activeThreads = new Thread[group.activeCount()];
+		group.enumerate(activeThreads);
+		for(Thread t : activeThreads){
+			t.stop();
+		}
+	}
+	
 	/**
 	 * Returns the plugin defined by "pl".
 	 * @return The plugin.
@@ -104,5 +121,9 @@ public class ImgMap extends JavaPlugin {
 	
 	public static File getSlideshowFile(int id){
 		return new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/", String.valueOf(id + ".slideshow"));
+	}
+	
+	public static MapThreadGroup getThreadGroup(){
+		return group;
 	}
 }

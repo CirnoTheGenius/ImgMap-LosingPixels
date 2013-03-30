@@ -1,6 +1,9 @@
 package com.tenko.cmdexe;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -19,14 +22,21 @@ import com.tenko.utils.PlayerUtils;
 import com.tenko.utils.URLUtils;
 
 public class SlideshowCommandExe implements CommandExe {
-
+	
+	public SlideshowCommandExe(CommandSender cs, String[] args) throws IOException{
+		Execute(cs, args);
+	}
+	
 	@Override
 	public void Execute(CommandSender cs, String[] args) throws IOException {
 		Player thePlayer = PlayerUtils.resolveToPlayer(cs);
 		ItemStack equipped = thePlayer.getItemInHand();
+		List<String> arguments = new LinkedList<String>(Arrays.asList(args));
+		
+		float waitTime = Float.valueOf(arguments.remove(0));
 		
 		//Yow. This may cause a lot of bandwith issues and lag.
-		for(String urls : args){
+		for(String urls : arguments){
 			if(!URLUtils.compatibleImage(urls)){
 				cs.sendMessage(ChatColor.RED + "[ImgMap] The specified image is not compatible!");
 				return;
@@ -40,8 +50,15 @@ public class SlideshowCommandExe implements CommandExe {
 		}
 		
 		viewport.setScale(Scale.FARTHEST);
-		viewport.addRenderer(new SlideshowRenderer(args, 2));
-		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + args[0]);
+		String[] urls = Arrays.copyOf(arguments.toArray(), arguments.toArray().length, String[].class);
+		viewport.addRenderer(new SlideshowRenderer(urls, waitTime));
+		
+		StringBuffer listOfURLs = new StringBuffer();
+		for(String url : urls){
+			listOfURLs.append(url + ", ");
+		}
+		
+		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + listOfURLs.toString().substring(0, listOfURLs.length() - 2));
 		
 		if(ArrayUtils.contains(args, "-p")){
 			DataUtils.checkFile(String.valueOf(equipped.getDurability()), "SlideshowData");
@@ -53,8 +70,5 @@ public class SlideshowCommandExe implements CommandExe {
 	@Override
 	public String getCommand() {
 		return "slideshow";
-	}
-	
-	
-	
+	}	
 }

@@ -5,7 +5,7 @@ import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
-import com.tenko.utils.ImageUtils;
+import com.tenko.threading.SlideshowThread;
 
 public class SlideshowRenderer extends MapRenderer {
 
@@ -22,14 +22,17 @@ public class SlideshowRenderer extends MapRenderer {
 	/**
 	 * The time to wait in seconds.
 	 */
-	private int waitTime = 0;
-
+	private float waitTime = 0;
+	
+	private SlideshowThread thread;
+	
 	/**
 	 * Creates a new ImageRenderer object.
 	 * @param theUrl - URL to be used to render images.
 	 */
-	public SlideshowRenderer(String[] theUrl, int time){
+	public SlideshowRenderer(String[] theUrl, float waitTime){
 		this.urls = theUrl;
+		this.waitTime = waitTime;
 	}
 
 	/**
@@ -37,20 +40,8 @@ public class SlideshowRenderer extends MapRenderer {
 	 * @param canvas - The MapCanvas. Note: This is a final canvas.
 	 */
 	private final void startRenderThread(final MapCanvas canvas){
-		new Thread(){
-			@Override
-			public void run() {
-				try {
-					for(int i=0; i <= urls.length; i++){
-						i = (i == urls.length ? 0 : i);
-						canvas.drawImage(0, 0, ImageUtils.resizeImage(urls[i]));
-						Thread.sleep(waitTime*20);
-					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
+		thread = new SlideshowThread(urls, waitTime, canvas);
+		thread.start();
 	}
 
 	/**

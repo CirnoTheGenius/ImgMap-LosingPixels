@@ -1,9 +1,9 @@
 package com.tenko.cmdexe;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -31,7 +31,13 @@ public class SlideshowCommandExe implements CommandExe {
 	public void Execute(CommandSender cs, String[] args) throws IOException {
 		Player thePlayer = PlayerUtils.resolveToPlayer(cs);
 		ItemStack equipped = thePlayer.getItemInHand();
-		List<String> arguments = new LinkedList<String>(Arrays.asList(args));
+		ArrayList<String> arguments = new ArrayList<String>();
+		
+		for(String arg : args){
+			if(!arg.startsWith("-")){
+				arguments.add(arg);
+			}
+		}
 		
 		float waitTime = Float.valueOf(arguments.remove(0));
 		
@@ -61,8 +67,11 @@ public class SlideshowCommandExe implements CommandExe {
 		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + listOfURLs.toString().substring(0, listOfURLs.length() - 2));
 		
 		if(ArrayUtils.contains(args, "-p")){
-			DataUtils.checkFile(String.valueOf(equipped.getDurability()), "SlideshowData");
-			DataUtils.writeArray(ImgMap.getSlideshowFile(equipped.getDurability()), args);
+			File slideshowFile = ImgMap.getSlideshowFile(equipped.getDurability());
+			arguments.remove("-p");
+			DataUtils.blankFile(slideshowFile);
+			DataUtils.write(slideshowFile, String.valueOf(waitTime));
+			DataUtils.writeArray(slideshowFile, Arrays.copyOf(arguments.toArray(), arguments.size(), String[].class));
 			cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
 		}
 	}

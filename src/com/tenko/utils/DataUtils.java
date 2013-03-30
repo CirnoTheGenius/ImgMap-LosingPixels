@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.tenko.ImgMap;
 
@@ -57,12 +58,12 @@ public class DataUtils {
 	}
 	
 	/**
-	 * Never use this outside. Just calls BufferedWriter to write a line and then create a new line, then closes the stream. Always appends.
+	 * Just calls BufferedWriter to write a line and then create a new line, then closes the stream. Always appends.
 	 * @param f - The file.
 	 * @param s - The string.
 	 * @throws IOException
 	 */
-	private static void write(File f, String s) throws IOException {
+	public static void write(File f, String s) throws IOException {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
 		bw.write(s);
 		bw.newLine();
@@ -193,7 +194,7 @@ public class DataUtils {
 	 * @return An Iterable array.
 	 * @throws IOException
 	 */
-	public static Iterable<String> getLines(File f) throws IOException {
+	public static List<String> getLines(File f) throws IOException {
 		ArrayList<String> contents = new ArrayList<String>();
 		
 		BufferedReader br = new BufferedReader(new FileReader(f));
@@ -227,5 +228,15 @@ public class DataUtils {
 
 		br.close();
 		return null;
+	}
+	
+	/**
+	 * Empties an entire file's contents.
+	 * @param f - The file to blank.
+	 * @throws IOException 
+	 */
+	public static void blankFile(File f) throws IOException{
+		f.delete();
+		f.createNewFile();
 	}
 }

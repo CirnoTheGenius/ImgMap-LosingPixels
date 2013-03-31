@@ -1,10 +1,12 @@
 package com.tenko.rendering;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import com.tenko.events.ImageRenderEvent;
 import com.tenko.utils.ImageUtils;
 
 public class ImageRenderer extends MapRenderer {
@@ -29,9 +31,13 @@ public class ImageRenderer extends MapRenderer {
 	
 	/**
 	 * This should never be called outside of this class.
-	 * @param canvas - The MapCanvas. Note: This is a final canvas.
+	 * @param canvas - The MapCanvas. Note: This has a final modifier.
 	 */
-	private final void startRenderThread(final MapCanvas canvas){
+	private final void startRenderThread(final MapCanvas canvas, MapView view){
+		for(int i=0; i < canvas.getCursors().size(); i++){
+			canvas.getCursors().removeCursor(canvas.getCursors().getCursor(i));
+		}
+
 		new Thread(){
 			@Override
 			public void run() {
@@ -45,9 +51,10 @@ public class ImageRenderer extends MapRenderer {
 	 */
 	@Override
 	public void render(MapView view, MapCanvas canvas, Player plyr) {
-		if(url != null && !hasRendered){
+		if(url != null && !hasRendered){			
 			hasRendered = true;
-			startRenderThread(canvas);
+			startRenderThread(canvas, view);
+			Bukkit.getServer().getPluginManager().callEvent(new ImageRenderEvent(url, view));
 		}
 	}
 	

@@ -19,5 +19,4 @@ public interface CommandExe {
 	 * @return Command name.
 	 */
 	public String getCommand();
-
 }

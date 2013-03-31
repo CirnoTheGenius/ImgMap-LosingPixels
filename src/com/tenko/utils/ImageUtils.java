@@ -13,7 +13,7 @@ public class ImageUtils {
 	/**
 	 * Resizes the image to a 128x128 image.
 	 * @param s - The URL
-	 * @return
+	 * @return An image that we can use.
 	 */
 	public static Image resizeImage(final String s){
 		BufferedImage resizedImage = new BufferedImage(128, 128, 2);

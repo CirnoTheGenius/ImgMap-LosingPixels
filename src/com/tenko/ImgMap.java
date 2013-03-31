@@ -52,17 +52,14 @@ public class ImgMap extends JavaPlugin {
 	 */
 	@Override
 	public void onEnable(){
+		String[] cmds = new String[]{
+				"map", 
+				"smap", 
+				"imap", "imgmap",
+				"restoremap", "rmap"
+		};
+
 		pl = this;
-
-		//Setting executors
-		getCommand("map").setExecutor(cc);
-		getCommand("smap").setExecutor(cc);
-
-		getCommand("imap").setExecutor(cc);
-		getCommand("imgmap").setExecutor(cc);
-
-		getCommand("restoremap").setExecutor(cc);
-		getCommand("rmap").setExecutor(cc);
 
 		//Usage
 		getCommand("map").setUsage(ChatColor.BLUE + "Usage: /map <url>");
@@ -74,55 +71,56 @@ public class ImgMap extends JavaPlugin {
 		getCommand("restoremap").setUsage(ChatColor.BLUE + "Usage: /restoremap");
 		getCommand("rmap").setUsage(ChatColor.BLUE + "Usage: /rmap");
 
-		//Rewriting all of the IO map data loading. It was crappy as hell.
-		try {
-			DataUtils.checkDataFolder();
-			DataUtils.checkFolder("SlideshowData");
-			DataUtils.checkFile("Maps.list");
-
-			for(String s : DataUtils.getLines(getList())){
-				String url = s.substring(s.indexOf(":")+1, s.length());
-				short id = Short.valueOf(s.substring(0, s.indexOf(":")));
-
-				MapView viewport = Bukkit.getServer().getMap(id);
-
-				for(MapRenderer mr : viewport.getRenderers()){
-					viewport.removeRenderer(mr);
-				}
-
-				viewport.addRenderer(new ImageRenderer(url));
-			}
-
-			// This is rather suicidel.
-			new Thread(){
-				@Override
-				public void run(){
-					try {
-						for(File f : new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/").listFiles()){
-							short id = Short.valueOf(f.getName().substring(0, f.getName().indexOf(".")));
-							MapView viewport = Bukkit.getServer().getMap(id);
-
-							for(MapRenderer mr : viewport.getRenderers()){
-								viewport.removeRenderer(mr);
-							}
-							
-							List<String> lines = DataUtils.getLines(f);
-							float waitTime = Float.valueOf(lines.remove(0));
-							String[] urls = new String[lines.size()];
-							lines.toArray(urls);
-							
-							viewport.addRenderer(new SlideshowRenderer(urls, waitTime));
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}.start();
-
-		} catch (IOException e) {
-			e.printStackTrace();
+		//Setting executors and permission errors.
+		for(String cmd : cmds){
+			//You get a cookie if you can guess the type of person I'm referring to.
+			//Original idea for perms error: "[ImgMap] I-It's not like I can't let you do that or anything! I-I'm just trying to protect you!"
+			getCommand(cmd).setPermissionMessage(ChatColor.RED + "[ImgMap] You cannot use this command for permission reasons!");
+			getCommand(cmd).setExecutor(cc);
 		}
 
+		// This is rather suicidel.
+		new Thread(){
+			@Override
+			public void run(){
+				try {
+					DataUtils.checkDataFolder();
+					DataUtils.checkFolder("SlideshowData");
+					DataUtils.checkFile("Maps.list");
+					
+					for(String s : DataUtils.getLines(getList())){
+						String url = s.substring(s.indexOf(":")+1, s.length());
+						short id = Short.valueOf(s.substring(0, s.indexOf(":")));
+						
+						MapView viewport = Bukkit.getServer().getMap(id);
+						
+						for(MapRenderer mr : viewport.getRenderers()){
+							viewport.removeRenderer(mr);
+						}
+
+						viewport.addRenderer(new ImageRenderer(url));
+					}
+
+					for(File f : new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/").listFiles()){
+						short id = Short.valueOf(f.getName().substring(0, f.getName().indexOf(".")));
+						MapView viewport = Bukkit.getServer().getMap(id);
+
+						for(MapRenderer mr : viewport.getRenderers()){
+							viewport.removeRenderer(mr);
+						}
+
+						List<String> lines = DataUtils.getLines(f);
+						float waitTime = Float.valueOf(lines.remove(0));
+						String[] urls = new String[lines.size()];
+						lines.toArray(urls);
+
+						viewport.addRenderer(new SlideshowRenderer(urls, waitTime));
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
 	}
 
 	public void onDisable(){

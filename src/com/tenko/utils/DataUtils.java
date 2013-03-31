@@ -28,6 +28,11 @@ public class DataUtils {
 		ImgMap.getPlugin().getDataFolder().mkdir();
 	}
 	
+	/**
+	 * Checks a folder via mkir().
+	 * @param s - The name of the folder to be created (Will be located under /plugins/ImgMap/)
+	 * @throws IOException
+	 */
 	public static void checkFolder(String s) throws IOException {
 		new File(ImgMap.getPlugin().getDataFolder() + "/"+s+"/").mkdir(); 
 	}
@@ -35,7 +40,7 @@ public class DataUtils {
 	/**
 	 * Checks a file via createNewFile().
 	 * @param s - The name of the file to be created (Will be located under /plugins/ImgMap/)
-	 * @return
+	 * @return The file we were trying to check.
 	 * @throws IOException
 	 */
 	public static File checkFile(String s) throws IOException {
@@ -48,7 +53,7 @@ public class DataUtils {
 	 * Checks a file in the given directory via createNewFile().
 	 * @param s - The name of the file to be created.
 	 * @param dir - The directory the file is located in (Will be inside of /plugins/ImgMap/)
-	 * @return
+	 * @return The file we were trying to check.
 	 * @throws IOException
 	 */
 	public static File checkFile(String s, String dir) throws IOException {
@@ -86,10 +91,16 @@ public class DataUtils {
 		
 		bw.close();
 	}
-
-	public static void writeComment(File f, String s) throws IOException {
-		write(f, "#" + s);
-	}
+	
+	/**
+	 * Writes a comment. Non-functional, do not use.
+	 * @param f - The file.
+	 * @param s - Comment to add.
+	 * @throws IOException
+	 */
+	//public static void writeComment(File f, String s) throws IOException {
+	//	write(f, "#" + s);
+	//}
 	
 	/**
 	 * Writes data to the file.
@@ -186,6 +197,10 @@ public class DataUtils {
 		}
 
 		bw.close();
+	}
+	
+	public static void deleteSlideshow(int id) throws IOException {
+		ImgMap.getSlideshowFile(id).delete();
 	}
 	
 	/**

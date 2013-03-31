@@ -23,12 +23,14 @@ public class ImgMapCommandExe implements CommandExe {
 	public void Execute(CommandSender cs, String[] args){
 		Player plyr = PlayerUtils.resolveToPlayer(cs);
 		plyr.sendMessage("ImgMap by Cirno/Tsunko");
-		plyr.sendMessage("Version 2");
+		plyr.sendMessage("Version 2beta");
 	}
 
 	@Override
 	public String getCommand() {
 		return "imgmap";
 	}
+
+
 
 }

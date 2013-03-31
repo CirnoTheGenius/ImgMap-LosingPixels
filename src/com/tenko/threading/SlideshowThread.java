@@ -6,12 +6,33 @@ import com.tenko.ImgMap;
 import com.tenko.utils.ImageUtils;
 
 public class SlideshowThread extends Thread {
-
+	
+	/**
+	 * List of images to render.
+	 */
 	private final String[] urls;
+	
+	/**
+	 * Wait time in seconds.
+	 */
 	private final float waitTime;
+	
+	/**
+	 * The map canvas to render to.
+	 */
 	private final MapCanvas viewport;
+	
+	/**
+	 * Is this thread running?
+	 */
 	private boolean running;
 
+	/**
+	 * Creates a new slideshow thread. It is not started until told to.
+	 * @param urls - The list of images.
+	 * @param waitTime - The wait time.
+	 * @param viewport - The map canvas.
+	 */
 	public SlideshowThread(String[] urls, float waitTime, MapCanvas viewport){
 		super("SlideshowRenderer #" + viewport.getMapView().getId());
 		this.urls = urls;
@@ -20,7 +41,11 @@ public class SlideshowThread extends Thread {
 		this.running = true;
 		ImgMap.getThreadGroup().getThreads().add(this);
 	}
-
+	
+	/**
+	 * Am I running?
+	 * @return Whether or not this thread is truely alive.
+	 */
 	public boolean amIAlive(){
 		return running;
 	}
@@ -42,7 +67,10 @@ public class SlideshowThread extends Thread {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Safely stop the thread.
+	 */
 	public void stopThread(){
 		running = false;
 	}

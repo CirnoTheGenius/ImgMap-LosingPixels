@@ -1,10 +1,12 @@
 package com.tenko.rendering;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import com.tenko.events.SlideshowRenderEvent;
 import com.tenko.threading.SlideshowThread;
 
 public class SlideshowRenderer extends MapRenderer {
@@ -49,9 +51,14 @@ public class SlideshowRenderer extends MapRenderer {
 	 */
 	@Override
 	public void render(MapView view, MapCanvas canvas, Player plyr) {
+		for(int i=0; i < canvas.getCursors().size(); i++){
+			canvas.getCursors().removeCursor(canvas.getCursors().getCursor(i));
+		}
+		
 		if(urls != null && !hasRendered){
 			hasRendered = true;
 			startRenderThread(canvas);
+			Bukkit.getServer().getPluginManager().callEvent(new SlideshowRenderEvent(urls, view));
 		}
 	}
 }

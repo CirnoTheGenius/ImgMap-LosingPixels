@@ -79,5 +79,5 @@ public class SlideshowCommandExe implements CommandExe {
 	@Override
 	public String getCommand() {
 		return "slideshow";
-	}	
+	}
 }

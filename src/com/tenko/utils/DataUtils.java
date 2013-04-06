@@ -162,7 +162,7 @@ public class DataUtils {
 			}
 		}
 		
-		if(isExisting){
+		if(!isExisting){
 			write(f, src, dest);
 		}
 	}

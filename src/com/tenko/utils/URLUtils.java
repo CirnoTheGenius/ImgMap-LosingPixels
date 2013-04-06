@@ -14,7 +14,7 @@ public class URLUtils {
 	/**
 	 * Checks to see if the image is a proper type. Currently uses Content-types.
 	 * @param s - The URL to try to check.
-	 * @return
+	 * @return True if the image is compatible; false otherwise.
 	 */
 	public static boolean compatibleImage(String s){
 		try {

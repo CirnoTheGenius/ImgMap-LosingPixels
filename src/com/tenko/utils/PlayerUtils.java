@@ -9,7 +9,7 @@ public class PlayerUtils {
 	/**
 	 * Resolves a CommandSender to a Player.
 	 * @param s - CommandSender that we're trying to get.
-	 * @return
+	 * @return The player from a CommandSender
 	 */
 	public static Player resolveToPlayer(CommandSender s){
 		return Bukkit.getServer().getPlayer(s.getName());

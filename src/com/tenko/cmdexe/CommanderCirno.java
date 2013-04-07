@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class CommanderCirno implements CommandExecutor {
 	
@@ -15,40 +16,45 @@ public class CommanderCirno implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
 		try {
-			if(c.getName().equalsIgnoreCase("imgmap") || c.getName().equalsIgnoreCase("imap")){
-				if(checkPermission(cs, "imgmap")){
-					new ImgMapCommandExe(cs, args);
+			if(cs instanceof Player){
+				if(c.getName().equalsIgnoreCase("imgmap") || c.getName().equalsIgnoreCase("imap")){
+					if(checkPermission(cs, "imgmap")){
+						new ImgMapCommandExe(cs, args);
+					}
+					return true;
+				} 
+				
+				if(c.getName().equalsIgnoreCase("map")){
+					if(args.length < 1){
+						cs.sendMessage(ChatColor.RED + "[ImgMap] Not enough arguments!");
+						return false;
+					}
+					if(checkPermission(cs, "map")){
+						new MapCommandExe(cs, args);
+					}
+					return true;
+				} 
+				
+				if(c.getName().equalsIgnoreCase("smap")){
+					if(args.length < 2){
+						cs.sendMessage(ChatColor.RED + "[ImgMap] Not enough arguments!");
+						return false;
+					}
+					if(checkPermission(cs, "slideshow")){
+						new SlideshowCommandExe(cs, args);
+					}
+					return true;
+				} 
+				
+				
+				if(c.getName().equalsIgnoreCase("restoremap") || c.getName().equalsIgnoreCase("rmap")){
+					if(checkPermission(cs, "restoremap")){
+						new RestoreMapCommandExe(cs, args);
+					}
+					return true;
 				}
-				return true;
-			} 
-			
-			if(c.getName().equalsIgnoreCase("map")){
-				if(args.length < 1){
-					cs.sendMessage(ChatColor.RED + "[ImgMap] Not enough arguments!");
-					return false;
-				}
-				if(checkPermission(cs, "map")){
-					new MapCommandExe(cs, args);
-				}
-				return true;
-			} 
-			
-			if(c.getName().equalsIgnoreCase("smap")){
-				if(args.length < 2){
-					cs.sendMessage(ChatColor.RED + "[ImgMap] Not enough arguments!");
-					return false;
-				}
-				if(checkPermission(cs, "slideshow")){
-					new SlideshowCommandExe(cs, args);
-				}
-				return true;
-			} 
-			
-			
-			if(c.getName().equalsIgnoreCase("restoremap") || c.getName().equalsIgnoreCase("rmap")){
-				if(checkPermission(cs, "restoremap")){
-					new RestoreMapCommandExe(cs, args);
-				}
+			} else {
+				cs.sendMessage(ChatColor.RED + "[ImgMap] You must be a player.");
 				return true;
 			}
 			

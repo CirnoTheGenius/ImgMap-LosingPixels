@@ -2,18 +2,19 @@ package com.tenko.cmdexe;
 
 import java.io.IOException;
 
+/* Volatile imports. */
 import net.minecraft.server.v1_5_R2.Item;
 import net.minecraft.server.v1_5_R2.ItemStack;
 import net.minecraft.server.v1_5_R2.WorldMap;
+import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R2.map.CraftMapRenderer;
+import org.bukkit.craftbukkit.v1_5_R2.map.CraftMapView;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R2.map.CraftMapRenderer;
-import org.bukkit.craftbukkit.v1_5_R2.map.CraftMapView;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
@@ -55,7 +56,7 @@ public class RestoreMapCommandExe implements CommandExe {
 
 		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Cleared Map #" + is.getData() + "!");
 		
-		if(!ArrayUtils.contains(args, "-temp")){
+		if(!ArrayUtils.contains(args, "-t")){
 			DataUtils.delete(ImgMap.getList(), is.getData());
 			DataUtils.deleteSlideshow(is.getData());
 		}

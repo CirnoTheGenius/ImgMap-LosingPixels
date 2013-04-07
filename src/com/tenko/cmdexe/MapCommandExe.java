@@ -57,7 +57,8 @@ public class MapCommandExe implements CommandExe {
 		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + args[0]);
 		
 		if(ArrayUtils.contains(args, "-p")){
-			DataUtils.replaceOrWrite(ImgMap.getList(), equipped.getDurability(), args[0]);
+			DataUtils.deleteSlideshow(equipped.getDurability());
+			DataUtils.replace(ImgMap.getList(), equipped.getDurability(), args[0]);
 			cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
 		}
 	}

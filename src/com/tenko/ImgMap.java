@@ -2,6 +2,7 @@ package com.tenko;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -10,6 +11,7 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.common.io.Files;
 import com.tenko.cmdexe.CommanderCirno;
 import com.tenko.rendering.ImageRenderer;
 import com.tenko.rendering.SlideshowRenderer;
@@ -84,11 +86,9 @@ public class ImgMap extends JavaPlugin {
 			@Override
 			public void run(){
 				try {
-					DataUtils.checkDataFolder();
-					DataUtils.checkFolder("SlideshowData");
-					DataUtils.checkFile("Maps.list");
+					DataUtils.initialize();
 					
-					for(String s : DataUtils.getLines(getList())){
+					for(String s : Files.readLines(getList(), Charset.defaultCharset())){
 						String url = s.substring(s.indexOf(":")+1, s.length());
 						short id = Short.valueOf(s.substring(0, s.indexOf(":")));
 						
@@ -109,7 +109,7 @@ public class ImgMap extends JavaPlugin {
 							viewport.removeRenderer(mr);
 						}
 
-						List<String> lines = DataUtils.getLines(f);
+						List<String> lines = Files.readLines(f, Charset.defaultCharset());
 						float waitTime = Float.valueOf(lines.remove(0));
 						String[] urls = new String[lines.size()];
 						lines.toArray(urls);
@@ -121,6 +121,8 @@ public class ImgMap extends JavaPlugin {
 				}
 			}
 		}.start();
+		
+		System.out.println(Bukkit.getServer().getVersion());
 	}
 
 	public void onDisable(){

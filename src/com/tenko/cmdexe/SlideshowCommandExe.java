@@ -15,6 +15,7 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.map.MapView.Scale;
 
+import com.google.common.io.Files;
 import com.tenko.ImgMap;
 import com.tenko.rendering.SlideshowRenderer;
 import com.tenko.utils.DataUtils;
@@ -69,7 +70,7 @@ public class SlideshowCommandExe implements CommandExe {
 		if(ArrayUtils.contains(args, "-p")){
 			File slideshowFile = ImgMap.getSlideshowFile(equipped.getDurability());
 			arguments.remove("-p");
-			DataUtils.blankFile(slideshowFile);
+			Files.touch(slideshowFile);
 			DataUtils.write(slideshowFile, String.valueOf(waitTime));
 			DataUtils.writeArray(slideshowFile, Arrays.copyOf(arguments.toArray(), arguments.size(), String[].class));
 			cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");

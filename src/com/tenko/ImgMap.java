@@ -1,9 +1,15 @@
 package com.tenko;
 
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +24,7 @@ import com.tenko.rendering.SlideshowRenderer;
 import com.tenko.threading.MapThreadGroup;
 import com.tenko.threading.SlideshowThread;
 import com.tenko.utils.DataUtils;
+import com.tenko.utils.ImageUtils;
 
 /**
  * ImgMap - Maps become picture frames!
@@ -44,7 +51,7 @@ public class ImgMap extends JavaPlugin {
 	/**
 	 * Ignore this. I use this to test the utils and functions.
 	 */
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception {
 
 	}
 
@@ -123,6 +130,7 @@ public class ImgMap extends JavaPlugin {
 		}.start();
 		
 		System.out.println(Bukkit.getServer().getVersion());
+		
 	}
 
 	public void onDisable(){

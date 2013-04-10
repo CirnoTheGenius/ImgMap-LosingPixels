@@ -35,6 +35,7 @@ public class DataUtils {
 	private static void write(File f, int id, String url) throws IOException{
 		BufferedWriter bw = Files.newWriter(f, Charset.defaultCharset());
 		bw.write(id + ":" + url);
+		bw.newLine();
 		bw.flush();
 		bw.close();
 	}
@@ -48,6 +49,7 @@ public class DataUtils {
 	public static void write(File f, String s) throws IOException{
 		BufferedWriter bw = Files.newWriter(f, Charset.defaultCharset());
 		bw.write(s);
+		bw.newLine();
 		bw.flush();
 		bw.close();
 	}
@@ -126,6 +128,7 @@ public class DataUtils {
 		for(String l : contents){
 			if(!l.startsWith(String.valueOf(target))){
 				bw.write(l);
+				bw.newLine();
 			}
 		}
 		

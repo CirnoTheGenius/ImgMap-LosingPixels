@@ -1,37 +1,31 @@
 package com.tenko.threading;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
-
 import org.bukkit.map.MapCanvas;
+import org.bukkit.map.MapPalette;
 
-import com.tenko.ImgMap;
-import com.tenko.utils.ImageUtils;
+import com.tenko.objs.GifAnimation;
 
-public class SlideshowThread extends Thread {
-	
-	/**
-	 * List of images to render.
-	 */
-	private final String[] urls;
-	
+public class AnimationThread extends Thread {
+
 	/**
 	 * Wait time in seconds.
 	 */
 	private final float waitTime;
-	
+
 	/**
 	 * The map canvas to render to.
 	 */
 	private final MapCanvas viewport;
-	
+
 	/**
 	 * Is this thread running?
 	 */
 	private boolean running;
+
+	private GifAnimation gif;
 
 	/**
 	 * Creates a new slideshow thread. It is not started until told to.
@@ -39,15 +33,19 @@ public class SlideshowThread extends Thread {
 	 * @param waitTime - The wait time.
 	 * @param viewport - The map canvas.
 	 */
-	public SlideshowThread(String[] urls, float waitTime, MapCanvas viewport){
+	public AnimationThread(String url, float waitTime, MapCanvas viewport){
 		super("SlideshowRenderer #" + viewport.getMapView().getId());
-		this.urls = urls;
 		this.waitTime = waitTime;
+		this.running = false;
 		this.viewport = viewport;
-		this.running = true;
-		ImgMap.getThreadGroup().getThreads().add(this);
+
+		try {
+			this.gif = new GifAnimation(new URL(url));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	/**
 	 * Am I running?
 	 * @return Whether or not this thread is truely alive.
@@ -56,28 +54,28 @@ public class SlideshowThread extends Thread {
 		return running;
 	}
 
+
+
 	@Override
 	public void run() {
-		int pos = 0;
+		this.running = true;
+		int i=0;
 
-		try {
-			while(running){
-				pos++;
-				if(pos >= urls.length){
-					pos = 0;
+		while(running){
+			//for every image
+			for(int frameNum = 0; frameNum < gif.frames.size(); frameNum++){
+				//every pixel in the image
+				for(int x=0; x < 128; x++){
+					for(int y=0; y < 128; y++){
+						i++;
+						//set this to that pixel.
+						viewport.setPixel(x, y, gif.frames.get(frameNum)[i]);
+					}
 				}
-				viewport.drawImage(0, 0, ImageUtils.resizeImage(ImageIO.read(new URL(urls[pos]))));
-				Thread.sleep(((int)waitTime)*1000);
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Safely stop the thread.
 	 */

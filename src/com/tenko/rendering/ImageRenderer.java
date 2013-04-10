@@ -1,5 +1,11 @@
 package com.tenko.rendering;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
@@ -41,7 +47,13 @@ public class ImageRenderer extends MapRenderer {
 		new Thread(){
 			@Override
 			public void run() {
-				canvas.drawImage(0, 0, ImageUtils.resizeImage(url));
+				try {
+					canvas.drawImage(0, 0, ImageUtils.resizeImage(ImageIO.read(new URL(url))));
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}.start();
 	}

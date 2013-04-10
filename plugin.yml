@@ -1,29 +1,45 @@
-version: 0.1A
-author: Cirno
 name: ImgMap
-main: cirno.Nineball
+version: 2
+main: com.tenko.ImgMap
 
 commands:
- map:
-  description: Replaces the current item in hand with a map.
-  usage: map [imgurl]
- restoremap:
-  description: Restores the original map renderer.
-  usage: restoremap
- imgmap:
-  description: Shows the help
-  usage: imgmap
- imap:
-  description: Shows the help
-  usage: imap
+    map:
+        description: Renders an image.
+        usage: /map <url>
+        permission: imgmap.cmd.map
+    smap:
+        description: Renders a slideshow.
+        usage: /smap <time> <url1> [url2] [url3]
+        permission: imgmap.cmd.slideshow
+    rmap:
+        description: Restores a map.
+        usage: /rmap
+        aliases: restoremap
+        permission: imgmap.cmd.restoremap
+    imap:
+        description: Gets the current version.
+        usage: /imap
+        aliases: imgmap
+        permission: imgmap.cmd.imgmap
 
-permission:
- imgmap.*:
-  description: Allows complete control over ImgMap.
-  children:
-   imgmap.render: true
-   imgmap.restoremap: true
- imgmap.render:
-  description: Allows the given person to render maps globally.
- imgmap.restoremap:
-  description: Allows the given person to revert to the default map globally.
+permissions:
+    imgmap.*:
+        description: Gives complete access to everything.
+        children:
+            imgmap.cmd.map: true
+            imgmap.cmd.slideshow: true
+            imgmap.cmd.restoremap: true
+            imgmap.cmd.imgmap: true
+        default: false
+    imgmap.cmd.map:
+        description: Allows the rendering of a single image.
+        default: false
+    imgmap.cmd.slideshow:
+        description: Allows the map to render a slideshow.
+        default: false
+    imgmap.cmd.restoremap:
+        description: Allows the map to be restored to it's original state.
+        default: false
+    imgmap.cmd.imgmap:
+        description: Allows the user to access the version.
+        default: false

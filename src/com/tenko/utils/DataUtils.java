@@ -17,12 +17,13 @@ import com.tenko.ImgMap;
 public class DataUtils {
 	
 	/**
-	 * Check if the main Plugin folder exists, then checks if the Maps.list file exists.
+	 * Check if the main Plugin folder exists, then checks if the Maps.list file and Slideshow directory exist.
 	 * @throws IOException
 	 */
 	public static void initialize() throws IOException {
 		ImgMap.getPlugin().getDataFolder().mkdir();
 		new File(ImgMap.getPlugin().getDataFolder(), "Maps.list").createNewFile();
+  new File(ImgMap.getPlugin().getDataFolder(), "SlideshowData").mkdir();
 	}
 	
 	/**

@@ -3,9 +3,8 @@ package com.tenko.cmdexe;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -32,20 +31,41 @@ public class SlideshowCommandExe implements CommandExe {
 	public void Execute(CommandSender cs, String[] args) throws IOException {
 		Player thePlayer = PlayerUtils.resolveToPlayer(cs);
 		ItemStack equipped = thePlayer.getItemInHand();
-		ArrayList<String> arguments = new ArrayList<String>();
-		
+
+  // Check if waitTime is valid and give a message if not.
+  float waitTime;
+  try {
+    waitTime = Float.valueOf(args[0]);
+  }
+  catch (NumberFormatException e) {
+    waitTime=-1;
+  }
+  if (waitTime<=0) {
+    cs.sendMessage( ChatColor.RED+
+        "[ImgMap] Invalid value for <time>. Must be a positive number.");
+    return;
+  }
+
+  // read the URLs and check if the slideshow is to be permanent
+  boolean isPermanent=false;
+  ArrayList<String> urls = new ArrayList<String>();
 		for(String arg : args){
 			if(!arg.startsWith("-")){
-				arguments.add(arg);
+     urls.add(new String(arg));
 			}
+   else {
+     if (arg.equals("-p"))
+       isPermanent=true;
+   }
 		}
-		
-		float waitTime = Float.valueOf(arguments.remove(0));
-		
+  // remove waitTime
+  urls.remove(0);
+
 		//Yow. This may cause a lot of bandwith issues and lag.
-		for(String urls : arguments){
-			if(!URLUtils.compatibleImage(urls)){
-				cs.sendMessage(ChatColor.RED + "[ImgMap] The specified image is not compatible!");
+		for(String url : urls){
+			if(!URLUtils.compatibleImage(url)){
+    // Tell the user which image is not compatible.
+				cs.sendMessage(ChatColor.RED + "[ImgMap] The image: '"+url+"' is not compatible!");
 				return;
 			}
 		}
@@ -57,22 +77,32 @@ public class SlideshowCommandExe implements CommandExe {
 		}
 		
 		viewport.setScale(Scale.FARTHEST);
-		String[] urls = Arrays.copyOf(arguments.toArray(), arguments.toArray().length, String[].class);
-		viewport.addRenderer(new SlideshowRenderer(urls, waitTime));
+		viewport.addRenderer(new SlideshowRenderer(urls.toArray(new String[urls.size()]), waitTime));
 		
 		StringBuffer listOfURLs = new StringBuffer();
-		for(String url : urls){
-			listOfURLs.append(url + ", ");
+  Iterator iter = urls.iterator();
+  while (iter.hasNext()) {
+			listOfURLs.append(iter.next());
+   if (iter.hasNext())
+     listOfURLs.append(", ");
 		}
 		
-		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + listOfURLs.toString().substring(0, listOfURLs.length() - 2));
+		cs.sendMessage(ChatColor.GREEN +"[ImgMap] Rendering "+ listOfURLs.toString());
 		
-		if(ArrayUtils.contains(args, "-p")){
+		if(isPermanent){
 			File slideshowFile = ImgMap.getSlideshowFile(equipped.getDurability());
-			arguments.remove("-p");
+
 			Files.touch(slideshowFile);
-			DataUtils.write(slideshowFile, String.valueOf(waitTime));
-			DataUtils.writeArray(slideshowFile, Arrays.copyOf(arguments.toArray(), arguments.size(), String[].class));
+
+   String[] lines=new String[1+urls.size()];
+   lines[0]=String.valueOf(waitTime);
+   int i=1;
+   for(String url : urls) {
+     lines[i]=url;
+     ++i;
+   }
+   DataUtils.writeArray(slideshowFile, lines);
+
 			cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
 		}
 	}

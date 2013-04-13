@@ -84,7 +84,7 @@ public class DataUtils {
 		BufferedWriter bw = Files.newWriter(f, Charset.defaultCharset());
 		
 		for(String l : contents){
-			bw.write(l.startsWith(String.valueOf(src)) ? src+":"+dest : l);
+			bw.write(l.startsWith(String.valueOf(src)+":") ? src+":"+dest : l);
 			bw.newLine();
 		}
 		
@@ -104,7 +104,7 @@ public class DataUtils {
 		boolean isExisting = false;
 		
 		for(String l : contents){
-			if(l.startsWith(String.valueOf(src))){
+			if(l.startsWith(String.valueOf(src)+":")){
 				isExisting = true;
 				replace(src, dest, f);
 			}
@@ -126,7 +126,7 @@ public class DataUtils {
 		BufferedWriter bw = Files.newWriter(f, Charset.defaultCharset());
 		
 		for(String l : contents){
-			if(!l.startsWith(String.valueOf(target))){
+			if(!l.startsWith(String.valueOf(target)+":")){
 				bw.write(l);
 				bw.newLine();
 			}

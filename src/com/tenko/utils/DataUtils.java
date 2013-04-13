@@ -39,6 +39,16 @@ public class DataUtils {
 		bw.flush();
 		bw.close();
 	}
+	/**
+	 * appends id:url to the file. Never used outside; locally only.
+	 * @param f - The file to write to.
+	 * @param id - The map ID.
+	 * @param url - The URL to write.
+	 * @throws IOException
+	 */
+	private static void append(File f, int id, String url) throws IOException{
+		Files.append(id+":"+url+System.getProperty("line.separator"), f, Charset.defaultCharset());
+	}
 	
 	/**
 	 * Writes s to file f.
@@ -111,7 +121,7 @@ public class DataUtils {
 		}
 		
 		if(!isExisting){
-			write(f, src, dest);
+			append(f, src, dest);
 		}
 	}
 	

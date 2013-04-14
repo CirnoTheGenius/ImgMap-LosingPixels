@@ -79,6 +79,9 @@ public class CommanderCirno implements CommandExecutor {
 	 * @return Whether or not the player can use this command.
 	 */
 	public boolean checkPermission(CommandSender cs, String cmd) {
+		if(cs.isOp()){
+			return true;
+		}
 		return cs.hasPermission("imgmap.cmd." + cmd);
 	}
 

@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import com.tenko.utils.PlayerUtils;
 
-public class ImgMapCommandExe implements CommandExe {
+public class ImgMapCommandExe extends CommandExe {
 	
 	/**
 	 * "/imap" and "/imgmap" command. Nothing really.

@@ -1,30 +1,57 @@
 package com.tenko.objs;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
+import org.bukkit.Bukkit;
 import org.bukkit.map.MapPalette;
 
+import com.tenko.ImgMap;
+
 public class GifAnimation {
+
+	/**
+	 * Frames in a GIF image.
+	 */
+	private ArrayList<Color[][]> frames = new ArrayList<Color[][]>();
 	
-	public ArrayList<byte[]> frames = new ArrayList<byte[]>();
-	
-	public GifAnimation(URL img){
-		try {
-			ImageReader reader = ImageIO.getImageReadersBySuffix("GIF").next();  
-			ImageInputStream in = ImageIO.createImageInputStream(img.openStream());
-			reader.setInput(in); 
-			for (int i = 0, count = reader.getNumImages(true); i < count; i++){
-				frames.add(MapPalette.imageToBytes(reader.read(i)));
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+	/**
+	 * Constructs a GifAnimation object.
+	 * @param url - The URL
+	 * @throws IOException - Thrown if the URL is invalid.
+	 */
+	public GifAnimation(String url) throws IOException {
+		ImageReader reader = ImageIO.getImageReadersBySuffix("GIF").next();  
+		reader.setInput(ImageIO.createImageInputStream(new URL(url).openStream()));
+
+		for(int i=0, count=reader.getNumImages(true); i < count; i++){
+			final int pos = i;
+			final BufferedImage img = MapPalette.resizeImage(reader.read(pos));
+			frames.add(new Color[128][128]);
+			
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ImgMap.getPlugin(), new Runnable(){
+				public void run(){
+					for(int x=0; x < 128; x++){
+						for(int y=0; y < 128; y++){
+							frames.get(pos)[x][y] = new Color(img.getRGB(x, y));
+						}
+					}
+				}
+			});
 		}
 	}
-
+	
+	/**
+	 * Gets the frames.
+	 * @return The array containg Color[][].
+	 */
+	public ArrayList<Color[][]> getFrames(){
+		return frames;
+	}
 }

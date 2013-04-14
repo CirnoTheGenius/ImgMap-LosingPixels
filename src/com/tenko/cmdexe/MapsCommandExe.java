@@ -8,7 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import com.tenko.ImgMap;
 
-public class MapsCommandExe implements CommandExe {
+public class MapsCommandExe extends CommandExe {
 
 	/**
 	 * "/map" command

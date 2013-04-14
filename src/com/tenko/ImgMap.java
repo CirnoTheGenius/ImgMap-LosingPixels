@@ -1,29 +1,20 @@
 package com.tenko;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.google.common.io.Files;
+import com.google.common.annotations.Beta;
 import com.tenko.cmdexe.CommanderCirno;
-import com.tenko.rendering.ImageRenderer;
-import com.tenko.rendering.SlideshowRenderer;
 import com.tenko.threading.MapThreadGroup;
 import com.tenko.threading.SlideshowThread;
-import com.tenko.utils.DataUtils;
 
 /**
  * ImgMap - Maps become picture frames!
  * @author Tsunko
- * @version 2 Alpha
+ * @version 2 Beta (Wow, I haven't changed that in a while.)
  */
+@Beta
 public class ImgMap extends JavaPlugin {
 
 	/**
@@ -59,7 +50,8 @@ public class ImgMap extends JavaPlugin {
 				"maps", 
 				"smap", 
 				"imap", "imgmap",
-				"restoremap", "rmap"
+				"restoremap", "rmap",
+				"ani"
 		};
 
 		pl = this;
@@ -82,94 +74,7 @@ public class ImgMap extends JavaPlugin {
 			getCommand(cmd).setPermissionMessage(ChatColor.RED + "[ImgMap] You cannot use this command for permission reasons!");
 			getCommand(cmd).setExecutor(cc);
 		}
-
-		// This is rather suicidel.
-		new Thread(){
-			@Override
-			public void run(){
-				try {
-					DataUtils.initialize();
-					
-					for(String s : Files.readLines(getList(), Charset.defaultCharset())){
-						String url = s.substring(s.indexOf(":")+1, s.length());
-      boolean doRender=true;
-
-					 if (!url.startsWith("http://")) {
-        if (!new File(url).isAbsolute()) {
-          try{
-            // Complete the path if it's not absolute
-            url=new File(new File(ImgMap.getPlugin().getDataFolder(),"maps"),url).getAbsolutePath();
-          }
-          catch (SecurityException e) {
-            // skip if something went wrong.
-            doRender=false;
-          }
-        }
-      }
-      if (doRender) {
-        short id = Short.valueOf(s.substring(0, s.indexOf(":")));
-        MapView viewport = Bukkit.getServer().getMap(id);
-        
-        for(MapRenderer mr : viewport.getRenderers()){
-         viewport.removeRenderer(mr);
-        }
-        viewport.addRenderer(new ImageRenderer(url));
-      }
-					}
-
-					for(File f : new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/").listFiles()){
-						List<String> lines = Files.readLines(f, Charset.defaultCharset());
-
-						float waitTime;
-      try {
-        waitTime = Float.valueOf(lines.remove(0));
-      }
-      catch (NumberFormatException e) {
-        waitTime=-1;
-      }
-      if (waitTime<=0)
-        // This doesn't look right, skip.
-        continue;
-
-						String[] urls = new String[lines.size()];
-						lines.toArray(urls);
-
-      boolean doRender=true;
-      for (int i=0; i<urls.length; ++i) {
-        if (!urls[i].startsWith("http://")) {
-          if (!new File(urls[i]).isAbsolute()) {
-            try{
-              // Complete the path if it's not absolute
-              urls[i]=new File(new File(ImgMap.getPlugin().getDataFolder(),"maps"),urls[i]).getAbsolutePath();
-            }
-            catch (SecurityException e) {
-              // skip if something went wrong.
-              doRender=false;
-              break;
-            }
-          }
-        }
-      }
-      if (doRender) {
-        short id = Short.valueOf(f.getName().substring(0, f.getName().indexOf(".")));
-
-        MapView viewport = Bukkit.getServer().getMap(id);
-
-        for(MapRenderer mr : viewport.getRenderers()){
-         viewport.removeRenderer(mr);
-        }
-
-        viewport.addRenderer(new SlideshowRenderer(urls, waitTime));
-      }
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
-		
-		System.out.println(Bukkit.getServer().getVersion());
-		
+				
 	}
 
 	public void onDisable(){
@@ -195,11 +100,20 @@ public class ImgMap extends JavaPlugin {
 	public static File getList(){
 		return new File(ImgMap.getPlugin().getDataFolder(), "Maps.list");
 	}
-
+	
+	/**
+	 * Get slideshow by ID.
+	 * @param id - The Map ID.
+	 * @return A file for the Slideshow.
+	 */
 	public static File getSlideshowFile(int id){
 		return new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/", String.valueOf(id + ".slideshow"));
 	}
-
+	
+	/**
+	 * Returns the custom threadgroup.
+	 * @return MapThreadGroup.
+	 */
 	public static MapThreadGroup getThreadGroup(){
 		return group;
 	}

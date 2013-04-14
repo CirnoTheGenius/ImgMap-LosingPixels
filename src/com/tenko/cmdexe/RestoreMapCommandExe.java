@@ -22,7 +22,7 @@ import com.tenko.ImgMap;
 import com.tenko.utils.DataUtils;
 import com.tenko.utils.PlayerUtils;
 
-public class RestoreMapCommandExe implements CommandExe {
+public class RestoreMapCommandExe extends CommandExe {
 	
 	/**
 	 * "/rmap" and "/restoremap" command.

@@ -1,33 +1,34 @@
 package com.tenko.threading;
 
 import java.io.IOException;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
 
 import org.bukkit.map.MapCanvas;
+import org.bukkit.map.MapPalette;
 
 import com.tenko.ImgMap;
-import com.tenko.utils.ImageUtils;
 
 public class SlideshowThread extends Thread {
-	
+
 	/**
 	 * List of images to render.
 	 */
 	private final String[] urls;
-	
+
 	/**
 	 * Wait time in seconds.
 	 */
 	private final float waitTime;
-	
+
 	/**
 	 * The map canvas to render to.
 	 */
 	private final MapCanvas viewport;
-	
+
 	/**
 	 * Is this thread running?
 	 */
@@ -47,7 +48,7 @@ public class SlideshowThread extends Thread {
 		this.running = true;
 		ImgMap.getThreadGroup().getThreads().add(this);
 	}
-	
+
 	/**
 	 * Am I running?
 	 * @return Whether or not this thread is truely alive.
@@ -66,7 +67,16 @@ public class SlideshowThread extends Thread {
 				if(pos >= urls.length){
 					pos = 0;
 				}
-				viewport.drawImage(0, 0, ImageUtils.resizeImage(ImageIO.read(new URL(urls[pos]))));
+				if (urls[pos].startsWith("http://")) {
+					viewport.drawImage(0, 0, MapPalette.resizeImage(ImageIO.read(new URL(urls[pos]))));
+				}
+				else {
+					/*
+					 * Here we assume that 'url' was already accepted by the input methods.
+					 * That is, we are not trying to access anything confidential.
+					 */
+					viewport.drawImage(0,0,MapPalette.resizeImage(ImageIO.read(new File(urls[pos]))));
+				}
 				Thread.sleep(((int)waitTime)*1000);
 			}
 		} catch (InterruptedException e) {
@@ -77,7 +87,7 @@ public class SlideshowThread extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Safely stop the thread.
 	 */

@@ -4,16 +4,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.bukkit.map.MapCanvas;
-import org.bukkit.map.MapPalette;
 
 import com.tenko.objs.GifAnimation;
 
 public class AnimationThread extends Thread {
-
-	/**
-	 * Wait time in seconds.
-	 */
-	private final float waitTime;
 
 	/**
 	 * The map canvas to render to.
@@ -35,7 +29,6 @@ public class AnimationThread extends Thread {
 	 */
 	public AnimationThread(String url, float waitTime, MapCanvas viewport){
 		super("SlideshowRenderer #" + viewport.getMapView().getId());
-		this.waitTime = waitTime;
 		this.running = false;
 		this.viewport = viewport;
 

@@ -1,6 +1,7 @@
 package com.tenko.rendering;
 
 import java.io.IOException;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -9,11 +10,11 @@ import javax.imageio.ImageIO;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
+import org.bukkit.map.MapPalette;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import com.tenko.events.ImageRenderEvent;
-import com.tenko.utils.ImageUtils;
 
 public class ImageRenderer extends MapRenderer {
 
@@ -21,12 +22,12 @@ public class ImageRenderer extends MapRenderer {
 	 * Non-modifiable URL associated with the renderer.
 	 */
 	private final String url;
-	
+
 	/**
 	 * Has the renderer rendered? (Try typing that one!)
 	 */
 	private boolean hasRendered = false;
-	
+
 	/**
 	 * Creates a new ImageRenderer object.
 	 * @param theUrl - URL to be used to render images.
@@ -34,7 +35,7 @@ public class ImageRenderer extends MapRenderer {
 	public ImageRenderer(String theUrl){
 		this.url = theUrl;
 	}
-	
+
 	/**
 	 * This should never be called outside of this class.
 	 * @param canvas - The MapCanvas. Note: This has a final modifier.
@@ -48,7 +49,16 @@ public class ImageRenderer extends MapRenderer {
 			@Override
 			public void run() {
 				try {
-					canvas.drawImage(0, 0, ImageUtils.resizeImage(ImageIO.read(new URL(url))));
+					if (url.startsWith("http://")) {
+						canvas.drawImage(0,0,MapPalette.resizeImage(ImageIO.read(new URL(url))));
+					}
+					else {
+						/*
+						 * Here we assume that 'url' was already accepted by the input methods.
+						 * That is, we are not trying to access anything confidential.
+						 */
+						canvas.drawImage(0,0,MapPalette.resizeImage(ImageIO.read(new File(url))));
+					}
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -57,7 +67,7 @@ public class ImageRenderer extends MapRenderer {
 			}
 		}.start();
 	}
-	
+
 	/**
 	 * Rendering method. Don't call anywhere; called by CraftBukkit itself.
 	 */
@@ -69,5 +79,5 @@ public class ImageRenderer extends MapRenderer {
 			Bukkit.getServer().getPluginManager().callEvent(new ImageRenderEvent(url, view));
 		}
 	}
-	
+
 }

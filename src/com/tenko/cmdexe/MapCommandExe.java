@@ -1,6 +1,7 @@
 package com.tenko.cmdexe;
 
 import java.io.IOException;
+import java.io.File;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -20,7 +21,7 @@ import com.tenko.utils.PlayerUtils;
 import com.tenko.utils.URLUtils;
 
 public class MapCommandExe implements CommandExe {
-	
+
 	/**
 	 * "/map" command
 	 * @param cs - Command sender.
@@ -41,9 +42,28 @@ public class MapCommandExe implements CommandExe {
 			return;
 		}
 
-		if(!URLUtils.compatibleImage(args[0])){
+		boolean isURL=args[0].startsWith("http://");
+		String location;
+
+		if(isURL && !URLUtils.compatibleImage(args[0])){
 			cs.sendMessage(ChatColor.RED + "[ImgMap] The specified image is not compatible!");
+			location=args[0];
 			return;
+		}
+		else {
+			try {
+				// Check if really subdir (not sure if this is safe).
+				File base=new File(ImgMap.getPlugin().getDataFolder(), "maps");
+				File child=new File(base, args[0]);
+				if (!child.getCanonicalPath().startsWith(base.getCanonicalPath())) {
+					throw new SecurityException("Someone tried to do something nasty.");
+				}
+				location=child.getAbsolutePath();
+			}
+			catch (SecurityException e) {
+				cs.sendMessage(ChatColor.RED + "[ImgMap] Please give in a URL or a path relative to plugins/ImgMap/maps/");
+				return;
+			}
 		}
 
 		MapView viewport = Bukkit.getServer().getMap(equipped.getDurability());
@@ -51,11 +71,11 @@ public class MapCommandExe implements CommandExe {
 		for(MapRenderer mr : viewport.getRenderers()){
 			viewport.removeRenderer(mr);
 		}
-		
+
 		viewport.setScale(Scale.FARTHEST);
-		viewport.addRenderer(new ImageRenderer(args[0]));
+		viewport.addRenderer(new ImageRenderer(location));
 		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + args[0]);
-		
+
 		if(ArrayUtils.contains(args, "-p")){
 			DataUtils.deleteSlideshow(equipped.getDurability());
 			DataUtils.replace(ImgMap.getList(), equipped.getDurability(), args[0]);

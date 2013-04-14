@@ -1,15 +1,9 @@
 package com.tenko;
 
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +18,6 @@ import com.tenko.rendering.SlideshowRenderer;
 import com.tenko.threading.MapThreadGroup;
 import com.tenko.threading.SlideshowThread;
 import com.tenko.utils.DataUtils;
-import com.tenko.utils.ImageUtils;
 
 /**
  * ImgMap - Maps become picture frames!
@@ -63,6 +56,7 @@ public class ImgMap extends JavaPlugin {
 	public void onEnable(){
 		String[] cmds = new String[]{
 				"map", 
+				"maps", 
 				"smap", 
 				"imap", "imgmap",
 				"restoremap", "rmap"
@@ -71,8 +65,9 @@ public class ImgMap extends JavaPlugin {
 		pl = this;
 
 		//Usage
-		getCommand("map").setUsage(ChatColor.BLUE + "Usage: /map <url>");
-		getCommand("smap").setUsage(ChatColor.BLUE + "Usage: /smap <time> <url1> [url2] [url3] and so on.");
+		getCommand("map").setUsage(ChatColor.BLUE + "Usage: /map <url|file>");
+		getCommand("maps").setUsage(ChatColor.BLUE + "Usage: /maps");
+		getCommand("smap").setUsage(ChatColor.BLUE + "Usage: /smap <time> <url1|file> [url2|file] [url3|file] and so on.");
 
 		getCommand("imap").setUsage(ChatColor.BLUE + "Usage: /imap");
 		getCommand("imgmap").setUsage(ChatColor.BLUE + "Usage: /imgmap");
@@ -97,31 +92,75 @@ public class ImgMap extends JavaPlugin {
 					
 					for(String s : Files.readLines(getList(), Charset.defaultCharset())){
 						String url = s.substring(s.indexOf(":")+1, s.length());
-						short id = Short.valueOf(s.substring(0, s.indexOf(":")));
-						
-						MapView viewport = Bukkit.getServer().getMap(id);
-						
-						for(MapRenderer mr : viewport.getRenderers()){
-							viewport.removeRenderer(mr);
-						}
+      boolean doRender=true;
 
-						viewport.addRenderer(new ImageRenderer(url));
+					 if (!url.startsWith("http://")) {
+        if (!new File(url).isAbsolute()) {
+          try{
+            // Complete the path if it's not absolute
+            url=new File(new File(ImgMap.getPlugin().getDataFolder(),"maps"),url).getAbsolutePath();
+          }
+          catch (SecurityException e) {
+            // skip if something went wrong.
+            doRender=false;
+          }
+        }
+      }
+      if (doRender) {
+        short id = Short.valueOf(s.substring(0, s.indexOf(":")));
+        MapView viewport = Bukkit.getServer().getMap(id);
+        
+        for(MapRenderer mr : viewport.getRenderers()){
+         viewport.removeRenderer(mr);
+        }
+        viewport.addRenderer(new ImageRenderer(url));
+      }
 					}
 
 					for(File f : new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/").listFiles()){
-						short id = Short.valueOf(f.getName().substring(0, f.getName().indexOf(".")));
-						MapView viewport = Bukkit.getServer().getMap(id);
-
-						for(MapRenderer mr : viewport.getRenderers()){
-							viewport.removeRenderer(mr);
-						}
-
 						List<String> lines = Files.readLines(f, Charset.defaultCharset());
-						float waitTime = Float.valueOf(lines.remove(0));
+
+						float waitTime;
+      try {
+        waitTime = Float.valueOf(lines.remove(0));
+      }
+      catch (NumberFormatException e) {
+        waitTime=-1;
+      }
+      if (waitTime<=0)
+        // This doesn't look right, skip.
+        continue;
+
 						String[] urls = new String[lines.size()];
 						lines.toArray(urls);
 
-						viewport.addRenderer(new SlideshowRenderer(urls, waitTime));
+      boolean doRender=true;
+      for (int i=0; i<urls.length; ++i) {
+        if (!urls[i].startsWith("http://")) {
+          if (!new File(urls[i]).isAbsolute()) {
+            try{
+              // Complete the path if it's not absolute
+              urls[i]=new File(new File(ImgMap.getPlugin().getDataFolder(),"maps"),urls[i]).getAbsolutePath();
+            }
+            catch (SecurityException e) {
+              // skip if something went wrong.
+              doRender=false;
+              break;
+            }
+          }
+        }
+      }
+      if (doRender) {
+        short id = Short.valueOf(f.getName().substring(0, f.getName().indexOf(".")));
+
+        MapView viewport = Bukkit.getServer().getMap(id);
+
+        for(MapRenderer mr : viewport.getRenderers()){
+         viewport.removeRenderer(mr);
+        }
+
+        viewport.addRenderer(new SlideshowRenderer(urls, waitTime));
+      }
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

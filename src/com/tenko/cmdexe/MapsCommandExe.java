@@ -19,13 +19,17 @@ public class MapsCommandExe implements CommandExe {
 	public MapsCommandExe (CommandSender cs, String[] args) throws IOException{
 		Execute(cs, args);
 	}
-
-	private ArrayList<String> listDir (File dir) throws IOException, SecurityException {
+ 
+ /**
+  * "/maps" command
+  * @param len - length of base path.
+  * @param dir - directory to list recursively.
+  */
+	private ArrayList<String> listDir (int len, File dir) throws IOException, SecurityException {
 		ArrayList<String> output=new ArrayList<String>();
-		int len=dir.getCanonicalPath().length();
 		for (File f : dir.listFiles()) {
 			if (f.isDirectory())
-				output.addAll(listDir(f));
+				output.addAll(listDir(len, f));
 			else
 				output.add(f.getCanonicalPath().substring(len,f.getCanonicalPath().length()));
 		}
@@ -41,7 +45,7 @@ public class MapsCommandExe implements CommandExe {
 
 		cs.sendMessage(ChatColor.YELLOW +"[ImgMap] Contents of the maps directory:");
 		try {
-			for (String f : listDir(maps))
+			for (String f : listDir(maps.getCanonicalPath().length(), maps))
 				cs.sendMessage(ChatColor.YELLOW +"- "+f);
 		}
 		catch (Exception e) {

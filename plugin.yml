@@ -7,6 +7,10 @@ commands:
         description: Renders an image.
         usage: /map <url>
         permission: imgmap.cmd.map
+    maps:
+        description: Lists the maps directory.
+        usage: /maps
+        permission: imgmap.cmd.maps
     smap:
         description: Renders a slideshow.
         usage: /smap <time> <url1> [url2] [url3]
@@ -27,19 +31,23 @@ permissions:
         description: Gives complete access to everything.
         children:
             imgmap.cmd.map: true
+            imgmap.cmd.maps: true
             imgmap.cmd.slideshow: true
             imgmap.cmd.restoremap: true
             imgmap.cmd.imgmap: true
-        default: false
+        default: op
     imgmap.cmd.map:
         description: Allows the rendering of a single image.
-        default: false
+        default: op
+    imgmap.cmd.maps:
+        description: Allows the listing of the maps directory.
+        default: op
     imgmap.cmd.slideshow:
         description: Allows the map to render a slideshow.
-        default: false
+        default: op
     imgmap.cmd.restoremap:
         description: Allows the map to be restored to it's original state.
-        default: false
+        default: op
     imgmap.cmd.imgmap:
         description: Allows the user to access the version.
-        default: false
+        default: op

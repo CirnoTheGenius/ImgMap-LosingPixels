@@ -17,54 +17,51 @@ public class CommanderCirno implements CommandExecutor {
 	public boolean onCommand(CommandSender cs, Command c, String label, String[] args) {
 		try {
 			if(cs instanceof Player){
-				if(c.getName().equalsIgnoreCase("imgmap") || c.getName().equalsIgnoreCase("imap")){
-					if(checkPermission(cs, "imgmap")){
-						new ImgMapCommandExe(cs, args);
-					}
+				if((c.getName().equalsIgnoreCase("imgmap") || c.getName().equalsIgnoreCase("imap")) && checkPermission(cs, "imgmap")){
+					new ImgMapCommandExe(cs, args);
 					return true;
 				}
 
-				if(c.getName().equalsIgnoreCase("map")){
+				if(c.getName().equalsIgnoreCase("map") && checkPermission(cs, "map")){
 					if(args.length < 1){
 						cs.sendMessage(ChatColor.RED + "[ImgMap] Not enough arguments!");
 						return false;
 					}
-					if(checkPermission(cs, "map")){
-						new MapCommandExe(cs, args);
-					}
+					new MapCommandExe(cs, args);
 					return true;
 				}
 
-				if(c.getName().equalsIgnoreCase("maps")){
-					if(checkPermission(cs, "maps")){
-						new MapsCommandExe(cs, args);
-					}
+				if(c.getName().equalsIgnoreCase("maps") && checkPermission(cs, "maps")){
+					new MapsCommandExe(cs, args);
 					return true;
 				}
 
-				if(c.getName().equalsIgnoreCase("smap")){
+				if(c.getName().equalsIgnoreCase("smap") && checkPermission(cs, "slideshow")){
 					if(args.length < 2){
 						cs.sendMessage(ChatColor.RED + "[ImgMap] Not enough arguments!");
 						return false;
 					}
-					if(checkPermission(cs, "slideshow")){
-						new SlideshowCommandExe(cs, args);
-					}
+					new SlideshowCommandExe(cs, args);
 					return true;
 				}
 
-
-				if(c.getName().equalsIgnoreCase("restoremap") || c.getName().equalsIgnoreCase("rmap")){
-					if(checkPermission(cs, "restoremap")){
-						new RestoreMapCommandExe(cs, args);
+				if(c.getName().equalsIgnoreCase("ani") && checkPermission(cs, "ani")){
+					if(args.length < 1){
+						cs.sendMessage(ChatColor.RED + "[ImgMap] Not enough arguments!");
+						return false;
 					}
+					cs.sendMessage(ChatColor.BLUE + "[ImgMap] This command is an experimental command. It has been tested to work, however, it's side effects are unknown.");
+					new AniCommandExe(cs, args);
+				}
+				
+				if((c.getName().equalsIgnoreCase("restoremap") || c.getName().equalsIgnoreCase("rmap")) && checkPermission(cs, "restoremap")){
+					new RestoreMapCommandExe(cs, args);
 					return true;
 				}
 			} else {
 				cs.sendMessage(ChatColor.RED + "[ImgMap] You must be a player.");
 				return true;
 			}
-
 		} catch (IOException e){
 			cs.sendMessage(ChatColor.RED + "[ImgMap] Something really bad happend. Contact an admin or look at the console itself.");
 			e.printStackTrace();

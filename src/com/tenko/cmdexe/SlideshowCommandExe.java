@@ -22,7 +22,7 @@ public class SlideshowCommandExe extends CommandExe {
 
 	@Override
 	public void Execute(CommandSender cs, String[] args) throws IOException {
-		super.validateInput(cs, args);
+		validateInput(cs, args);
 
 		// read the URLs and check if the slideshow is to be permanent
 		boolean isPermanent = false;

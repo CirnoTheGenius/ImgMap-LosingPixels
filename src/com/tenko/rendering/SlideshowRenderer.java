@@ -20,14 +20,14 @@ public class SlideshowRenderer extends MapRenderer {
 	 * Has the renderer rendered? (Try typing that one!)
 	 */
 	private boolean hasRendered = false;
-	
+
 	/**
 	 * The time to wait in seconds.
 	 */
 	private float waitTime = 0;
-	
+
 	private SlideshowThread thread;
-	
+
 	/**
 	 * Creates a new ImageRenderer object.
 	 * @param theUrl - URL to be used to render images.
@@ -54,7 +54,7 @@ public class SlideshowRenderer extends MapRenderer {
 		for(int i=0; i < canvas.getCursors().size(); i++){
 			canvas.getCursors().removeCursor(canvas.getCursors().getCursor(i));
 		}
-		
+
 		if(urls != null && !hasRendered){
 			hasRendered = true;
 			startRenderThread(canvas);

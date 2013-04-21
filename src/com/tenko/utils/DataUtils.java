@@ -10,7 +10,7 @@ import com.google.common.io.Files;
 import com.tenko.ImgMap;
 
 /**
- * DataUtils used in ImgMap in order to modify Slideshow data and Maps.list. 
+ * DataUtils used in ImgMap in order to modify Slideshow data and Maps.list.
  * This time, I will attempt to use every pregiven library included only in CraftBukkit, such as com.google.common.io.
  * @author Tsunko
  */

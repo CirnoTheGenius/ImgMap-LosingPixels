@@ -12,22 +12,22 @@ import org.bukkit.map.MapView;
  * @author Tsunko
  */
 public class PlayerData {
-	
+
 	/**
 	 * The player object.
 	 */
 	private final Player plyr;
-	
+
 	/**
 	 * The item stack.
 	 */
 	private final ItemStack itmstk;
-	
+
 	/**
 	 * The MapView.
 	 */
 	private final MapView viewport;
-	
+
 	/**
 	 * Creates a new PlayrStack.
 	 * @param plyr - The player
@@ -38,7 +38,7 @@ public class PlayerData {
 	public PlayerData(Player plyr, Object itmstk, MapView viewport) throws InvalidClassException{
 		this.plyr = plyr;
 		this.viewport = viewport;
-		
+
 		if(itmstk instanceof org.bukkit.inventory.ItemStack){
 			this.itmstk = (ItemStack)itmstk;
 		} else if(itmstk instanceof net.minecraft.server.v1_5_R2.ItemStack){
@@ -50,15 +50,15 @@ public class PlayerData {
 			throw new InvalidClassException("Itmstk is supposed to be a NMS ItemStack or Bukkit ItemStack, not a " + itmstk.getClass() + "!");
 		}
 	}
-	
+
 	public Player getPlayer(){
 		return plyr;
 	}
-	
+
 	public ItemStack getStack(){
 		return itmstk;
 	}
-	
+
 	public MapView getMap(){
 		return viewport;
 	}

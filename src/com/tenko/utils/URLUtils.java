@@ -10,7 +10,7 @@ import java.net.URL;
  * @author Tsunko
  */
 public class URLUtils {
-	
+
 	/**
 	 * Checks to see if the image is a proper type. Currently uses Content-types.
 	 * @param s - The URL to try to check.
@@ -29,7 +29,7 @@ public class URLUtils {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Gets the content type. Do not use outside of this class. No point.
 	 * @param theURL - The URL object.

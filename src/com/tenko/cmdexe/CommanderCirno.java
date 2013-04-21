@@ -22,7 +22,7 @@ public class CommanderCirno implements CommandExecutor {
 						new ImgMapCommandExe(cs, args);
 					}
 					return true;
-				} 
+				}
 
 				if(c.getName().equalsIgnoreCase("map")){
 					if(args.length < 1){
@@ -33,7 +33,7 @@ public class CommanderCirno implements CommandExecutor {
 						new MapCommandExe(cs, args);
 					}
 					return true;
-				} 
+				}
 
 				if(c.getName().equalsIgnoreCase("maps")){
 					if(checkPermission(cs, "maps")){
@@ -51,7 +51,7 @@ public class CommanderCirno implements CommandExecutor {
 						new SlideshowCommandExe(cs, args);
 					}
 					return true;
-				} 
+				}
 
 
 				if(c.getName().equalsIgnoreCase("restoremap") || c.getName().equalsIgnoreCase("rmap")){

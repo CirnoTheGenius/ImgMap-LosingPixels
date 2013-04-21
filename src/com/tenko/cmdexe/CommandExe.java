@@ -17,7 +17,7 @@ import com.tenko.objs.PlayerData;
 import com.tenko.utils.PlayerUtils;
 
 public class CommandExe {
-	
+
 	/**
 	 * The PlayerData
 	 */
@@ -38,7 +38,7 @@ public class CommandExe {
 	public String getCommand(){
 		return null;
 	}
-	
+
 	/**
 	 * Get the PlayerData that is received from validateInput()
 	 * @return
@@ -46,7 +46,7 @@ public class CommandExe {
 	public PlayerData getData(){
 		return this.data;
 	}
-	
+
 	/**
 	 * Validates user input.
 	 * @param cs
@@ -62,15 +62,15 @@ public class CommandExe {
 			cs.sendMessage(ChatColor.RED + "[ImgMap] The currently equipped item is not a map!");
 			return null;
 		}
-		
+
 		MapView viewport = Bukkit.getServer().getMap(equipped.getDurability());
-		
+
 		for(MapRenderer mr : viewport.getRenderers()){
 			viewport.removeRenderer(mr);
 		}
-		
+
 		viewport.setScale(Scale.FARTHEST);
-		
+
 		if(thePlayer != null && equipped != null && viewport != null){
 			return new PlayerData(thePlayer, equipped, viewport);
 		} else {

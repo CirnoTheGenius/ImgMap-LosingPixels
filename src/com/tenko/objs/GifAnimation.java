@@ -20,22 +20,23 @@ public class GifAnimation {
 	 * Frames in a GIF image.
 	 */
 	private ArrayList<Color[][]> frames = new ArrayList<Color[][]>();
-	
+
 	/**
 	 * Constructs a GifAnimation object.
 	 * @param url - The URL
 	 * @throws IOException - Thrown if the URL is invalid.
 	 */
 	public GifAnimation(String url) throws IOException {
-		ImageReader reader = ImageIO.getImageReadersBySuffix("GIF").next();  
+		ImageReader reader = ImageIO.getImageReadersBySuffix("GIF").next();
 		reader.setInput(ImageIO.createImageInputStream(new URL(url).openStream()));
 
 		for(int i=0, count=reader.getNumImages(true); i < count; i++){
 			final int pos = i;
 			final BufferedImage img = MapPalette.resizeImage(reader.read(pos));
 			frames.add(new Color[128][128]);
-			
+
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ImgMap.getPlugin(), new Runnable(){
+				@Override
 				public void run(){
 					for(int x=0; x < 128; x++){
 						for(int y=0; y < 128; y++){
@@ -46,7 +47,7 @@ public class GifAnimation {
 			});
 		}
 	}
-	
+
 	/**
 	 * Gets the frames.
 	 * @return The array containg Color[][].

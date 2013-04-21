@@ -5,7 +5,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 public class ImageUtils {
-	
+
 	/**
 	 * Resizes the image to a 128x128 image.
 	 * @param s - The URL

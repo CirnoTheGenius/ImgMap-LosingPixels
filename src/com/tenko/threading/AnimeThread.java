@@ -8,23 +8,23 @@ import org.bukkit.map.MapView;
 import com.tenko.objs.GifAnimation;
 
 public class AnimeThread extends Thread {
-	
+
 	/**
 	 * The map canvas to render to.
 	 */
 	private final MapCanvas viewport;
-	
+
 	/**
 	 * Is this thread running?
 	 */
 	private boolean running;
-	
+
 	private final MapView view;
-	
+
 	private final Player plyr;
-	
+
 	private final GifAnimation anime;
-	
+
 	public AnimeThread(MapView view, MapCanvas viewport, Player plyr, GifAnimation gif){
 		this.viewport = viewport;
 		this.view = view;
@@ -32,7 +32,7 @@ public class AnimeThread extends Thread {
 		this.anime = gif;
 		this.running = true;
 	}
-	
+
 	@Override
 	public void run(){
 		while(running){
@@ -40,7 +40,7 @@ public class AnimeThread extends Thread {
 				if(pos >= anime.getFrames().size()){
 					pos = 0;
 				}
-				
+
 				for(int x=0; x < 128; x++){
 					for(int y=0; y < 128; y++){
 						try {
@@ -48,17 +48,17 @@ public class AnimeThread extends Thread {
 						} catch (NullPointerException e){}
 					}
 				}
-				
+
 				try {
 					sleep(20);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
+
 				plyr.sendMap(view);
 			}
 
 		}
 	}
-	
+
 }

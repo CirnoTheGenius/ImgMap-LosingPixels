@@ -1,7 +1,7 @@
 package com.tenko.rendering;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -73,7 +73,7 @@ public class ImageRenderer extends MapRenderer {
 	 */
 	@Override
 	public void render(MapView view, MapCanvas canvas, Player plyr) {
-		if(url != null && !hasRendered){			
+		if(url != null && !hasRendered){
 			hasRendered = true;
 			startRenderThread(canvas, view);
 			Bukkit.getServer().getPluginManager().callEvent(new ImageRenderEvent(url, view));

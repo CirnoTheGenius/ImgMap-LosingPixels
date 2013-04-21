@@ -1,11 +1,12 @@
 package com.tenko.cmdexe;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
 import com.tenko.ImgMap;
 
 public class MapsCommandExe extends CommandExe {
@@ -19,12 +20,12 @@ public class MapsCommandExe extends CommandExe {
 	public MapsCommandExe (CommandSender cs, String[] args) throws IOException{
 		Execute(cs, args);
 	}
- 
- /**
-  * "/maps" command
-  * @param len - length of base path.
-  * @param dir - directory to list recursively.
-  */
+
+	/**
+	 * "/maps" command
+	 * @param len - length of base path.
+	 * @param dir - directory to list recursively.
+	 */
 	private ArrayList<String> listDir (int len, File dir) throws IOException, SecurityException {
 		ArrayList<String> output=new ArrayList<String>();
 		for (File f : dir.listFiles()) {

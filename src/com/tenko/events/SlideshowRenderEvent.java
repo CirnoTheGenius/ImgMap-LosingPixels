@@ -5,17 +5,17 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.map.MapView;
 
 public class SlideshowRenderEvent extends Event {
-	
+
 	/**
 	 * List of handlers.
 	 */
 	private static final HandlerList handlers = new HandlerList();
-	
+
 	/**
 	 * The MapView associated
 	 */
 	private MapView viewport;
-	
+
 	/**
 	 * The list of URLs associated
 	 */
@@ -30,7 +30,7 @@ public class SlideshowRenderEvent extends Event {
 		this.viewport = viewport;
 		this.urls = urls;
 	}
-	
+
 	/**
 	 * Gets a string array containing all the URLs being used.
 	 * @return String array with URLs
@@ -38,23 +38,24 @@ public class SlideshowRenderEvent extends Event {
 	public String[] getURLs(){
 		return urls;
 	}
-	
-    /**
-     * Gets the MapView being used.
-     * @return A MapView.
-     */
+
+	/**
+	 * Gets the MapView being used.
+	 * @return A MapView.
+	 */
 	public MapView getView(){
 		return viewport;
 	}
 
-    /**
-     * Gets the HandlerList.
-     * @return A HandlerList
-     */
+	/**
+	 * Gets the HandlerList.
+	 * @return A HandlerList
+	 */
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
-	
+
 	/**
 	 * Gets the HandlerList.
 	 * @return A HandlerList

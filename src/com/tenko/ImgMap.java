@@ -1,6 +1,7 @@
 package com.tenko;
 
 import java.io.File;
+
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -46,9 +47,9 @@ public class ImgMap extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		String[] cmds = new String[]{
-				"map", 
-				"maps", 
-				"smap", 
+				"map",
+				"maps",
+				"smap",
 				"imap", "imgmap",
 				"restoremap", "rmap",
 				"ani"
@@ -74,9 +75,10 @@ public class ImgMap extends JavaPlugin {
 			getCommand(cmd).setPermissionMessage(ChatColor.RED + "[ImgMap] You cannot use this command for permission reasons!");
 			getCommand(cmd).setExecutor(cc);
 		}
-				
+
 	}
 
+	@Override
 	public void onDisable(){
 		SlideshowThread[] activeThreads = new SlideshowThread[group.activeCount()];
 		group.enumerate(activeThreads);
@@ -100,7 +102,7 @@ public class ImgMap extends JavaPlugin {
 	public static File getList(){
 		return new File(ImgMap.getPlugin().getDataFolder(), "Maps.list");
 	}
-	
+
 	/**
 	 * Get slideshow by ID.
 	 * @param id - The Map ID.
@@ -109,7 +111,7 @@ public class ImgMap extends JavaPlugin {
 	public static File getSlideshowFile(int id){
 		return new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/", String.valueOf(id + ".slideshow"));
 	}
-	
+
 	/**
 	 * Returns the custom threadgroup.
 	 * @return MapThreadGroup.

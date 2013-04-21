@@ -1,11 +1,12 @@
 package com.tenko.cmdexe;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
 import com.tenko.ImgMap;
 import com.tenko.rendering.ImageRenderer;
 import com.tenko.utils.DataUtils;
@@ -47,7 +48,7 @@ public class MapCommandExe extends CommandExe {
 				return;
 			}
 		}
-		
+
 		getData().getMap().addRenderer(new ImageRenderer(location));
 		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + args[0]);
 

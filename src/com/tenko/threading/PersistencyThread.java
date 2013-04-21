@@ -20,7 +20,7 @@ import com.tenko.utils.DataUtils;
  * @author Tsunko
  */
 public class PersistencyThread extends Thread {
-	
+
 	public PersistencyThread(){
 		try {
 			DataUtils.initialize();
@@ -28,23 +28,23 @@ public class PersistencyThread extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void run(){
 		try {
 			for(String s : Files.readLines(ImgMap.getList(), Charset.defaultCharset())){
 				String url = s.substring(s.indexOf(":")+1, s.length());
 				short id = Short.valueOf(s.substring(0, s.indexOf(":")));
-				
+
 				MapView viewport = Bukkit.getServer().getMap(id);
-				
+
 				for(MapRenderer mr : viewport.getRenderers()){
 					viewport.removeRenderer(mr);
 				}
 
 				viewport.addRenderer(new ImageRenderer(url));
 			}
-			
+
 			for(File f : new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/").listFiles()){
 				short id = Short.valueOf(f.getName().substring(0, f.getName().indexOf(".")));
 				MapView viewport = Bukkit.getServer().getMap(id);
@@ -63,6 +63,6 @@ public class PersistencyThread extends Thread {
 		} catch (IOException e){
 			e.printStackTrace();
 		}
-		
+
 	}
 }

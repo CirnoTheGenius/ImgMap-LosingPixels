@@ -72,7 +72,8 @@ public class CommandExe {
 		viewport.setScale(Scale.FARTHEST);
 
 		if(thePlayer != null && equipped != null && viewport != null){
-			return new PlayerData(thePlayer, equipped, viewport);
+			data = new PlayerData(thePlayer, equipped, viewport);
+			return data;
 		} else {
 			throw new InvalidClassException("One of the parameters sent to PlayerData was not expected!");
 		}

@@ -1,30 +1,56 @@
 package com.tenko.rendering;
 
+import java.io.IOException;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import com.tenko.objs.GifAnimation;
+import com.tenko.threading.AnimeThread;
 
 /**
- * EXTREAMLY experimental animated rendering. Quite possibly an extreamly laggy one too.
+ * EXTREAMLY experimental animated rendering. Quite possibly an extremely laggy one too.
  * @author Tsunko
- *
  */
 public class AnimatedRenderer extends MapRenderer {
 
-	@Override
-	public void render(MapView viewport, MapCanvas canvas, Player plyr) {
+	private GifAnimation anime;
 
+	private AnimeThread rendering;
+	
+	private boolean hasRendered = false;
+	
+	public AnimatedRenderer(String url){
+		try {
+			this.anime = new GifAnimation(url);
+			Bukkit.broadcastMessage("Created anime object!");
+		} catch (IOException e){
+			e.printStackTrace();
+		}
 	}
 
-	//	  ImageReader reader = ImageIO.getImageReadersBySuffix("GIF").next();
-	//    ImageInputStream in = ImageIO.createImageInputStream(new URL("https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Rotating_earth_%28large%29.gif/200px-Rotating_earth_%28large%29.gif").openStream());
-	//    reader.setInput(in);
-	//    for (int i = 0, count = reader.getNumImages(true); i < count; i++)
-	//    {
-	//        ImageIO.write((RenderedImage)ImageUtils.resizeImage(reader.read(i)), "png", new File("C:/Users/Tenshi/Desktop/derp/output" + i + ".jpg"));
-	//    }
+	@Override
+	public void render(final MapView viewport, final MapCanvas canvas, final Player plyr) {
+		for(int i=0; i < canvas.getCursors().size(); i++){
+			canvas.getCursors().removeCursor(canvas.getCursors().getCursor(i));
+		}
+		
+		if(anime != null && !hasRendered){
+			hasRendered = true;
+			startRenderThread(viewport, canvas, plyr);	
+		}
+	}
 
-
+	/**
+	 * This should never be called outside of this class.
+	 * @param canvas - The MapCanvas. Note: This is a final canvas.
+	 */
+	private final void startRenderThread(final MapView viewport, final MapCanvas canvas, final Player plyr){
+		rendering = new AnimeThread(viewport, canvas, plyr, anime);
+		rendering.start();
+	}
+	
 }

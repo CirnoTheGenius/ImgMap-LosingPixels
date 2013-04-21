@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.google.common.annotations.Beta;
 import com.tenko.cmdexe.CommanderCirno;
 import com.tenko.threading.MapThreadGroup;
+import com.tenko.threading.PersistencyThread;
 import com.tenko.threading.SlideshowThread;
 
 /**
@@ -61,6 +62,7 @@ public class ImgMap extends JavaPlugin {
 		getCommand("map").setUsage(ChatColor.BLUE + "Usage: /map <url|file>");
 		getCommand("maps").setUsage(ChatColor.BLUE + "Usage: /maps");
 		getCommand("smap").setUsage(ChatColor.BLUE + "Usage: /smap <time> <url1|file> [url2|file] [url3|file] and so on.");
+		getCommand("ani").setUsage(ChatColor.BLUE + "Usage: /ani <url|file>");
 
 		getCommand("imap").setUsage(ChatColor.BLUE + "Usage: /imap");
 		getCommand("imgmap").setUsage(ChatColor.BLUE + "Usage: /imgmap");
@@ -75,7 +77,9 @@ public class ImgMap extends JavaPlugin {
 			getCommand(cmd).setPermissionMessage(ChatColor.RED + "[ImgMap] You cannot use this command for permission reasons!");
 			getCommand(cmd).setExecutor(cc);
 		}
-
+		
+		PersistencyThread pt = new PersistencyThread();
+		pt.run();
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package com.tenko.cmdexe;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -26,29 +25,20 @@ public class MapCommandExe extends CommandExe {
 
 	@Override
 	public void Execute(CommandSender cs, String[] args) throws IOException {
-		super.validateInput(cs, args);
-
 		String location = "";
 
-		if(args[0].startsWith("http://") && !URLUtils.compatibleImage(args[0])){
-			cs.sendMessage(ChatColor.RED + "[ImgMap] The specified image is not compatible!");
+		if(URLUtils.compatibleImage(args[0])){
 			location = args[0];
-			return;
+		} else if(!(location = URLUtils.isLocal(cs, args[0])).isEmpty()){
+			//Do nothing, since it set the location here :3
 		} else {
-			try {
-				// Check if really subdir (not sure if this is safe).
-				File base = new File(ImgMap.getPlugin().getDataFolder(), "maps");
-				File child = new File(base, args[0]);
-				if (!child.getCanonicalPath().startsWith(base.getCanonicalPath())) {
-					throw new SecurityException("Someone tried to do something nasty.");
-				}
-				location = child.getAbsolutePath();
-			} catch (SecurityException e) {
-				cs.sendMessage(ChatColor.RED + "[ImgMap] Please give in a URL or a path relative to plugins/ImgMap/maps/");
-				return;
-			}
+			cs.sendMessage(ChatColor.RED + "[ImgMap] The image specificed isn't compatible.");
+			return;
 		}
-
+		
+		//Validate after.
+		validateInput(cs, args);
+		
 		getData().getMap().addRenderer(new ImageRenderer(location));
 		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + args[0]);
 

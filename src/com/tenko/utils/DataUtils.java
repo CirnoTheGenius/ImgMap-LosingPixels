@@ -24,7 +24,7 @@ public class DataUtils {
 		ImgMap.getPlugin().getDataFolder().mkdir();
 		new File(ImgMap.getPlugin().getDataFolder(), "Maps.list").createNewFile();
 		new File(ImgMap.getPlugin().getDataFolder(), "SlideshowData").mkdir();
-		new File(ImgMap.getPlugin().getDataFolder(), "maps").mkdir();
+		new File(ImgMap.getPlugin().getDataFolder(), "images").mkdir();
 	}
 
 	/**
@@ -133,7 +133,11 @@ public class DataUtils {
 		bw.flush();
 		bw.close();
 	}
-
+	
+	/**
+	 * Does what is says on the can.
+	 * @param id - The map ID
+	 */
 	public static void deleteSlideshow(int id) {
 		ImgMap.getSlideshowFile(id).delete();
 	}

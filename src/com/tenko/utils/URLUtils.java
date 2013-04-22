@@ -19,14 +19,14 @@ import com.tenko.ImgMap;
  * @author Tsunko
  */
 public class URLUtils {
-	
+
 	/**
 	 * 
 	 * @return
 	 */
 	public static String isLocal(CommandSender cs, String localName){
 		String tmp = "";
-		
+
 		try {
 			for(File f : new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles()){
 				if(f.getName().equalsIgnoreCase(localName)){
@@ -39,10 +39,10 @@ public class URLUtils {
 		} catch (IOException e) {
 			cs.sendMessage(ChatColor.RED + "[ImgMap] Please give in a URL or a path relative to plugins/ImgMap/images/");
 		}
-		
+
 		return tmp;
 	}
-	
+
 	/**
 	 * Checks to see if the image is a proper type. Currently uses Content-types.
 	 * @param s - The URL to try to check.
@@ -55,9 +55,9 @@ public class URLUtils {
 				return true;
 			}
 		} catch (MalformedURLException e){
-			//Do nothing, since it's most likely the users fault.
+			e.printStackTrace();
 		} catch (Exception e){
-			//Do nothing, local files were implemented, thus, this may cause some issues.
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -69,26 +69,17 @@ public class URLUtils {
 	 * @throws IOException
 	 */
 	private final static String getContentType(URL theURL) throws IOException {
-		String toReturn;
-		URLConnection con;
-				
+		//Attempt to reconsutrct HTTPS URLs. Most likely to fail.
 		if(theURL.getProtocol().equalsIgnoreCase("https")){
-			con = (HttpsURLConnection)theURL.openConnection();	
-			((HttpsURLConnection)con).setRequestMethod("HEAD");
-			con.connect();
-			toReturn = con.getContentType();
-			((HttpsURLConnection)con).disconnect();
-		} else {
-			con = (HttpURLConnection)theURL.openConnection();
-			((HttpURLConnection) con).setRequestMethod("HEAD");
-			con.connect();
-			toReturn = con.getContentType();
-			((HttpURLConnection) con).disconnect();
+			theURL = new URL("http://" + theURL.getHost() + theURL.getFile());	
 		}
+		
+		HttpURLConnection con = (HttpURLConnection)theURL.openConnection();
+		con.setRequestMethod("HEAD");
+		con.connect();
+		String toReturn = con.getContentType();
+		con.disconnect();
 
-		
-		System.out.println(theURL.getProtocol());
-		
 		return toReturn;
 	}
 

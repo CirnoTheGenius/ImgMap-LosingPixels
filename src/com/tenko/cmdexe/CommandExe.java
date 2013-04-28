@@ -57,7 +57,7 @@ public class CommandExe {
 	protected final PlayerData validateInput(CommandSender cs, String[] args) throws InvalidClassException{
 		Player thePlayer = PlayerUtils.resolveToPlayer(cs);
 		ItemStack equipped = thePlayer.getItemInHand();
-
+		
 		if(equipped.getType() != Material.MAP){
 			cs.sendMessage(ChatColor.RED + "[ImgMap] The currently equipped item is not a map!");
 			return null;

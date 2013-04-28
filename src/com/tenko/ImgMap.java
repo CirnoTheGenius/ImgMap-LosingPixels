@@ -35,13 +35,6 @@ public class ImgMap extends JavaPlugin {
 	private final static MapThreadGroup group = new MapThreadGroup();
 
 	/**
-	 * Ignore this. I use this to test the utils and functions.
-	 */
-	public static void main(String[] args) throws Exception {
-
-	}
-
-	/**
 	 * Let's start it!
 	 * Get chance and luck!
 	 */
@@ -79,7 +72,7 @@ public class ImgMap extends JavaPlugin {
 		}
 		
 		PersistencyThread pt = new PersistencyThread();
-		pt.run();
+		pt.start();
 	}
 
 	@Override

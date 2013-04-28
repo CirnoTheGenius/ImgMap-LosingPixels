@@ -5,10 +5,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-
-import javax.net.ssl.HttpsURLConnection;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 

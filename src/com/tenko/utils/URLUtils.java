@@ -20,23 +20,26 @@ public class URLUtils {
 	 * 
 	 * @return
 	 */
-	public static String isLocal(CommandSender cs, String localName){
+	public static String getLocal(String localName) throws SecurityException, IOException {
 		String tmp = "";
 
-		try {
-			for(File f : new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles()){
-				if(f.getName().equalsIgnoreCase(localName)){
-					tmp = f.getCanonicalPath();
-					break;
-				}
+		for(File f : new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles()){
+			if(f.getName().equalsIgnoreCase(localName)){
+				tmp = f.getCanonicalPath();
+				break;
 			}
-		} catch (SecurityException e){
-			cs.sendMessage(ChatColor.RED + "[ImgMap] Please give in a URL or a path relative to plugins/ImgMap/images/");
-		} catch (IOException e) {
-			cs.sendMessage(ChatColor.RED + "[ImgMap] Please give in a URL or a path relative to plugins/ImgMap/images/");
 		}
 
 		return tmp;
+	}
+
+	public static boolean isLocal(String fileName){
+		for(File f : new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles()){
+			if(f.getName().equalsIgnoreCase(fileName)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -67,9 +70,10 @@ public class URLUtils {
 	private final static String getContentType(URL theURL) throws IOException {
 		//Attempt to reconsutrct HTTPS URLs. Most likely to fail.
 		if(theURL.getProtocol().equalsIgnoreCase("https")){
-			theURL = new URL("http://" + theURL.getHost() + theURL.getFile());	
+			theURL = new URL(fixEncryptedUrl(theURL.toExternalForm()));		
+			System.out.println("http://" + theURL.getHost() + theURL.getFile());
 		}
-		
+
 		HttpURLConnection con = (HttpURLConnection)theURL.openConnection();
 		con.setRequestMethod("HEAD");
 		con.connect();
@@ -77,6 +81,10 @@ public class URLUtils {
 		con.disconnect();
 
 		return toReturn;
+	}
+
+	public static String fixEncryptedUrl(String s){
+		return s.replaceFirst("https", "http");
 	}
 
 }

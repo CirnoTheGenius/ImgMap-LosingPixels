@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
@@ -14,6 +15,7 @@ import com.tenko.ImgMap;
 import com.tenko.rendering.ImageRenderer;
 import com.tenko.rendering.SlideshowRenderer;
 import com.tenko.utils.DataUtils;
+import com.tenko.utils.URLUtils;
 
 /**
  * Loads persistent maps into the game; multithreaded so it doesn't disturb the server.
@@ -37,12 +39,13 @@ public class PersistencyThread extends Thread {
 				short id = Short.valueOf(s.substring(0, s.indexOf(":")));
 
 				MapView viewport = Bukkit.getServer().getMap(id);
-
+				System.out.println(url);
+				
 				for(MapRenderer mr : viewport.getRenderers()){
 					viewport.removeRenderer(mr);
 				}
 
-				viewport.addRenderer(new ImageRenderer(url));
+				viewport.addRenderer(new ImageRenderer(URLUtils.isLocal(s) ? URLUtils.getLocal(s) : s));
 			}
 
 			for(File f : new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/").listFiles()){

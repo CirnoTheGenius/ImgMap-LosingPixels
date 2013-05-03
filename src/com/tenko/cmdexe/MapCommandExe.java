@@ -29,8 +29,13 @@ public class MapCommandExe extends CommandExe {
 
 		if(URLUtils.compatibleImage(args[0])){
 			location = args[0];
-		} else if(!(location = URLUtils.isLocal(cs, args[0])).isEmpty()){
-			//Do nothing, since it set the location here :3
+		} else if(URLUtils.isLocal(args[0])){
+			try {
+				location = URLUtils.getLocal(args[0]);
+			} catch (Exception e){
+				cs.sendMessage(ChatColor.RED + "[ImgMap] Weird result! The file apperently exists, but it actually doesn't!");
+				return;
+			}
 		} else {
 			cs.sendMessage(ChatColor.RED + "[ImgMap] The image specificed isn't compatible.");
 			return;

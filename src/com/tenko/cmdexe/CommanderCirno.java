@@ -31,8 +31,8 @@ public class CommanderCirno implements CommandExecutor {
 					return true;
 				}
 
-				if(c.getName().equalsIgnoreCase("maps") && checkPermission(cs, "maps")){
-					new MapsCommandExe(cs, args);
+				if(c.getName().equalsIgnoreCase("images") && checkPermission(cs, "listimages")){
+					new ImagesCommandExe(cs, args);
 					return true;
 				}
 

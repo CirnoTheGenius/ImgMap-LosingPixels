@@ -49,15 +49,15 @@ public class ImageRenderer extends MapRenderer {
 			@Override
 			public void run() {
 				try {
-					if (url.startsWith("http://")) {
-						canvas.drawImage(0,0,MapPalette.resizeImage(ImageIO.read(new URL(url))));
+					if(url.startsWith("http://")) {
+						canvas.drawImage(0,0,MapPalette.resizeImage(ImageIO.read(new URL(url).openStream())));
 					}
 					else {
 						/*
 						 * Here we assume that 'url' was already accepted by the input methods.
 						 * That is, we are not trying to access anything confidential.
 						 */
-						canvas.drawImage(0,0,MapPalette.resizeImage(ImageIO.read(new File(url))));
+						canvas.drawImage(0,0,MapPalette.resizeImage(ImageIO.read(new File(url).toURL().openStream())));
 					}
 				} catch (MalformedURLException e) {
 					e.printStackTrace();

@@ -38,8 +38,8 @@ public class GifAnimation {
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ImgMap.getPlugin(), new Runnable(){
 				@Override
 				public void run(){
-					for(int x=0; x < 128; x++){
-						for(int y=0; y < 128; y++){
+					for(int x=0; x <= 128; x++){
+						for(int y=0; y <= 128; y++){
 							frames.get(pos)[x][y] = new Color(img.getRGB(x, y));
 						}
 					}

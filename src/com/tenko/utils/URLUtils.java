@@ -25,7 +25,7 @@ public class URLUtils {
 
 		for(File f : new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles()){
 			if(f.getName().equalsIgnoreCase(localName)){
-				tmp = f.getCanonicalPath();
+				tmp = f.getAbsolutePath();
 				break;
 			}
 		}
@@ -36,6 +36,7 @@ public class URLUtils {
 	public static boolean isLocal(String fileName){
 		for(File f : new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles()){
 			if(f.getName().equalsIgnoreCase(fileName)){
+				System.out.println("found something");
 				return true;
 			}
 		}
@@ -70,8 +71,7 @@ public class URLUtils {
 	private final static String getContentType(URL theURL) throws IOException {
 		//Attempt to reconsutrct HTTPS URLs. Most likely to fail.
 		if(theURL.getProtocol().equalsIgnoreCase("https")){
-			theURL = new URL(fixEncryptedUrl(theURL.toExternalForm()));		
-			System.out.println("http://" + theURL.getHost() + theURL.getFile());
+			theURL = new URL(fixEncryptedUrl(theURL.toExternalForm()));
 		}
 
 		HttpURLConnection con = (HttpURLConnection)theURL.openConnection();

@@ -39,7 +39,6 @@ public class PersistencyThread extends Thread {
 				short id = Short.valueOf(s.substring(0, s.indexOf(":")));
 
 				MapView viewport = Bukkit.getServer().getMap(id);
-				System.out.println(url);
 				
 				for(MapRenderer mr : viewport.getRenderers()){
 					viewport.removeRenderer(mr);

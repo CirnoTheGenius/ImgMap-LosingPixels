@@ -41,8 +41,8 @@ public class PlayerData {
 
 		if(itmstk instanceof org.bukkit.inventory.ItemStack){
 			this.itmstk = (ItemStack)itmstk;
-		} else if(itmstk instanceof net.minecraft.server.v1_5_R2.ItemStack){
-			net.minecraft.server.v1_5_R2.ItemStack nmsstack = (net.minecraft.server.v1_5_R2.ItemStack)itmstk;
+		} else if(itmstk instanceof net.minecraft.server.v1_5_R3.ItemStack){
+			net.minecraft.server.v1_5_R3.ItemStack nmsstack = (net.minecraft.server.v1_5_R3.ItemStack)itmstk;
 			this.itmstk = new ItemStack(Material.getMaterial(nmsstack.id));
 			this.itmstk.setAmount(nmsstack.count);
 			this.itmstk.setDurability((short)nmsstack.getData());

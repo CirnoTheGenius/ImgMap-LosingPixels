@@ -42,7 +42,7 @@ public class ImgMap extends JavaPlugin {
 	public void onEnable(){
 		String[] cmds = new String[]{
 				"map",
-				"maps",
+				"images",
 				"smap",
 				"imap", "imgmap",
 				"restoremap", "rmap",
@@ -53,7 +53,7 @@ public class ImgMap extends JavaPlugin {
 
 		//Usage
 		getCommand("map").setUsage(ChatColor.BLUE + "Usage: /map <url|file>");
-		getCommand("maps").setUsage(ChatColor.BLUE + "Usage: /maps");
+		getCommand("images").setUsage(ChatColor.BLUE + "Usage: /images");
 		getCommand("smap").setUsage(ChatColor.BLUE + "Usage: /smap <time> <url1|file> [url2|file] [url3|file] and so on.");
 		getCommand("ani").setUsage(ChatColor.BLUE + "Usage: /ani <url|file>");
 

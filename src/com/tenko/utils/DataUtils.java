@@ -2,6 +2,7 @@ package com.tenko.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -77,12 +78,12 @@ public class DataUtils {
 	 * @param dest - The new data to put in.
 	 * @throws IOException
 	 */
-	private static void replace(int src, String dest, File f) throws IOException{
+	private static void replacePri(File f, int src, String dest) throws IOException {
 		List<String> contents = Files.readLines(f, Charset.defaultCharset());
-		BufferedWriter bw = Files.newWriter(f, Charset.defaultCharset());
+		BufferedWriter bw = new BufferedWriter(new FileWriter(f, false));
 
 		for(String l : contents){
-			bw.write(l.startsWith(String.valueOf(src)+":") ? src+":"+dest : l);
+			bw.write(l.startsWith(String.valueOf(src)+":") ? src + ":" + dest : l);
 			bw.newLine();
 		}
 
@@ -102,9 +103,10 @@ public class DataUtils {
 		boolean isExisting = false;
 
 		for(String l : contents){
-			if(l.startsWith(String.valueOf(src)+":")){
+			if(l.startsWith(String.valueOf(src) + ":")){
 				isExisting = true;
-				replace(src, dest, f);
+				replacePri(f, src, dest);
+				break;
 			}
 		}
 

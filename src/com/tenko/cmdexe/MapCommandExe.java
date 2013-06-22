@@ -26,7 +26,7 @@ public class MapCommandExe extends CommandExe {
 	@Override
 	public void Execute(CommandSender cs, String[] args) throws IOException {
 		String location = "";
-
+		
 		if(URLUtils.compatibleImage(args[0])){
 			location = args[0];
 		} else if(URLUtils.isLocal(args[0])){
@@ -53,9 +53,5 @@ public class MapCommandExe extends CommandExe {
 			cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
 		}
 	}
-
-	@Override
-	public String getCommand() {
-		return "map";
-	}
+	
 }

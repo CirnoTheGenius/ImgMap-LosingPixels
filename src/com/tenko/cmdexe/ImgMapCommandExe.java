@@ -26,11 +26,4 @@ public class ImgMapCommandExe extends CommandExe {
 		plyr.sendMessage("Version 2beta");
 	}
 
-	@Override
-	public String getCommand() {
-		return "imgmap";
-	}
-
-
-
 }

@@ -74,7 +74,7 @@ public class SlideshowCommandExe extends CommandExe {
 					}
 					locations.add(child.getAbsolutePath());
 				} catch (SecurityException e) {
-					cs.sendMessage(ChatColor.RED + "[ImgMap] Please give in URLs or paths relative to plugins/ImgMap/maps/");
+					cs.sendMessage(ChatColor.RED + "[ImgMap] ");
 					return;
 				}
 			}
@@ -112,9 +112,5 @@ public class SlideshowCommandExe extends CommandExe {
 			cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
 		}
 	}
-
-	@Override
-	public String getCommand() {
-		return "slideshow";
-	}
+	
 }

@@ -1,14 +1,14 @@
-package com.tenko.cmdexe;
+package com.tenko.Gunvarrel;
 
-import java.io.IOException;
 import java.io.InvalidClassException;
 import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -17,37 +17,37 @@ import org.bukkit.map.MapView.Scale;
 import com.tenko.objs.PlayerData;
 import com.tenko.utils.PlayerUtils;
 
-public class CommandExe {
-
-	/**
-	 * The PlayerData
-	 */
+/**
+ * Easy implementation. I'm lazy. Too lazy.
+ * Duhuhu. Kthxbai.
+ * @author Tsunko
+ *
+ */
+public abstract class Function implements CommandExecutor {
+	
+	protected boolean successful = false;
+	public String result = "No result! Contact author if there is supposed to be one!";
 	protected PlayerData data;
 
-	/**
-	 * The function that executes the command.
-	 * @param cs - The CommandSender, used to get a Player.
-	 * @param args - The arguments.
-	 * @throws IOException
-	 */
-	public void Execute(CommandSender cs, String[] args) throws IOException {};
-
-	/**
-	 * Get the PlayerData that is received from validateInput()
-	 * @return
-	 */
+	@Override
+	public abstract boolean onCommand(CommandSender cs, Command c, String l, String[] args);
+	
+	public boolean end(CommandSender cs){
+		cs.sendMessage((successful ? ChatColor.BLUE : ChatColor.RED) + "[ImgMap] " + result);
+		return successful;
+	}
+	
+	public boolean end(CommandSender cs, Command c){
+		cs.sendMessage((successful ? ChatColor.BLUE : ChatColor.RED) + "[ImgMap] " + result);
+		cs.sendMessage(ChatColor.RED + "Usage: " + c.getUsage());
+		return successful;
+	}
+	
 	public PlayerData getData(){
 		return this.data;
 	}
-
-	/**
-	 * Validates user input.
-	 * @param cs
-	 * @param args
-	 * @return PlayerData containing the player, equipment, and viewport.
-	 * @throws InvalidClassException
-	 */
-	protected final PlayerData validateInput(CommandSender cs, String[] args) throws InvalidClassException{
+	
+	protected final PlayerData validateInput(CommandSender cs, String[] args){
 		ItemStack equipped = PlayerUtils.resolveToPlayer(cs).getItemInHand();
 		
 		if(equipped.getType() == Material.MAP){

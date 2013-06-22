@@ -7,24 +7,24 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import net.minecraft.server.v1_5_R3.Item;
-import net.minecraft.server.v1_5_R3.ItemStack;
-import net.minecraft.server.v1_5_R3.WorldMap;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R3.map.CraftMapRenderer;
-import org.bukkit.craftbukkit.v1_5_R3.map.CraftMapView;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import com.tenko.ImgMap;
 import com.tenko.utils.DataUtils;
 import com.tenko.utils.PlayerUtils;
+
+import net.minecraft.server.v1_5_R3.Item;
+import net.minecraft.server.v1_5_R3.ItemStack;
+import net.minecraft.server.v1_5_R3.WorldMap;
+import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R3.map.CraftMapRenderer;
+import org.bukkit.craftbukkit.v1_5_R3.map.CraftMapView;
 /* Volatile imports. */
 
 public class RestoreMapCommandExe extends CommandExe {
@@ -66,41 +66,5 @@ public class RestoreMapCommandExe extends CommandExe {
 			DataUtils.deleteSlideshow(is.getData());
 		}
 	}
-
-	@Override
-	public String getCommand() {
-		return "restoremap";
-	}
-
-	//Okay, this is incredibly stupid, but here goes nothing.
-	@SuppressWarnings("rawtypes")
-	public Class[] setVersion() throws IOException, ClassNotFoundException{
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		Enumeration<URL> sources = cl.getResources("net/minecraft/server");
-		ArrayList<File> directories = new ArrayList<File>();
-		
-		while(sources.hasMoreElements()){
-			directories.add(new File(sources.nextElement().getFile()));
-		}
-		
-		ArrayList<Class> classes = new ArrayList<Class>();
-		
-		for(File f : directories){
-			classes.addAll(getClasses(f, "net/minecraft/server"));
-		}
-		
-		return classes.toArray(new Class[classes.size()]);
-	}
 	
-	@SuppressWarnings("rawtypes")
-	public ArrayList<Class> getClasses(File f, String pkg) throws ClassNotFoundException{
-		ArrayList<Class> classes = new ArrayList<Class>();
-		if(!f.exists()){
-			return classes;
-		}
-		for(File f2 : f.listFiles()){
-            classes.add(Class.forName(pkg + '.' + f2.getName().substring(0, f2.getName().length() - 6)));
-		}
-		return classes;
-	}
 }

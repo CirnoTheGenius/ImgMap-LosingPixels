@@ -61,6 +61,25 @@ public class URLUtils {
 		}
 		return false;
 	}
+	
+	/**
+	 * Checks to see if the image is a proper type. Currently uses Content-types.
+	 * @param s - The URL to try to check.
+	 * @return True if the image is compatible; false otherwise.
+	 */
+	public static boolean compatibleImage(URL u){
+		try {
+			String contentType = getContentType(u);
+			if(contentType.startsWith("image")){
+				return true;
+			}
+		} catch (MalformedURLException e){
+			e.printStackTrace();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	/**
 	 * Gets the content type. Do not use outside of this class. No point.

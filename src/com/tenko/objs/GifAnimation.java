@@ -34,8 +34,9 @@ public class GifAnimation {
 			final int pos = i;
 			final BufferedImage img = MapPalette.resizeImage(reader.read(pos));
 			frames.add(new Color[128][128]);
-
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(ImgMap.getPlugin(), new Runnable(){
+			
+			//Unsafe.
+			Thread populationThread = new Thread(){
 				@Override
 				public void run(){
 					for(int x=0; x <= 128; x++){
@@ -44,7 +45,9 @@ public class GifAnimation {
 						}
 					}
 				}
-			});
+			};
+			
+			populationThread.start();
 		}
 	}
 

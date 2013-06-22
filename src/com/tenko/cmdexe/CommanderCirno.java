@@ -8,6 +8,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * com.tenko.cmdexe is now a dead package.
+ * Use com.tenko.Gunvarrel instead.
+ * @author Tsunko
+ *
+ */
 public class CommanderCirno implements CommandExecutor {
 
 	/**

@@ -20,9 +20,4 @@ public class AniCommandExe extends CommandExe {
 		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Rendering " + args[0]);
 	}
 
-	@Override
-	public String getCommand() {
-		return "ani";
-	}
-
 }

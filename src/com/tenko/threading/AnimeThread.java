@@ -57,8 +57,11 @@ public class AnimeThread extends Thread {
 
 				plyr.sendMap(view);
 			}
-
 		}
+	}
+	
+	public void stopThread(){
+		running = false;
 	}
 
 }

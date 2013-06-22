@@ -35,20 +35,10 @@ public class PlayerData {
 	 * @param viewport - A mapview.
 	 * @throws InvalidClassException - Thrown when itmstk isn't an ItemStack.
 	 */
-	public PlayerData(Player plyr, Object itmstk, MapView viewport) throws InvalidClassException{
+	public PlayerData(Player plyr, ItemStack itmstk, MapView viewport){
 		this.plyr = plyr;
 		this.viewport = viewport;
-
-		if(itmstk instanceof org.bukkit.inventory.ItemStack){
-			this.itmstk = (ItemStack)itmstk;
-		} else if(itmstk instanceof net.minecraft.server.v1_5_R3.ItemStack){
-			net.minecraft.server.v1_5_R3.ItemStack nmsstack = (net.minecraft.server.v1_5_R3.ItemStack)itmstk;
-			this.itmstk = new ItemStack(Material.getMaterial(nmsstack.id));
-			this.itmstk.setAmount(nmsstack.count);
-			this.itmstk.setDurability((short)nmsstack.getData());
-		} else {
-			throw new InvalidClassException("Itmstk is supposed to be a NMS ItemStack or Bukkit ItemStack, not a " + itmstk.getClass() + "!");
-		}
+		this.itmstk = (ItemStack)itmstk;
 	}
 
 	public Player getPlayer(){

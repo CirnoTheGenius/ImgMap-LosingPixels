@@ -24,12 +24,12 @@ public class MapThreadGroup {
 	}
 
 	/**
-	 * Returns an array of threads.
-	 * @param dest - The destination to copy the list to.
+	 * Stops all threads.
 	 */
-	public void enumerate(SlideshowThread[] dest){
-		SlideshowThread[] src = st.toArray(new SlideshowThread[st.size()]);
-		System.arraycopy(src, 0, dest, 0, dest.length);
+	public void stopThreads(){
+		for(SlideshowThread t : st){
+			t.stopThread();
+		}
 	}
 
 	/**

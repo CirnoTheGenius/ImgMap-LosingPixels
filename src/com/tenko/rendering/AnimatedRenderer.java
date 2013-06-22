@@ -26,7 +26,6 @@ public class AnimatedRenderer extends MapRenderer {
 	public AnimatedRenderer(String url){
 		try {
 			this.anime = new GifAnimation(url);
-			Bukkit.broadcastMessage("Created anime object!");
 		} catch (IOException e){
 			e.printStackTrace();
 		}

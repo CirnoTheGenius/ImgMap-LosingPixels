@@ -21,7 +21,7 @@ public class ImageRenderer extends MapRenderer {
 	/**
 	 * Non-modifiable URL associated with the renderer.
 	 */
-	private final String url;
+	public final String url;
 
 	/**
 	 * Has the renderer rendered? (Try typing that one!)
@@ -40,7 +40,7 @@ public class ImageRenderer extends MapRenderer {
 	 * This should never be called outside of this class.
 	 * @param canvas - The MapCanvas. Note: This has a final modifier.
 	 */
-	private final void startRenderThread(final MapCanvas canvas, MapView view){
+	private void startRenderThread(final MapCanvas canvas){
 		for(int i=0; i < canvas.getCursors().size(); i++){
 			canvas.getCursors().removeCursor(canvas.getCursors().getCursor(i));
 		}
@@ -57,7 +57,7 @@ public class ImageRenderer extends MapRenderer {
 						 * Here we assume that 'url' was already accepted by the input methods.
 						 * That is, we are not trying to access anything confidential.
 						 */
-						canvas.drawImage(0,0,MapPalette.resizeImage(ImageIO.read(new File(url).toURL().openStream())));
+						canvas.drawImage(0,0,MapPalette.resizeImage(ImageIO.read(new File(url).toURI().toURL().openStream())));
 					}
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
@@ -75,7 +75,7 @@ public class ImageRenderer extends MapRenderer {
 	public void render(MapView view, MapCanvas canvas, Player plyr) {
 		if(url != null && !hasRendered){
 			hasRendered = true;
-			startRenderThread(canvas, view);
+			startRenderThread(canvas);
 			Bukkit.getServer().getPluginManager().callEvent(new ImageRenderEvent(url, view));
 		}
 	}

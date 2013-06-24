@@ -26,9 +26,9 @@ public class ImageRenderEvent extends Event {
 	 * @param url - The URL that is being used.
 	 * @param viewport - The MapView being used.
 	 */
-	public ImageRenderEvent(String url, MapView viewport){
-		this.viewport = viewport;
-		this.url = url;
+	public ImageRenderEvent(String urlz, MapView view){
+		this.viewport = view;
+		this.url = urlz;
 	}
 
 	/**

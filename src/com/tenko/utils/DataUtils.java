@@ -40,20 +40,6 @@ public class DataUtils {
 	}
 
 	/**
-	 * Writes s to file f.
-	 * @param f - The file to write to.
-	 * @param s - The string to write.
-	 * @throws IOException
-	 */
-	public static void write(File f, String s) throws IOException{
-		BufferedWriter bw = Files.newWriter(f, Charset.defaultCharset());
-		bw.write(s);
-		bw.newLine();
-		bw.flush();
-		bw.close();
-	}
-
-	/**
 	 * Writes an entire array to the given file.
 	 * @param f - The file.
 	 * @param s - The string array.

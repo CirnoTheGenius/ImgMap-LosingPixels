@@ -9,12 +9,11 @@ import com.tenko.Gunvarrel.Gunvarrel;
 import com.tenko.Gunvarrel.Parts.*;
 import com.tenko.threading.MapThreadGroup;
 import com.tenko.threading.PersistencyThread;
-import com.tenko.threading.SlideshowThread;
 
 /**
  * ImgMap - Maps become picture frames!
  * @author Tsunko
- * @version 3 Beta (It's the square root of 9!
+ * @version 3 Beta (It's the square root of 9!)
  */
 @Beta
 public class ImgMap extends JavaPlugin {
@@ -26,7 +25,7 @@ public class ImgMap extends JavaPlugin {
 	private Gunvarrel commandHandler;
 	
 	/**
-	 * Knockin' on heaven's door.
+	 * "El Psy Congroo"
 	 */
 	@Override
 	public void onEnable(){
@@ -40,7 +39,8 @@ public class ImgMap extends JavaPlugin {
 		commandHandler.add(MapCommand.class, "map");
 		commandHandler.add(RestoreMapCommand.class, "rmap", "restoremap");
 		commandHandler.add(SlideshowCommand.class, "smap");
-	
+		commandHandler.add(InfoCommand.class, "imap", "imgmap");
+		
 		PersistencyThread pt = new PersistencyThread();
 		pt.start();
 	}
@@ -49,6 +49,10 @@ public class ImgMap extends JavaPlugin {
 	public void onDisable(){
 		group.stopThreads();
 	}
+
+    public Gunvarrel getCommandHandler(){
+        return commandHandler;
+    }
 	
 	public static ImgMap getPlugin(){
 		return instance;

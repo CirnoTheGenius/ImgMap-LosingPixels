@@ -1,6 +1,5 @@
 package com.tenko.Gunvarrel;
 
-import java.io.InvalidClassException;
 import java.util.Iterator;
 
 import org.bukkit.Bukkit;
@@ -21,7 +20,6 @@ import com.tenko.utils.PlayerUtils;
  * Easy implementation. I'm lazy. Too lazy.
  * Duhuhu. Kthxbai.
  * @author Tsunko
- *
  */
 public abstract class Function implements CommandExecutor {
 	
@@ -47,7 +45,7 @@ public abstract class Function implements CommandExecutor {
 		return this.data;
 	}
 	
-	protected final PlayerData validateInput(CommandSender cs, String[] args){
+	protected final PlayerData validateInput(CommandSender cs){
 		ItemStack equipped = PlayerUtils.resolveToPlayer(cs).getItemInHand();
 		
 		if(equipped.getType() == Material.MAP){

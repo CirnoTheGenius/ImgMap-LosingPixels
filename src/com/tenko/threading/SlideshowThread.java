@@ -12,7 +12,7 @@ import org.bukkit.map.MapPalette;
 
 import com.tenko.ImgMap;
 
-public class SlideshowThread extends Thread {
+public class SlideshowThread extends SafeThread {
 
 	/**
 	 * List of images to render.
@@ -30,31 +30,18 @@ public class SlideshowThread extends Thread {
 	private final MapCanvas viewport;
 
 	/**
-	 * Is this thread running?
-	 */
-	private boolean running;
-
-	/**
 	 * Creates a new slideshow thread. It is not started until told to.
 	 * @param urls - The list of images.
 	 * @param waitTime - The wait time.
 	 * @param viewport - The map canvas.
 	 */
-	public SlideshowThread(String[] urls, float waitTime, MapCanvas viewport){
-		super("SlideshowRenderer #" + viewport.getMapView().getId());
-		this.urls = urls;
-		this.waitTime = waitTime;
-		this.viewport = viewport;
+	public SlideshowThread(String[] urlList, float time, MapCanvas view){
+		super("SlideshowRenderer #" + view.getMapView().getId());
+		this.urls = urlList;
+		this.waitTime = time;
+		this.viewport = view;
 		this.running = true;
 		ImgMap.getThreadGroup().getThreads().add(this);
-	}
-
-	/**
-	 * Am I running?
-	 * @return Whether or not this thread is truely alive.
-	 */
-	public boolean amIAlive(){
-		return running;
 	}
 
 	@Override
@@ -62,7 +49,7 @@ public class SlideshowThread extends Thread {
 		int pos = 0;
 
 		try {
-			while(running){
+			while(isRunning()){
 				pos++;
 				if(pos >= urls.length){
 					pos = 0;
@@ -91,6 +78,7 @@ public class SlideshowThread extends Thread {
 	/**
 	 * Safely stop the thread.
 	 */
+	@Override
 	public void stopThread(){
 		running = false;
 	}

@@ -23,12 +23,12 @@ public class SlideshowRenderEvent extends Event {
 
 	/**
 	 * Constructs a new Slideshow render event.
-	 * @param urls - The URLs being used.
+	 * @param url - The URLs being used.
 	 * @param viewport - The MapView being used.
 	 */
-	public SlideshowRenderEvent(String[] urls, MapView viewport){
-		this.viewport = viewport;
-		this.urls = urls;
+	public SlideshowRenderEvent(String[] url, MapView view){
+		this.viewport = view;
+		this.urls = url;
 	}
 
 	/**

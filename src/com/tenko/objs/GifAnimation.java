@@ -9,17 +9,14 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 
-import org.bukkit.Bukkit;
 import org.bukkit.map.MapPalette;
-
-import com.tenko.ImgMap;
 
 public class GifAnimation {
 
 	/**
 	 * Frames in a GIF image.
 	 */
-	private ArrayList<Color[][]> frames = new ArrayList<Color[][]>();
+	public ArrayList<Color[][]> frames = new ArrayList<Color[][]>();
 
 	/**
 	 * Constructs a GifAnimation object.

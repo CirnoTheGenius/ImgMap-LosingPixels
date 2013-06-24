@@ -26,23 +26,21 @@ public class SlideshowRenderer extends MapRenderer {
 	 */
 	private float waitTime = 0;
 
-	private SlideshowThread thread;
-
 	/**
 	 * Creates a new ImageRenderer object.
 	 * @param theUrl - URL to be used to render images.
 	 */
-	public SlideshowRenderer(String[] theUrl, float waitTime){
+	public SlideshowRenderer(String[] theUrl, float wait){
 		this.urls = theUrl;
-		this.waitTime = waitTime;
+		this.waitTime = wait;
 	}
 
 	/**
 	 * This should never be called outside of this class.
 	 * @param canvas - The MapCanvas. Note: This is a final canvas.
 	 */
-	private final void startRenderThread(final MapCanvas canvas){
-		thread = new SlideshowThread(urls, waitTime, canvas);
+	private void startRenderThread(final MapCanvas canvas){
+        SlideshowThread thread = new SlideshowThread(urls, waitTime, canvas);
 		thread.start();
 	}
 

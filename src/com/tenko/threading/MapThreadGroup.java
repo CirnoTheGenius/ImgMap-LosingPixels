@@ -8,7 +8,7 @@ public class MapThreadGroup {
 	/**
 	 * List of threads.
 	 */
-	private List<SlideshowThread> st = new ArrayList<SlideshowThread>();
+	private List<SafeThread> st = new ArrayList<SafeThread>();
 
 	/**
 	 * Group class for SlideshowThreads. Greatly going to regret doing this.
@@ -19,7 +19,7 @@ public class MapThreadGroup {
 	 * Get the a list of threads.
 	 * @return The list of threads running in this thread group.
 	 */
-	public List<SlideshowThread> getThreads(){
+	public List<SafeThread> getThreads(){
 		return st;
 	}
 
@@ -27,22 +27,9 @@ public class MapThreadGroup {
 	 * Stops all threads.
 	 */
 	public void stopThreads(){
-		for(SlideshowThread t : st){
+		for(SafeThread t : st){
 			t.stopThread();
 		}
 	}
 
-	/**
-	 * Returns an active count of threads.
-	 * @return An integer with the amount of active threads.
-	 */
-	public int activeCount(){
-		int i = 0;
-		for(SlideshowThread t : st){
-			if(t.amIAlive()){
-				i++;
-			}
-		}
-		return i;
-	}
 }

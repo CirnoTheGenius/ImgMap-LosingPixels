@@ -1,61 +1,25 @@
 name: ImgMap
-version: 2
+version: 3
 main: com.tenko.ImgMap
 
 commands:
     map:
-        description: Renders an image.
+        description: Renders an image on the map the commander is holding.
         usage: /map <url>
-        permission: imgmap.cmd.map
     images:
-        description: Lists the maps directory.
-        usage: /maps
-        permission: imgmap.cmd.listimages
+        description: Lists all currently local images under /images/.
+        usage: /images
     smap:
-        description: Renders a slideshow.
-        usage: /smap <time> <url1> [url2] [url3]
-        permission: imgmap.cmd.slideshow
-    rmap:
-        description: Restores a map.
-        usage: /rmap
-        aliases: restoremap
-        permission: imgmap.cmd.restoremap
-    imap:
-        description: Gets the current version.
-        usage: /imap
-        aliases: imgmap
-        permission: imgmap.cmd.imgmap
+        description: Renders a slideshow on the current map.
+        usage: /smap <waitTimeBetweenImages> <url1> [url...]
+    restoremap:
+        description: Removes all renderers on a map and makes it into a vanilla map.
+        usage: /restoremap
+        aliases: rmap
+    imgmap:
+        description: Returns plugin information.
+        usage: /imgmap
+        aliases: imap
     ani:
-        description: -BETA- Renders an animated GIF image.
+        description: Renders animated gif on map.
         usage: /ani <url>
-        permission: imgmap.cmd.ani
-
-permissions:
-    imgmap.*:
-        description: Gives complete access to everything.
-        children:
-            imgmap.cmd.map: true
-            imgmap.cmd.listimages: true
-            imgmap.cmd.slideshow: true
-            imgmap.cmd.restoremap: true
-            imgmap.cmd.imgmap: true
-            imgmap.cmd.ani: true
-        default: op
-    imgmap.cmd.map:
-        description: Allows the rendering of a single image.
-        default: op
-    imgmap.cmd.maps:
-        description: Allows the listing of the maps directory.
-        default: op
-    imgmap.cmd.slideshow:
-        description: Allows the map to render a slideshow.
-        default: op
-    imgmap.cmd.restoremap:
-        description: Allows the map to be restored to it's original state.
-        default: op
-    imgmap.cmd.imgmap:
-        description: Allows the user to access the version.
-        default: op
-    imgmap.cmd.ani:
-        description: Allows the rendering of an animated image.
-        default: op

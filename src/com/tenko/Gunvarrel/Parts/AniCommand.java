@@ -1,6 +1,5 @@
 package com.tenko.Gunvarrel.Parts;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -11,7 +10,7 @@ public class AniCommand extends Function {
 
 	@Override
 	public boolean onCommand(CommandSender cs, Command c, String l, String[] args){
-		validateInput(cs, args);
+		validateInput(cs);
 		this.getData().getMap().addRenderer(new AnimatedRenderer(args[0]));
 		result = "[ImgMap] Rendering " + args[0];
 		this.successful = true;

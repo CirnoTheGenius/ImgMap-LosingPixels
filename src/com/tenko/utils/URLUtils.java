@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-
 import com.tenko.ImgMap;
 
 /**
@@ -20,7 +17,7 @@ public class URLUtils {
 	 * 
 	 * @return
 	 */
-	public static String getLocal(String localName) throws SecurityException, IOException {
+	public static String getLocal(String localName) throws SecurityException {
 		String tmp = "";
 
 		for(File f : new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles()){
@@ -55,7 +52,7 @@ public class URLUtils {
 				return true;
 			}
 		} catch (MalformedURLException e){
-			e.printStackTrace();
+			return false;
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -70,15 +67,15 @@ public class URLUtils {
 	public static boolean compatibleImage(URL u){
 		try {
 			String contentType = getContentType(u);
-			if(contentType.startsWith("image")){
-				return true;
+			if(!contentType.startsWith("image")){
+				return false;
 			}
 		} catch (MalformedURLException e){
 			e.printStackTrace();
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-		return false;
+		return true;
 	}
 
 	/**
@@ -87,13 +84,14 @@ public class URLUtils {
 	 * @return A string featuring the content-type.
 	 * @throws IOException
 	 */
-	private final static String getContentType(URL theURL) throws IOException {
+	private static String getContentType(URL theURL) throws IOException {
 		//Attempt to reconsutrct HTTPS URLs. Most likely to fail.
+		URL tmpUrl = theURL;
 		if(theURL.getProtocol().equalsIgnoreCase("https")){
-			theURL = new URL(fixEncryptedUrl(theURL.toExternalForm()));
+			tmpUrl = new URL(fixEncryptedUrl(theURL.toExternalForm()));
 		}
 
-		HttpURLConnection con = (HttpURLConnection)theURL.openConnection();
+		HttpURLConnection con = (HttpURLConnection)tmpUrl.openConnection();
 		con.setRequestMethod("HEAD");
 		con.connect();
 		String toReturn = con.getContentType();

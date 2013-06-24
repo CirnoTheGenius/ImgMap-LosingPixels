@@ -1,13 +1,6 @@
 package com.tenko.cmdexe;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,16 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
-import com.tenko.ImgMap;
-import com.tenko.utils.DataUtils;
 import com.tenko.utils.PlayerUtils;
-
-import net.minecraft.server.v1_5_R3.Item;
-import net.minecraft.server.v1_5_R3.ItemStack;
-import net.minecraft.server.v1_5_R3.WorldMap;
-import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R3.map.CraftMapRenderer;
-import org.bukkit.craftbukkit.v1_5_R3.map.CraftMapView;
 /* Volatile imports. */
 
 public class RestoreMapCommandExe extends CommandExe {
@@ -52,19 +36,24 @@ public class RestoreMapCommandExe extends CommandExe {
 			viewport.removeRenderer(r);
 		}
 
-		ItemStack is = new ItemStack(Item.MAP);
-		is.setData(equipped.getData().getData());
-
-		//NMS <3
-		WorldMap map = (WorldMap)(((CraftWorld)PlayerUtils.resolveToPlayer(cs).getWorld()).getHandle().a(WorldMap.class, "map_" + is.getData()));
-		viewport.addRenderer(new CraftMapRenderer((CraftMapView)viewport, map));
-
-		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Cleared Map #" + is.getData() + "!");
-
-		if(!ArrayUtils.contains(args, "-t")){
-			DataUtils.delete(ImgMap.getList(), is.getData());
-			DataUtils.deleteSlideshow(is.getData());
-		}
+//		ItemStack is = new ItemStack(Item.MAP);
+//		is.setData(equipped.getData().getData());
+//
+//		//NMS <3
+        /*
+             CraftWorld = (CraftWorld)getWorld()
+             World = craftWorld.getHandle()
+             WorldMap = invoke a(class, data)
+         */
+//		WorldMap map = (WorldMap)(((CraftWorld)PlayerUtils.resolveToPlayer(cs).getWorld()).getHandle().a(WorldMap.class, "map_" + is.getData()));
+//		viewport.addRenderer(new CraftMapRenderer((CraftMapView)viewport, map));
+//
+//		cs.sendMessage(ChatColor.GREEN + "[ImgMap] Cleared Map #" + is.getData() + "!");
+//
+//		if(!ArrayUtils.contains(args, "-t")){
+//			DataUtils.delete(ImgMap.getList(), is.getData());
+//			DataUtils.deleteSlideshow(is.getData());
+//		}
 	}
 	
 }

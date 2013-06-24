@@ -12,3 +12,9 @@
 
 # GitHub stuff #
 .gitignore
+
+.idea
+.settings
+lib
+out
+ImgMap-LosingPixels.iml

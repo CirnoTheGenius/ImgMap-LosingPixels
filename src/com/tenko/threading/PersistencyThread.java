@@ -3,15 +3,16 @@ package com.tenko.threading;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import com.google.common.io.Files;
 import com.tenko.ImgMap;
+import com.tenko.objs.MapData;
 import com.tenko.rendering.ImageRenderer;
 import com.tenko.rendering.SlideshowRenderer;
 import com.tenko.utils.DataUtils;
@@ -34,37 +35,44 @@ public class PersistencyThread extends Thread {
 	@Override
 	public void run(){
 		try {
-			for(String s : Files.readLines(ImgMap.getList(), Charset.defaultCharset())){
-				String url = s.substring(s.indexOf(":")+1, s.length());
-				short id = Short.valueOf(s.substring(0, s.indexOf(":")));
-
-				MapView viewport = Bukkit.getServer().getMap(id);
+			List<String> savedMapData = Files.readLines(ImgMap.getList(), Charset.defaultCharset());
+			File[] dirFiles = new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/").listFiles();
+			
+			for(String line : savedMapData){
+				MapData md = MapData.convertData(line);
+				MapView viewport = Bukkit.getServer().getMap(md.getId());
+				Iterator<MapRenderer> mr = viewport.getRenderers().iterator();
 				
-				for(MapRenderer mr : viewport.getRenderers()){
-					viewport.removeRenderer(mr);
+				while(mr.hasNext()){
+					viewport.getRenderers().remove(mr.next());
 				}
-
-				viewport.addRenderer(new ImageRenderer(URLUtils.isLocal(s) ? URLUtils.getLocal(s) : s));
+				
+				viewport.addRenderer(new ImageRenderer(URLUtils.isLocal(md.getUrl()) ? URLUtils.getLocal(md.getUrl()) : md.getUrl()));
 			}
-
-			for(File f : new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/").listFiles()){
+			
+			for(File f : dirFiles){
 				short id = Short.valueOf(f.getName().substring(0, f.getName().indexOf(".")));
 				MapView viewport = Bukkit.getServer().getMap(id);
-
-				for(MapRenderer mr : viewport.getRenderers()){
-					viewport.removeRenderer(mr);
+				Iterator<MapRenderer> mr = viewport.getRenderers().iterator();
+				
+				while(mr.hasNext()){
+					viewport.getRenderers().remove(mr.next());
 				}
-
+				
 				List<String> lines = Files.readLines(f, Charset.defaultCharset());
 				float waitTime = Float.valueOf(lines.remove(0));
-				String[] urls = new String[lines.size()];
-				lines.toArray(urls);
-
-				viewport.addRenderer(new SlideshowRenderer(urls, waitTime));
+				viewport.addRenderer(new SlideshowRenderer(lines.toArray(new String[0]), waitTime));
 			}
+			
+			//This is probably a really bad idea. Will remove in the future.
+			//inb4i-forget-about-this.
+			System.gc();
 		} catch (IOException e){
 			e.printStackTrace();
+		} catch (MapData.InvalidMapDataException e) {
+			e.printStackTrace();
 		}
-
 	}
+	
+
 }

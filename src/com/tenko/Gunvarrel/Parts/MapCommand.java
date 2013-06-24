@@ -27,7 +27,8 @@ public class MapCommand extends Function {
 		//I wonder if it's necessary to even check anymore.
 		if(c.getName().equalsIgnoreCase("map")){
 			String location = "";
-			
+            String url;
+
 			if(args.length < 1){
 				result = "Not enough arguments!";
 				return end(cs, c);
@@ -35,33 +36,35 @@ public class MapCommand extends Function {
 				result = "You must be a player!";
 				return end(cs);
 			} else {
-				String url = args[0];
-				if(!URLUtils.compatibleImage(url)){
-					result = "That image isn't compatible!";
-					return end(cs);
-				} else if(URLUtils.isLocal(url)){
-					try {
-						location = URLUtils.getLocal(url);
-					} catch (Exception e){
-						result = "Weird result! The file apperently exists, but it actually doesn't!";
-					}
+				url = args[0];
+				if(URLUtils.isLocal(url)){
+                    try {
+                        location = URLUtils.getLocal(url);
+                    } catch (Exception e){
+                        result = "Weird result! The file apperently exists, but it actually doesn't!";
+                    }
+				} else if(!URLUtils.compatibleImage(url)){
+                    result = "That image isn't compatible!";
+                    return end(cs);
 				}
 				
-				super.validateInput(cs, args);
+				super.validateInput(cs);
 				super.getData().getMap().addRenderer(new ImageRenderer(location));
-				
+
 				if(ArrayUtils.contains(args, "-p")){
 					try {
 						DataUtils.deleteSlideshow(super.getData().getStack().getDurability());
-						DataUtils.replace(ImgMap.getList(), super.getData().getStack().getDurability(), location);
+						DataUtils.replace(ImgMap.getList(), super.getData().getStack().getDurability(), URLUtils.isLocal(url) ? args[0] : location);
 						cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
 					} catch (IOException e) {
 						cs.sendMessage(ChatColor.RED + "[ImgMap] Failed to save the map's data!");
 						e.printStackTrace();
 					}
 				}
-				
-				return true;
+
+                result = "Rendering " + args[0];
+                this.successful = true;
+                return end(cs);
 			}
 		}
 		

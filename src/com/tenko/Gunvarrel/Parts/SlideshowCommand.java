@@ -21,7 +21,7 @@ public class SlideshowCommand extends Function {
 
 	@Override
 	public boolean onCommand(CommandSender cs, Command c, String l,	String[] args) {
-		super.validateInput(cs, args);
+		super.validateInput(cs);
 		
 		boolean isPermament = false;
 		
@@ -33,7 +33,6 @@ public class SlideshowCommand extends Function {
 				urls.add(arg);
 			} else if(arg.equalsIgnoreCase("-p")){
 				isPermament = true;
-				continue;
 			}
 		}
 		
@@ -63,7 +62,7 @@ public class SlideshowCommand extends Function {
 					}
 				} catch (SecurityException e2){
 					result = "Please give in URLs or paths relative to plugins/ImgMap/maps/";
-					end(cs);
+					return end(cs, c);
 				}
 			}
 		}

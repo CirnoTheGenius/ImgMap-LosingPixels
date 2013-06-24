@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -30,7 +29,7 @@ public class CommandExe {
 	 * @param args - The arguments.
 	 * @throws IOException
 	 */
-	public void Execute(CommandSender cs, String[] args) throws IOException {};
+	public void Execute(CommandSender cs, String[] args) throws IOException {/**/}
 
 	/**
 	 * Get the PlayerData that is received from validateInput()

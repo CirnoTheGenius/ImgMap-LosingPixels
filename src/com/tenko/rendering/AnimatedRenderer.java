@@ -2,7 +2,6 @@ package com.tenko.rendering;
 
 import java.io.IOException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
@@ -18,8 +17,6 @@ import com.tenko.threading.AnimeThread;
 public class AnimatedRenderer extends MapRenderer {
 
 	private GifAnimation anime;
-
-	private AnimeThread rendering;
 	
 	private boolean hasRendered = false;
 	
@@ -47,8 +44,8 @@ public class AnimatedRenderer extends MapRenderer {
 	 * This should never be called outside of this class.
 	 * @param canvas - The MapCanvas. Note: This is a final canvas.
 	 */
-	private final void startRenderThread(final MapView viewport, final MapCanvas canvas, final Player plyr){
-		rendering = new AnimeThread(viewport, canvas, plyr, anime);
+	private void startRenderThread(final MapView viewport, final MapCanvas canvas, final Player plyr){
+        AnimeThread rendering = new AnimeThread(viewport, canvas, plyr, anime);
 		rendering.start();
 	}
 	

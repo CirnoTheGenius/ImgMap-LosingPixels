@@ -9,16 +9,10 @@ import com.tenko.ImgMap;
 import com.tenko.objs.GifAnimation;
 
 public class AnimeThread extends SafeThread {
-
-	/**
-	 * The map canvas to render to.
-	 */
+	
 	private final MapCanvas viewport;
-
 	private final MapView view;
-
 	private final Player plyr;
-
 	private final GifAnimation anime;
 
 	public AnimeThread(MapView mapview, MapCanvas viewCanvas, Player player, GifAnimation gif){

@@ -32,13 +32,15 @@ public abstract class Function implements CommandExecutor {
 	
 	public boolean end(CommandSender cs){
 		cs.sendMessage((successful ? ChatColor.BLUE : ChatColor.RED) + "[ImgMap] " + result);
-		return successful;
+		successful = false;
+		return true;
 	}
 	
 	public boolean end(CommandSender cs, Command c){
 		cs.sendMessage((successful ? ChatColor.BLUE : ChatColor.RED) + "[ImgMap] " + result);
 		cs.sendMessage(ChatColor.RED + "Usage: " + c.getUsage());
-		return successful;
+		successful = false;
+		return true;
 	}
 	
 	public PlayerData getData(){

@@ -13,30 +13,30 @@ import com.tenko.ImgMap;
  */
 public class URLUtils {
 
-	/**
-	 * 
-	 * @return
-	 */
-	public static String getLocal(String localName) throws SecurityException {
+	public static String getLocal(String localName) throws SecurityException, MalformedURLException {
 		String tmp = "";
-
-		for(File f : new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles()){
+		
+		File[] dir = new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles();
+		
+		for(File f : dir){
 			if(f.getName().equalsIgnoreCase(localName)){
-				tmp = f.getAbsolutePath();
+				tmp = f.toURI().toURL().toExternalForm();
 				break;
 			}
 		}
-
+		
 		return tmp;
 	}
 
 	public static boolean isLocal(String fileName){
-		for(File f : new File(ImgMap.getPlugin().getDataFolder(), "images").listFiles()){
-			if(f.getName().equalsIgnoreCase(fileName)){
-				System.out.println("found something");
-				return true;
-			}
+		try {
+			return !getLocal(fileName).isEmpty();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
+		
 		return false;
 	}
 
@@ -65,17 +65,7 @@ public class URLUtils {
 	 * @return True if the image is compatible; false otherwise.
 	 */
 	public static boolean compatibleImage(URL u){
-		try {
-			String contentType = getContentType(u);
-			if(!contentType.startsWith("image")){
-				return false;
-			}
-		} catch (MalformedURLException e){
-			e.printStackTrace();
-		} catch (Exception e){
-			e.printStackTrace();
-		}
-		return true;
+		return compatibleImage(u.toExternalForm());
 	}
 
 	/**
@@ -85,23 +75,13 @@ public class URLUtils {
 	 * @throws IOException
 	 */
 	private static String getContentType(URL theURL) throws IOException {
-		//Attempt to reconsutrct HTTPS URLs. Most likely to fail.
-		URL tmpUrl = theURL;
-		if(theURL.getProtocol().equalsIgnoreCase("https")){
-			tmpUrl = new URL(fixEncryptedUrl(theURL.toExternalForm()));
-		}
-
-		HttpURLConnection con = (HttpURLConnection)tmpUrl.openConnection();
+		HttpURLConnection con = (HttpURLConnection)theURL.openConnection();
 		con.setRequestMethod("HEAD");
 		con.connect();
 		String toReturn = con.getContentType();
 		con.disconnect();
 
 		return toReturn;
-	}
-
-	public static String fixEncryptedUrl(String s){
-		return s.replaceFirst("https", "http");
 	}
 
 }

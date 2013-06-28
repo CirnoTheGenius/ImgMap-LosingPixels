@@ -42,19 +42,23 @@ public class MapCommand extends Function {
                         location = URLUtils.getLocal(url);
                     } catch (Exception e){
                         result = "Weird result! The file apperently exists, but it actually doesn't!";
+                        return end(cs);
                     }
 				} else if(!URLUtils.compatibleImage(url)){
                     result = "That image isn't compatible!";
                     return end(cs);
+				} else {
+					location = url;
 				}
 				
-				super.validateInput(cs);
-				super.getData().getMap().addRenderer(new ImageRenderer(location));
+				this.validateInput(cs);
+				this.getData().getMap().addRenderer(new ImageRenderer(location));
 
 				if(ArrayUtils.contains(args, "-p")){
 					try {
 						DataUtils.deleteSlideshow(super.getData().getStack().getDurability());
 						DataUtils.replace(ImgMap.getList(), super.getData().getStack().getDurability(), URLUtils.isLocal(url) ? args[0] : location);
+						successful = true;
 						cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
 					} catch (IOException e) {
 						cs.sendMessage(ChatColor.RED + "[ImgMap] Failed to save the map's data!");

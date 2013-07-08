@@ -1,79 +1,90 @@
 package com.tenko.Gunvarrel.Parts;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import com.tenko.ImgMap;
-import com.tenko.utils.DataUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import com.tenko.Gunvarrel.Function;
-import com.tenko.utils.PlayerUtils;
+import com.tenko.utils.MapDataUtils;
 
+//A little different from MapCommand, since there's a lot of nasty class objects.
 public class RestoreMapCommand extends Function {
-
-	@Override
-	public boolean onCommand(CommandSender cs, Command c, String l,	String[] args) {
-		ItemStack equipped = PlayerUtils.resolveToPlayer(cs).getItemInHand();
-		
-		if(equipped.getType() != Material.MAP){
-			result = "The currently equipped item is not a map!";
-		}
-		
-		MapView viewport = Bukkit.getServer().getMap(equipped.getDurability());
-		for(MapRenderer r : viewport.getRenderers()){
-			viewport.removeRenderer(r);
-		}
-		
+	
+	private Class<?> craftbukkitRenderer, nmsItem, nmsItemStack, nmsWorldMap, craftbukkitWorld, craftbukkitMapView;
+	
+	private final boolean canUse;
+	
+	public RestoreMapCommand(){
 		String packageName = Bukkit.getServer().getClass().getPackage().getName();
 		String version = packageName.substring(packageName.lastIndexOf(".") + 1);
 
-		Class<?> craftMap, item, itemStack, worldMap, craftWorld, craftView;
+		try {
+			craftbukkitWorld = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
+			craftbukkitMapView = Class.forName("org.bukkit.craftbukkit." + version + ".map.CraftMapView");
+			craftbukkitRenderer= Class.forName("org.bukkit.craftbukkit." + version + ".map.CraftMapRenderer");
+			//NMS <3
+			nmsItemStack = Class.forName("net.minecraft.server." + version + ".ItemStack");
+			nmsItem = Class.forName("net.minecraft.server." + version + ".Item");
+			nmsWorldMap = Class.forName("net.minecraft.server." + version + ".WorldMap");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		canUse = true;
+	}
+
+	@Override
+	public boolean onCommand(CommandSender cs, Command c, String l, String[] args){
+		if(!canUse){
+			notifySender(cs, "This command appears to be broken. Please notify the developers about this issue and please provide your Bukkit build number.", Result.FAILURE);
+			return true;
+		} else if(!(cs instanceof Player)){
+			notifySender(cs, "You must be a player!", Result.FAILURE);
+			return true;
+		}
+		
+		Player plyr = (Player)cs;
+		
+		if(plyr.getItemInHand().getType() != Material.MAP){
+			notifySender(cs, "The currently equipped item is not a map!", Result.FAILURE);
+			return true;
+		}
+		
+		MapView viewport = Bukkit.getMap(plyr.getItemInHand().getDurability());
+		
 		try {
 			//Version independent version-specific methods. Don't touch.
-			//Bukkit version-dependent.
-			craftWorld = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
-			craftView = Class.forName("org.bukkit.craftbukkit." + version + ".map.CraftMapView");
-			craftMap = Class.forName("org.bukkit.craftbukkit." + version + ".map.CraftMapRenderer");
-			//NMS <3
-			itemStack = Class.forName("net.minecraft.server." + version + ".ItemStack");
-			item = Class.forName("net.minecraft.server." + version + ".Item");
-			worldMap = Class.forName("net.minecraft.server." + version + ".WorldMap");
-			
-			Object cbWorld = craftWorld.cast(PlayerUtils.resolveToPlayer(cs).getWorld());
-			Object nmsWorld = cbWorld.getClass().getMethod("getHandle").invoke(cbWorld);
-			Object nmsItemStack = itemStack.getConstructor(item).newInstance(item.getField("MAP").get(null));
-			
-			nmsItemStack.getClass().getMethod("setData", int.class).invoke(nmsItemStack, PlayerUtils.resolveToPlayer(cs).getItemInHand().getData().getData());
+			//Bukkit version independent.
+			Object craftbukkitWorldObj = craftbukkitWorld.cast(plyr.getWorld());
+			Object nmsWorldObj = craftbukkitWorldObj.getClass().getMethod("getHandle").invoke(craftbukkitWorldObj);
+			Object nmsItemStackObj = nmsItemStack.getConstructor(nmsItem).newInstance(nmsItem.getField("MAP").get(null));
 
-			int id = (Integer)nmsItemStack.getClass().getMethod("getData").invoke(nmsItemStack);
-			
-			Object preMap = nmsWorld.getClass().getMethod("a", Class.class, String.class).invoke(nmsWorld, worldMap, "map_"+id);
-			Object craftMapObj = craftMap.getConstructor(craftView, worldMap).newInstance(craftView.cast(viewport), worldMap.cast(preMap));
-			
-			viewport.addRenderer((MapRenderer)craftMapObj);
-            try {
-                DataUtils.delete(ImgMap.getList(), id);
-            } catch (IOException e){
-                cs.sendMessage("Failed to clear data for id " + id);
-                e.printStackTrace();
-            }
+			nmsItemStackObj.getClass().getMethod("setData", int.class).invoke(nmsItemStackObj, plyr.getItemInHand().getData().getData());
 
-			result = "Cleared Map ID " + equipped.getDurability();
-			successful = true;
-		//There are so many ways this could go wrong.
-		//Looks like a wave.
-		} catch (ClassNotFoundException e){
-			e.printStackTrace();
+			short id = Short.valueOf(String.valueOf(nmsItemStackObj.getClass().getMethod("getData").invoke(nmsItemStackObj)));
+
+			Object preMap = nmsWorldObj.getClass().getMethod("a", Class.class, String.class).invoke(nmsWorldObj, nmsWorldMap, "map_"+id);
+			Object craftMapObj = craftbukkitRenderer.getConstructor(craftbukkitMapView, nmsWorldMap).newInstance(craftbukkitMapView.cast(viewport), nmsWorldMap.cast(preMap));
+
+			setRenderer(viewport, (MapRenderer)craftMapObj);	
+			
+			if(!MapDataUtils.deleteMapData(id)){
+				notifySender(cs, "Failed to clear data for id " + id, Result.SUCCESS);
+			}
+
+			notifySender(cs, "Cleared Map ID " + id, Result.SUCCESS);
+			return true;
+			//There are so many ways this could go wrong.
+			//Looks like a wave.
 		} catch(NoSuchFieldException e){
-            e.printStackTrace();
-        } catch (NoSuchMethodException e){
+			e.printStackTrace();
+		} catch (NoSuchMethodException e){
 			e.printStackTrace();
 		} catch (SecurityException e){
 			e.printStackTrace();
@@ -86,7 +97,8 @@ public class RestoreMapCommand extends Function {
 		} catch (InstantiationException e){
 			e.printStackTrace();
 		}
-		return end(cs);
+		
+		return false;
 	}
 
 }

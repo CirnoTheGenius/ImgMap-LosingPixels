@@ -1,8 +1,8 @@
 package com.tenko.rendering;
 
+import java.awt.Image;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 import javax.imageio.ImageIO;
 
@@ -14,37 +14,30 @@ import org.bukkit.map.MapView;
 
 public class ImageRenderer extends MapRenderer {
 	
-	private boolean hasRendered = false;
+	private boolean hasRendered;
+	private final Image theImg;
+	private Thread renderImageThread;
+	public final String theUrl;
 	
-	public String sauce;
-	
-	public ImageRenderer(String url){
-		this.sauce = url;
-	}
-	
-	private void _render(final MapCanvas canvas){
-		Thread renderThread = new Thread(){
-			@Override
-			public void run(){
-				try {
-					canvas.drawImage(0, 0, MapPalette.resizeImage(ImageIO.read(new URL(sauce))));
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		
-		renderThread.start();
-		hasRendered = true;
+	public ImageRenderer(String url) throws IOException{
+		hasRendered = false;
+		theImg = ImageIO.read(URI.create(url).toURL().openStream());
+		theUrl = url;
 	}
 	
 	@Override
-	public void render(MapView view, MapCanvas canvas, Player plyr) {
-		if(!hasRendered && sauce != null && !sauce.isEmpty()){
-			_render(canvas);
+	public void render(MapView view, final MapCanvas canvas, Player plyr){
+		if(!hasRendered && theImg != null && renderImageThread == null){
+			renderImageThread = new Thread(){
+				@Override
+				public void run(){
+					canvas.drawImage(0, 0, MapPalette.resizeImage(theImg));
+				}
+			};
+			
+			renderImageThread.start();
+			hasRendered = true;
 		}
 	}
-
+	
 }

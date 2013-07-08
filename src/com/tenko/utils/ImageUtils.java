@@ -1,26 +1,44 @@
 package com.tenko.utils;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import com.tenko.ImgMap;
 
 public class ImageUtils {
-
-	/**
-	 * Resizes the image to a 128x128 image.
-	 * @param s - The URL
-	 * @return An image that we can use.
-	 */
-	public static Image resizeImage(Image img){
-		BufferedImage originalImage = (BufferedImage)img;
-		BufferedImage resizedImage = new BufferedImage(128, 128, 2);
-		Graphics2D g = resizedImage.createGraphics();
-		g.drawImage(originalImage, 0, 0, 128, 128, null);
-		g.finalize();
-		g.dispose();
-		resizedImage.flush();
-
-		return resizedImage;
+	
+	public static File getLocalImage(String imageName){
+		File[] dir = new File(ImgMap.getInstance().getDataFolder(), "images").listFiles();
+		
+		for(File f : dir){
+			if(f.getName().equalsIgnoreCase(imageName)){
+				return f;
+			}
+		}
+		
+		return null;
 	}
+	
+	public static boolean isLocal(String fileName){
+		return getLocalImage(fileName) != null;
+	}
+	
+	public static boolean isImageCompatible(String url){
+		try {
+			URL theURL = new URL(url);
+			HttpURLConnection con = (HttpURLConnection)theURL.openConnection();
+			con.setRequestMethod("HEAD");
+			con.connect();
+			String toReturn = con.getContentType();
+			con.disconnect();
 
+			return toReturn.startsWith("image");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 }

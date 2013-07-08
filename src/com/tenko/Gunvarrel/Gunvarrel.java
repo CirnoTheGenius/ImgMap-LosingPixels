@@ -6,7 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 
 import com.tenko.ImgMap;
-import com.tenko.Gunvarrel.Function;
 
 /**
  * 
@@ -34,7 +33,7 @@ public class Gunvarrel {
 			parts.add(newFunction);
 			
 			for(String cmd : commands){
-				PluginCommand com = ImgMap.getPlugin().getCommand(cmd);
+				PluginCommand com = ImgMap.getInstance().getCommand(cmd);
 				com.setExecutor(newFunction);
 				com.setPermissionMessage(ChatColor.RED + "[ImgMap] You cannot use this command for permission reasons!");
 				com.setPermission("imgmap.command."+cmd);
@@ -45,15 +44,6 @@ public class Gunvarrel {
 			e.printStackTrace();
 		} catch (IllegalAccessException e){
 			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	public boolean remove(Class<? extends Function> f){
-		for(Function funky : parts){
-			if(funky.getClass().equals(f)){
-				parts.remove(f);
-			}
 		}
 		return false;
 	}

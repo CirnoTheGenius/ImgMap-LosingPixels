@@ -2,69 +2,67 @@ package com.tenko.Gunvarrel;
 
 import java.util.Iterator;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.map.MapView.Scale;
 
-import com.tenko.objs.PlayerData;
-import com.tenko.utils.PlayerUtils;
+import com.tenko.rendering.SlideshowRenderer;
 
-/**
- * Easy implementation. I'm lazy. Too lazy.
- * Duhuhu. Kthxbai.
- * @author Tsunko
- */
 public abstract class Function implements CommandExecutor {
 	
-	protected boolean successful = false;
-	public String result = "No result! Contact author if there is supposed to be one!";
-	protected PlayerData data;
-
+	public enum Result {
+		SUCCESS, INFO, FAILURE
+	}
+	
+	private MapRenderer lastRenderer;
+	
 	@Override
 	public abstract boolean onCommand(CommandSender cs, Command c, String l, String[] args);
 	
-	public boolean end(CommandSender cs){
-		cs.sendMessage((successful ? ChatColor.BLUE : ChatColor.RED) + "[ImgMap] " + result);
-		successful = false;
-		return true;
-	}
-	
-	public boolean end(CommandSender cs, Command c){
-		cs.sendMessage((successful ? ChatColor.BLUE : ChatColor.RED) + "[ImgMap] " + result);
-		cs.sendMessage(ChatColor.RED + "Usage: " + c.getUsage());
-		successful = false;
-		return true;
-	}
-	
-	public PlayerData getData(){
-		return this.data;
-	}
-	
-	protected final PlayerData validateInput(CommandSender cs){
-		ItemStack equipped = PlayerUtils.resolveToPlayer(cs).getItemInHand();
-		
-		if(equipped.getType() == Material.MAP){
-			MapView viewport = Bukkit.getServer().getMap(equipped.getDurability());
-			
-			if(viewport != null){
-				Iterator<MapRenderer> mr = viewport.getRenderers().iterator();
-				while(mr.hasNext()){
-					viewport.removeRenderer(mr.next());
-				}
-				
-				viewport.setScale(Scale.FARTHEST);
-				
-				return data = new PlayerData(PlayerUtils.resolveToPlayer(cs), equipped, viewport);
+	public void notifySender(CommandSender cs, String message, Result r){
+		switch(r){
+			case SUCCESS:{
+				cs.sendMessage(ChatColor.BLUE + "[ImgMap] " + message);
+				return;
 			}
+			
+			case INFO:{
+				cs.sendMessage(ChatColor.GOLD + "[ImgMap] " + message);
+				return;
+			}
+			
+			case FAILURE:{
+				cs.sendMessage(ChatColor.RED + "[ImgMap] " + message);
+				return;
+			}
+			
+			default:
+				cs.sendMessage(ChatColor.BLUE + "[ImgMap] " + message);
+				return;
 		}
-		cs.sendMessage(ChatColor.RED + "[ImgMap] The currently equipped item is not a map!");
-		return null;
+	}
+	
+	public void setRenderer(MapView view, MapRenderer render){
+		Iterator<MapRenderer> renderers = view.getRenderers().iterator();
+		while(renderers.hasNext()){
+			MapRenderer mr = renderers.next();
+			if(mr instanceof SlideshowRenderer){
+				((SlideshowRenderer)mr).thread.stopThread();
+			}
+			view.removeRenderer(mr);
+		}
+		
+		view.setScale(Scale.FARTHEST);
+		view.addRenderer(render);
+		
+		this.lastRenderer = render;
+	}
+	
+	public MapRenderer getLastRenderer(){
+		return lastRenderer;
 	}
 }

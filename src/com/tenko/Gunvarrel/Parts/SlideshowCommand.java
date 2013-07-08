@@ -1,98 +1,101 @@
 package com.tenko.Gunvarrel.Parts;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-
-import org.bukkit.ChatColor;
+import java.util.Arrays;
+import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 
-import com.google.common.io.Files;
-import com.tenko.ImgMap;
 import com.tenko.Gunvarrel.Function;
 import com.tenko.rendering.SlideshowRenderer;
-import com.tenko.utils.DataUtils;
-import com.tenko.utils.URLUtils;
+import com.tenko.utils.ImageUtils;
+import com.tenko.utils.MapDataUtils;
 
 public class SlideshowCommand extends Function {
 
 	@Override
-	public boolean onCommand(CommandSender cs, Command c, String l,	String[] args) {
-		super.validateInput(cs);
-		
-		boolean isPermament = false;
-		
-		ArrayList<String> urls = new ArrayList<String>();
-		ArrayList<String> locations = new ArrayList<String>();
-		
-		for(String arg : args){
-			if(!arg.startsWith("-")){
-				urls.add(arg);
-			} else if(arg.equalsIgnoreCase("-p")){
-				isPermament = true;
-			}
-		}
-		
-		float waitTime;
-		
+	public boolean onCommand(CommandSender cs, Command c, String l, String[] args){
 		try {
-			float tmpWaitTime = Float.valueOf(urls.remove(0));
-			waitTime = tmpWaitTime > 0 ? tmpWaitTime : -1;
-		} catch (NumberFormatException e){
-			result = "Invalid value for <time>. Must be a number.";
-			return end(cs, c);
-		}
-		
-		for(String url : urls){
-			try {
-				URL urlz = new URL(url);
-				if(!URLUtils.compatibleImage(urlz)){
-					result = "The image: \"" + url + "\" is not compatible!";
-					return end(cs);
-				}
-				locations.add(url);
-			} catch (MalformedURLException e){
-				try {
-					File f = new File(ImgMap.getPlugin().getDataFolder(), "maps/" + url);
-					if(f.exists()){
-						locations.add(f.getAbsolutePath());
+			Player plyr = (Player)cs;
+			boolean isPermament = false;
+			
+			ArrayList<String> urls = new ArrayList<String>();
+			
+			if(args.length == 0){
+				notifySender(cs, "You didn't provide any arguments to use!", Result.FAILURE);
+				return true;
+			}
+
+			if(!plyr.getItemInHand().getType().equals(Material.MAP)){
+				notifySender(cs, "The currently equipped item isn't a map!", Result.FAILURE);
+				return true;
+			}
+			
+			short mapId = plyr.getItemInHand().getDurability();
+			MapView view = Bukkit.getMap(mapId);
+			
+			if(args[0].equalsIgnoreCase("add")){
+				//
+				MapRenderer mr = view.getRenderers().get(0);
+				if(mr instanceof SlideshowRenderer){
+					SlideshowRenderer sr = (SlideshowRenderer)mr;
+					
+					for(int i=1; i < args.length; i++){
+						sr.getUrls().add(args[i]);
 					}
-				} catch (SecurityException e2){
-					result = "Please give in URLs or paths relative to plugins/ImgMap/maps/";
-					return end(cs, c);
+					
+					notifySender(cs, "Sucessfully added all data!", Result.SUCCESS);
+					return true;
 				}
 			}
-		}
-		
-		super.getData().getMap().addRenderer(new SlideshowRenderer(locations.toArray(new String[locations.size()]), waitTime));
-		result = "Rendering slideshow!";
-		successful = true;
-		
-		if(isPermament){
-			try {
-				File slideshowFile = ImgMap.getSlideshowFile(super.getData().getStack().getDurability());
-				//Update timestamp.
-				Files.touch(slideshowFile);
-				
-				String[] lines = new String[locations.size()];
-				lines[0] = String.valueOf(waitTime);
-				for(int i=1; i < lines.length; i++){
-					lines[i] = locations.get(i);
+			
+			float waitTime = Float.valueOf(args[0]);
+			Object[] tmp = ArrayUtils.remove(args, 0);
+			String[] urlSArray = Arrays.copyOf(tmp, tmp.length, String[].class);
+			
+			//Heh, the old source code called for 2 for-loops. I just made it one long one.
+			for(String arg : urlSArray){
+				if(!arg.startsWith("-")){
+					if(ImageUtils.isLocal(arg)){
+						urls.add(ImageUtils.getLocalImage(arg).toURI().toURL().toExternalForm());
+					} else if(ImageUtils.isImageCompatible(arg)){
+						urls.add(arg);
+					} else {
+						notifySender(cs, "The image " + arg + " isn't compatible. Skipping over it.", Result.INFO);
+					}
+				} else if(arg.equalsIgnoreCase("-p")){
+					isPermament = true;
 				}
-				
-				DataUtils.writeArray(slideshowFile, lines);
-				
-				cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
-			} catch (IOException e) {
-				cs.sendMessage(ChatColor.RED + "[ImgMap] Failed to write to slideshow file!");
-				e.printStackTrace();
 			}
+			
+			setRenderer(view, new SlideshowRenderer(urls, waitTime));
+			notifySender(cs, "Slideshow has started!", Result.SUCCESS);
+			
+			if(isPermament){
+				File slideshowFile = MapDataUtils.getSlideshowFile(mapId);
+				if(MapDataUtils.addArray(slideshowFile, urls)){
+					notifySender(cs, "Sucessfully saved map data!", Result.SUCCESS);					
+				} else {
+					notifySender(cs, "Failed to save data!", Result.FAILURE);					
+				}
+			}
+			
+			return true;
+		} catch (ClassCastException e){
+			notifySender(cs, "You must be a player!", Result.FAILURE);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
-		
-		return end(cs);
+		return false;
 	}
+
+
 
 }

@@ -1,85 +1,41 @@
 package com.tenko;
 
-import java.io.File;
-
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.google.common.annotations.Beta;
 import com.tenko.Gunvarrel.Gunvarrel;
-import com.tenko.Gunvarrel.Parts.*;
-import com.tenko.threading.MapThreadGroup;
-import com.tenko.threading.PersistencyThread;
+import com.tenko.Gunvarrel.Parts.ImagesCommand;
+import com.tenko.Gunvarrel.Parts.MapCommand;
+import com.tenko.Gunvarrel.Parts.RestoreMapCommand;
+import com.tenko.Gunvarrel.Parts.SlideshowCommand;
+import com.tenko.utils.MapDataUtils;
 
-/**
- * ImgMap - Maps become picture frames!
- * @author Tsunko
- * @version 3 Beta (It's the square root of 9!)
- */
-@Beta
+//ByteFailure build.
 public class ImgMap extends JavaPlugin {
 	
-	private static ImgMap instance;
-	
-	private final static MapThreadGroup group = new MapThreadGroup();
+	public static ImgMap pluginInstance;
 	
 	private Gunvarrel commandHandler;
 	
-	/**
-	 * "El Psy Congroo"
-	 */
 	@Override
 	public void onEnable(){
-		instance = this;
+		pluginInstance = this;
 		
-		//A new way to handle commands.
+		//Prepare the plugin folder.
+		MapDataUtils.init();
+		
+		//Add commands.
 		commandHandler = new Gunvarrel();
-		
-		commandHandler.add(AniCommand.class, "ani");
-		commandHandler.add(ImagesCommand.class, "images");
 		commandHandler.add(MapCommand.class, "map");
-		commandHandler.add(RestoreMapCommand.class, "rmap", "restoremap");
+		commandHandler.add(RestoreMapCommand.class, "restoremap");
+		commandHandler.add(ImagesCommand.class, "images");
 		commandHandler.add(SlideshowCommand.class, "smap");
-		commandHandler.add(InfoCommand.class, "imap", "imgmap");
 		
-		PersistencyThread pt = new PersistencyThread();
-		pt.start();
+		//Load configuration (if any)
+		//Load old data and set canvas to images.
+		//Load slideshow data and set canvas to data.
 	}
 	
-	@Override
-	public void onDisable(){
-		group.stopThreads();
-	}
-
-    public Gunvarrel getCommandHandler(){
-        return commandHandler;
-    }
-	
-	public static ImgMap getPlugin(){
-		return instance;
-	}
-	
-	/**
-	 * Gets the file and returns a File object.
-	 * @return The Maps.list file.
-	 */
-	public static File getList(){
-		return new File(ImgMap.getPlugin().getDataFolder(), "Maps.list");
-	}
-
-	/**
-	 * Get slideshow by ID.
-	 * @param id - The Map ID.
-	 * @return A file for the Slideshow.
-	 */
-	public static File getSlideshowFile(int id){
-		return new File(ImgMap.getPlugin().getDataFolder().getAbsolutePath() + "/SlideshowData/", String.valueOf(id + ".slideshow"));
-	}
-
-	/**
-	 * Returns the custom threadgroup.
-	 * @return MapThreadGroup.
-	 */
-	public static MapThreadGroup getThreadGroup(){
-		return group;
+	public static ImgMap getInstance(){
+		return pluginInstance;
 	}
 }

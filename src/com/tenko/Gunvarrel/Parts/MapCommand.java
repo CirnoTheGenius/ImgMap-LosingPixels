@@ -4,78 +4,76 @@ import java.io.IOException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.map.MapView;
 
-import com.tenko.ImgMap;
 import com.tenko.Gunvarrel.Function;
 import com.tenko.rendering.ImageRenderer;
-import com.tenko.utils.DataUtils;
-import com.tenko.utils.URLUtils;
+import com.tenko.utils.ImageUtils;
+import com.tenko.utils.MapDataUtils;
 
-/**
- * 
- * The first and base command for ImgMap.
- * @author Tsunko
- *
- */
 public class MapCommand extends Function {
 
 	@Override
-	public boolean onCommand(CommandSender cs, Command c, String l, String[] args) {
-		//I wonder if it's necessary to even check anymore.
-		if(c.getName().equalsIgnoreCase("map")){
-			String location = "";
-            String url;
+	public boolean onCommand(CommandSender cs, Command c, String l, String[] args){
+		try {
+			Player plyr = (Player)cs;
 
-			if(args.length < 1){
-				result = "Not enough arguments!";
-				return end(cs, c);
-			} else if(cs.equals(Bukkit.getConsoleSender())){
-				result = "You must be a player!";
-				return end(cs);
-			} else {
-				url = args[0];
-				if(URLUtils.isLocal(url)){
-                    try {
-                        location = URLUtils.getLocal(url);
-                    } catch (Exception e){
-                        result = "Weird result! The file apperently exists, but it actually doesn't!";
-                        return end(cs);
-                    }
-				} else if(!URLUtils.compatibleImage(url)){
-                    result = "That image isn't compatible!";
-                    return end(cs);
-				} else {
-					location = url;
-				}
-				
-				this.validateInput(cs);
-				this.getData().getMap().addRenderer(new ImageRenderer(location));
-
-				if(ArrayUtils.contains(args, "-p")){
-					try {
-						DataUtils.deleteSlideshow(super.getData().getStack().getDurability());
-						DataUtils.replace(ImgMap.getList(), super.getData().getStack().getDurability(), URLUtils.isLocal(url) ? args[0] : location);
-						successful = true;
-						cs.sendMessage(ChatColor.BLUE + "[ImgMap] Successfully saved this map's data!");
-					} catch (IOException e) {
-						cs.sendMessage(ChatColor.RED + "[ImgMap] Failed to save the map's data!");
-						e.printStackTrace();
-					}
-				}
-
-                result = "Rendering " + args[0];
-                this.successful = true;
-                return end(cs);
+			if(args.length == 0){
+				notifySender(cs, "You didn't provide an URL to use!", Result.FAILURE);
+				return true;
 			}
+
+			if(!plyr.getItemInHand().getType().equals(Material.MAP)){
+				notifySender(cs, "The currently equipped item isn't a map!", Result.FAILURE);
+				return true;
+			}
+
+			short mapId = plyr.getItemInHand().getDurability();
+			MapView view = Bukkit.getMap(mapId);
+			String location = "";
+			
+			if(ImageUtils.isLocal(args[0])){
+				setRenderer(view, new ImageRenderer(ImageUtils.getLocalImage(args[0]).toURI().toURL().toExternalForm()));	
+			} else {
+				if(ImageUtils.isImageCompatible(args[0])){
+					setRenderer(view, new ImageRenderer(args[0]));
+				} else {
+					notifySender(cs, "That image isn't compatible!", Result.FAILURE);					
+					return true;
+				}
+			}
+			
+			if(super.getLastRenderer() instanceof ImageRenderer){
+				location = ((ImageRenderer)super.getLastRenderer()).theUrl;
+				notifySender(cs, "Currently rendering " + args[0], Result.SUCCESS);
+			} else {
+				//Theoretically, this block should never happen. But let's just check to make sure.
+				location = args[0];
+				notifySender(cs, "Couldn't get the URL of the renderer, saving may fail." + args[0], Result.INFO);
+			}
+			
+			if(ArrayUtils.contains(args, "-p")){
+				MapDataUtils.attemptDeleteSlideshow(mapId);
+				if(MapDataUtils.add(mapId, location)){
+					notifySender(cs, "Sucessfully saved map data!", Result.SUCCESS);					
+				} else {
+					notifySender(cs, "Failed to save data!", Result.FAILURE);					
+				}
+			}
+
+			return true;
+		} catch (ClassCastException e){ 
+			notifySender(cs, "You must be a player to use this command.", Result.FAILURE);
+		} catch (IOException e){
+			notifySender(cs, "There was a read/write error with the provided URL! See console for more details.", Result.FAILURE);
+			e.printStackTrace();
 		}
-		
-		return end(cs);
+
+		return true;
 	}
-	
-	
-	
-	
+
 }

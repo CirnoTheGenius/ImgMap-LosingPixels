@@ -1,6 +1,6 @@
 package com.tenko.threading;
 
-public class SafeThread extends Thread {
+public abstract class SafeThread extends Thread {
 	
 	protected boolean running;
 	
@@ -12,8 +12,9 @@ public class SafeThread extends Thread {
 		return running;
 	}
 	
-	public void stopThread(){
-		running = false;
-	}
+	//Allow other threads to implement a "clean-up" routine.
+	public abstract void stopThread();
 	
+	@Override
+	public abstract void run();
 }

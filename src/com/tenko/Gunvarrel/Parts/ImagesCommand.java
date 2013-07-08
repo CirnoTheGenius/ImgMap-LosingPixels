@@ -15,33 +15,36 @@ public class ImagesCommand extends Function {
 
 	@Override
 	public boolean onCommand(CommandSender cs, Command c, String l, String[] args) {
-		File images = new File(ImgMap.getPlugin().getDataFolder(), "images");
-
-		cs.sendMessage(ChatColor.YELLOW + "[ImgMap] Contents of the \"images\" directory:");
-
+		File imagesFolder = new File(ImgMap.getInstance().getDataFolder(), "images");
+		notifySender(cs, "Contents of \"/images/\"", Result.INFO);
+		
 		try {
-			for(String s : listDir(images.getCanonicalPath().length(), images)){
-				cs.sendMessage(ChatColor.YELLOW + s);
+			for(String s : listDir(imagesFolder.getCanonicalFile().length(), imagesFolder)){
+				cs.sendMessage(ChatColor.GOLD + s);
 			}
 		} catch (IOException e){
-			cs.sendMessage(ChatColor.RED + "Failed to read directory!");
+			notifySender(cs, "Failed to read the images directory.", Result.FAILURE);
 			e.printStackTrace();
 		}
-		return false;
+		
+		return true;
 	}
 
-	private ArrayList<String> listDir(int l, File dir) throws IOException {
+	private final ArrayList<String> listDir(long l, File dir){
 		ArrayList<String> output = new ArrayList<String>();
-		for (File f : dir.listFiles()) {
-			if(f.isDirectory()){
-				output.addAll(listDir(dir.getCanonicalPath().length(), f));
-			} else {
-				output.add(f.getCanonicalPath().substring(l+1));
+		try {
+			for(File f : dir.listFiles()){
+				if(f.isDirectory()){
+					output.addAll(listDir(l, f));
+				} else {
+					output.add(f.getCanonicalPath().substring((int)(l+1)));
+				}
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		
 		return output;
 	}
-
-
 
 }

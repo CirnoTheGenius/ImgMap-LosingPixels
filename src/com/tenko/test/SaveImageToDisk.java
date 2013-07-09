@@ -1,7 +1,19 @@
 package com.tenko.test;
 
+import java.awt.Image;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import javax.imageio.ImageIO;
+
 import org.bukkit.Bukkit;
+import org.bukkit.map.MapPalette;
 
 /**
  * NOTE:
@@ -16,114 +28,177 @@ import org.bukkit.Bukkit;
  */
 public class SaveImageToDisk {
 
-	static Class<?> worldBase, NBTTag, NBTCompress;
-
+	static Class<?> worldBase, NBTTag, NBTCompress, CraftWorld;
+	
 	static {
 		String packageName = Bukkit.getServer().getClass().getPackage().getName();
 		String version = packageName.substring(packageName.lastIndexOf(".") + 1);
-		try {
+		try { 
 			worldBase = Class.forName("net.minecraft.server." + version + ".WorldMapBase");
 			NBTTag = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
 			NBTCompress = Class.forName("net.minecraft.server." + version + ".NBTCompressedStreamTools");
+			CraftWorld = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
-	//Just when I thought I was able to avoid NMS code.
-	public static void a(int id, String worldName) {
-		//worldmapbase is an abstract class. Something extends WorldMapBase.
+	public static void tryTest(){
 		
 //		try {
-//			if(worldBase.isAssignableFrom(worldmapbase.getClass())){
-//				Field id = worldBase.getField("id");
-//				File dataFile = getDataFile(worldName, (String)id.get(worldmapbase));
+//			Class<?> nmsItemStack = Class.forName("net.minecraft.server." + version + ".ItemStack");
+//			Class<?> nmsItem = Class.forName("net.minecraft.server." + version + ".Item");
+//			
+//			Object worldMap = nmsItem.getField("MAP").get(null);
+//			Object o = nmsItemStack.getConstructor(nmsItem, int.class, int.class).newInstance(worldMap, 1, 1);
+//			System.out.println(o);
+//			Object nbt = o.getClass().getMethod("getTag").invoke(o);
 //
-//				if (dataFile != null) {
-//					Object nbttagcompound = NBTTag.newInstance();
-//
-//					worldBase.getMethod("a", NBTTag).invoke(worldmapbase, nbttagcompound);
-//					Object nbtData = NBTTag.newInstance();
-//
-//					NBTTag.getMethod("setCompound", String.class, NBTTag).invoke(nbtData, "data", nbttagcompound);
-//					FileOutputStream fileoutputstream = new FileOutputStream(dataFile);
-//
-//					NBTCompress.getMethod("a", NBTTag, FileOutputStream.class).invoke(null, nbtData, fileoutputstream);
-//					fileoutputstream.close();
-//				}
-//			}
-//		} catch (Exception exception) {
-//			exception.printStackTrace();
+//			System.out.println(nbt);
+//			System.out.println(nbt.getClass());
+//			System.out.println(nbt.toString());
+//			System.out.println(nbt.hashCode());
+//			
+//			//setData(nbt, ImageIO.read(new URL("http://fc03.deviantart.net/fs28/f/2009/251/c/d/Happy_Cirno_Day_by_shingenjitsu.png").openStream()), (byte) 0);
+//		} catch (ClassNotFoundException e){
+//			e.printStackTrace();
+//		} catch (IllegalArgumentException e){
+//			e.printStackTrace();
+//		} catch (SecurityException e){
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e){
+//			e.printStackTrace();
+//		} catch (NoSuchFieldException e){
+//			e.printStackTrace();
+//		} catch (InstantiationException e){
+//			e.printStackTrace();
+//		} catch (InvocationTargetException e){
+//			e.printStackTrace();
+//		} catch (NoSuchMethodException e){
+//			e.printStackTrace();
 //		}
 	}
-
-	//Work on this later. Direct copy/paste from CB code. Unsafe; volatile.
-	public void dur(){
-//		// CraftBukkit start
-//		byte dimension = nbttagcompound.getByte("dimension");
-//
-//		if (dimension >= 10) {
-//			long least = nbttagcompound.getLong("UUIDLeast");
-//			long most = nbttagcompound.getLong("UUIDMost");
-//
-//			if (least != 0L && most != 0L) {
-//				this.uniqueId = new UUID(most, least);
-//
-//				CraftWorld world = (CraftWorld) server.getWorld(this.uniqueId);
-//				// Check if the stored world details are correct.
-//				if (world == null) {
-//					/* All Maps which do not have their valid world loaded are set to a dimension which hopefully won't be reached.
-//This is to prevent them being corrupted with the wrong map data. */
-//					dimension = 127;
-//				} else {
-//					dimension = (byte) world.getHandle().dimension;
+	
+//	//I don't know why I would need this. Maybe for later.
+//	//Deobfuscated "a" method. The one that takes an NBTTagCompound under WorldMap.
+//	@SuppressWarnings("unused")
+//	public static void getNBTData(Object nbttag) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException{
+//		if(nbttag.getClass() == NBTTag){
+//			Method getByte = NBTTag.getMethod("getByte", String.class);
+//			Method getLong = NBTTag.getMethod("getLong", String.class);
+//			Method getInt = NBTTag.getMethod("getInt", String.class);
+//			Method getShort = NBTTag.getMethod("getShort", String.class);
+//			Method getByteArray = NBTTag.getMethod("getByteArray", String.class);
+//			
+//			byte dimension = (Byte)getByte.invoke(nbttag, "dimension");
+//			byte map;
+//			
+//			byte[] colors = new byte[16384];
+//			
+//			//CraftBukkit code begin
+//			if(dimension >= 10){
+//				long least = (Long)getLong.invoke(nbttag, "UUIDLeast");
+//				long most = (Long)getLong.invoke(nbttag, "UUIDMost");
+//				
+//				UUID id = null;
+//				
+//				if(least != 0L && most != 0L){
+//					id = new UUID(most, least);
+//					
+//					Object world = CraftWorld.cast(Bukkit.getWorld(id));
+//					
+//					if(world == null){
+//						dimension = 127;
+//					} else {
+//						Object handle = CraftWorld.getMethod("").invoke(world, (Object[])null);
+//						dimension = (Byte)handle.getClass().getField("dimension").get(handle);
+//					}
 //				}
+//				
+//				map = dimension;	
 //			}
-//		}
+//			//CraftBukkit code end
 //
-//		this.map = dimension;
-//		// CraftBukkit end
-//		this.centerX = nbttagcompound.getInt("xCenter");
-//		this.centerZ = nbttagcompound.getInt("zCenter");
-//		this.scale = nbttagcompound.getByte("scale");
-//		if (this.scale < 0) {
-//			this.scale = 0;
-//		}
-//
-//		if (this.scale > 4) {
-//			this.scale = 4;
-//		}
-//
-//		short short1 = nbttagcompound.getShort("width");
-//		short short2 = nbttagcompound.getShort("height");
-//
-//		if (short1 == 128 && short2 == 128) {
-//			this.colors = nbttagcompound.getByteArray("colors");
-//		} else {
-//			byte[] abyte = nbttagcompound.getByteArray("colors");
-//
-//			this.colors = new byte[16384];
-//			int i = (128 - short1) / 2;
-//			int j = (128 - short2) / 2;
-//
-//			for (int k = 0; k < short2; ++k) {
-//				int l = k + j;
-//
-//				if (l >= 0 || l < 128) {
-//					for (int i1 = 0; i1 < short1; ++i1) {
-//						int j1 = i1 + i;
-//
-//						if (j1 >= 0 || j1 < 128) {
-//							this.colors[j1 + l * 128] = abyte[i1 + k * short1];
+//			int centerX = (Integer)getInt.invoke(nbttag, "xCenter");
+//			int centerZ = (Integer)getInt.invoke(nbttag, "zCenter");
+//			byte scale = (Byte)getByte.invoke(nbttag, "scale");
+//			
+//			if(scale < 0){
+//				scale = 0;
+//			} else if (scale > 4){
+//				scale = 4;
+//			}
+//			
+//			short width = (Short)getShort.invoke(nbttag, "width");
+//			short height = (Short)getShort.invoke(nbttag, "height");
+//			
+//			if(width == 128 && height == 128){
+//				colors = (byte[])getByteArray.invoke(nbttag, "colors");
+//			} else {
+//				//This part made me pull my hairs out.
+//				byte[] newColors = (byte[])getByteArray.invoke(nbttag, "colors");
+//				colors = new byte[16384];
+//				
+//				int newWidth = (128 - width) / 2;
+//				int newHeight = (128 - height) / 2;
+//				
+//				for(int looper1=0; looper1 < newHeight; looper1++){
+//					int x = looper1 + newHeight;
+//					
+//					if(x >= 0 || x < 128){
+//						for(int looper2=0; looper2 < newWidth; looper2++){
+//							int y = looper2+looper1;
+//							
+//							if(y >= 0 || y < 128){
+//								colors[y + x * 128] = newColors[looper2 + looper1 * width];
+//							}
 //						}
 //					}
 //				}
 //			}
 //		}
-	}
+//	}
+	
+    public static void setData(Object nbtTag, Image io, byte dimension, String world, String mapid) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException{
+    	setByte(nbtTag, "dimension", (byte)dimension);
+    	setInt(nbtTag, "xCenter", (int)0);
+    	setInt(nbtTag, "zCenter", (int)0);
+    	setByte(nbtTag, "scale", (byte)1);
+    	setShort(nbtTag, "width", (short)128);
+    	setShort(nbtTag, "height", (short)128);
+    	setByteArray(nbtTag, "colors", MapPalette.imageToBytes(MapPalette.resizeImage(io)));
+    	
+        FileOutputStream fileoutputstream = new FileOutputStream(getDataFile(world, mapid));
+    	NBTCompress.getMethod("a", NBTTag, OutputStream.class).invoke(null, nbtTag, (OutputStream)fileoutputstream);
+        fileoutputstream.close();
+    }
+    
 
 	public static File getDataFile(String worldName, String mapId) {
 		return new File(Bukkit.getWorld(worldName).getWorldFolder().getAbsolutePath() + "/data/", mapId + ".dat");
 	}
-
+	
+	public static void setByte(Object nbtTag, String property, byte b) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+		if(nbtTag.getClass() == NBTTag){
+			NBTTag.getMethod("setByte", String.class, byte.class).invoke(nbtTag, property, b);
+		}
+	}
+	
+	public static void setInt(Object nbtTag, String property, int i) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+		if(nbtTag.getClass() == NBTTag){
+			NBTTag.getMethod("setInt", String.class, int.class).invoke(nbtTag, property, i);
+		}
+	}
+	
+	public static void setShort(Object nbtTag, String property, short s) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+		if(nbtTag.getClass() == NBTTag){
+			NBTTag.getMethod("setShort", String.class, short.class).invoke(nbtTag, property, s);
+		}
+	}
+	
+	public static void setByteArray(Object nbtTag, String property, byte[] ba) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+		if(nbtTag.getClass() == NBTTag){
+			NBTTag.getMethod("setByteArray", String.class, byte[].class).invoke(nbtTag, property, ba);
+		}
+	}
 }

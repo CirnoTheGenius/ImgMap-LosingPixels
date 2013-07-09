@@ -7,6 +7,8 @@ import com.tenko.Gunvarrel.Parts.ImagesCommand;
 import com.tenko.Gunvarrel.Parts.MapCommand;
 import com.tenko.Gunvarrel.Parts.RestoreMapCommand;
 import com.tenko.Gunvarrel.Parts.SlideshowCommand;
+import com.tenko.Gunvarrel.Parts.TestCommand;
+import com.tenko.test.SaveImageToDisk;
 import com.tenko.utils.MapDataUtils;
 
 //ByteFailure build.
@@ -29,10 +31,13 @@ public class ImgMap extends JavaPlugin {
 		commandHandler.add(RestoreMapCommand.class, "restoremap");
 		commandHandler.add(ImagesCommand.class, "images");
 		commandHandler.add(SlideshowCommand.class, "smap");
+		commandHandler.add(TestCommand.class, "test");
 		
 		//Load configuration (if any)
 		//Load old data and set canvas to images.
 		//Load slideshow data and set canvas to data.
+		
+		SaveImageToDisk.tryTest();
 	}
 	
 	public static ImgMap getInstance(){

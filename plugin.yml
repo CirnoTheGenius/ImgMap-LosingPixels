@@ -23,3 +23,6 @@ commands:
     ani:
         description: Renders animated gif on map.
         usage: /ani <url>
+    test:
+        description: Test.
+        usage: /test

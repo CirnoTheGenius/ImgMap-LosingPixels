@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.google.common.io.Files;
 import com.tenko.ImgMap;
+import com.tenko.test.MapListener;
 
 public class MapDataUtils {
 	
@@ -55,6 +56,8 @@ public class MapDataUtils {
 			
 			bw.flush();
 			bw.close();
+			
+			MapListener.updateList();
 			return true;
 		} catch (IOException e){
 			e.printStackTrace();
@@ -73,7 +76,8 @@ public class MapDataUtils {
 
 			bw.flush();
 			bw.close();
-			
+
+			MapListener.updateList();
 			return true;
 		} catch (IOException e){
 			e.printStackTrace();
@@ -95,6 +99,8 @@ public class MapDataUtils {
 			
 			bw.flush();
 			bw.close();
+			
+			MapListener.updateList();
 			return true;
 		} catch (IOException e){
 			e.printStackTrace();

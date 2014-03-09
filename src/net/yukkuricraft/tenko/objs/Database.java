@@ -38,9 +38,9 @@ public class Database {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(this.database, true));
 			
 			writer.write(String.valueOf(id));
-			writer.write("\\|");
+			writer.write("|");
 			writer.write(url);
-			writer.write("\\|");
+			writer.write("|");
 			writer.write(isAnimated ? 'a' : 's');
 			writer.newLine();
 			
@@ -56,7 +56,7 @@ public class Database {
 			BufferedReader reader = new BufferedReader(new FileReader(this.database));
 			ArrayList<String> contents = new ArrayList<>();
 			// Shave off some time by not constructing a new StringBuffer every line.
-			String beginning = id + ":";
+			String beginning = id + "|";
 			String line;
 			while((line = reader.readLine()) != null){
 				if(line.startsWith(beginning)){
@@ -66,7 +66,7 @@ public class Database {
 			reader.close();
 			
 			BufferedWriter writer = new BufferedWriter(new FileWriter(this.database, false));
-			for (String content : contents){
+			for(String content : contents){
 				writer.write(content);
 			}
 			writer.flush();
@@ -83,14 +83,15 @@ public class Database {
 			
 			String line;
 			while((line = reader.readLine()) != null){
-				if(line.indexOf('|') < 1){
+				if(line.indexOf("|") == -1){
 					System.out.println("Database contained invalid line (Reason: Invalid format!): \"" + line + "\".");
 					continue;
 				}
 				
-				short id = Short.valueOf(line.split("\\|")[0]);
-				String url = line.split("\\|")[1];
-				String type = line.split("\\|")[2];
+				String[] strs = line.split("\\|");
+				short id = Short.valueOf(strs[0]);
+				String url = strs[1];
+				String type = strs[2];
 				
 				MapView view = Bukkit.getMap(id);
 				RenderUtils.removeRenderers(view);

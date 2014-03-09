@@ -9,6 +9,9 @@ public abstract class AbstractSafeRunnable implements Runnable {
 	
 	@Override
 	public void run(){
+		if(this.isRunning == null){
+			return; // Huzzah!
+		}
 		this.isRunning.set(true);
 		
 		while(this.isRunning.get()){
@@ -18,6 +21,10 @@ public abstract class AbstractSafeRunnable implements Runnable {
 			
 			this.running();
 		}
+	}
+	
+	public void disposeEarly(){
+		this.isRunning = null;
 	}
 	
 	public void stopRunning(){

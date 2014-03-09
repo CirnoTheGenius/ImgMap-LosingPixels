@@ -24,6 +24,7 @@ public class ImgMap extends JavaPlugin {
 	
 	private static Logger pluginLogger;
 	private Database database; // Just living in the database~ Wo-oh!
+	private File localImages = new File(this.getDataFolder(), "localImgs");
 	
 	@Override
 	public void onEnable(){
@@ -48,7 +49,7 @@ public class ImgMap extends JavaPlugin {
 			
 			if(cs instanceof Player){
 				if(args.length > 0){
-					Player plyr = (Player)cs;
+					Player plyr = (Player) cs;
 					
 					if(plyr.getItemInHand().getType() == Material.MAP){
 						MapView view = Bukkit.getMap(plyr.getItemInHand().getDurability());
@@ -57,7 +58,11 @@ public class ImgMap extends JavaPlugin {
 						ImageRenderer renderer;
 						
 						try{
-							renderer = new ImageRenderer(args[0]);
+							if(ArrayUtils.contains(args, "-l")){
+								renderer = new ImageRenderer(new File(this.localImages, args[0]));
+							}else{
+								renderer = new ImageRenderer(args[0]);
+							}
 						}catch (IOException e){
 							cs.sendMessage(ChatColor.RED + "[ImgMap] An error occured! Is the URL correct?");
 							e.printStackTrace();
@@ -65,7 +70,7 @@ public class ImgMap extends JavaPlugin {
 						}
 						
 						view.addRenderer(renderer);
-						for (Player player : plyr.getWorld().getPlayers()){
+						for(Player player : plyr.getWorld().getPlayers()){
 							player.sendMap(view);
 						}
 						
@@ -78,8 +83,7 @@ public class ImgMap extends JavaPlugin {
 					}else{
 						cs.sendMessage(ChatColor.RED + "[ImgMap] You must be holding a map!");
 					}
-				}else{
-					cs.sendMessage(ChatColor.RED + c.getUsage());
+					return true;
 				}
 			}else{
 				cs.sendMessage(ChatColor.RED + "[ImgMap] You need to be a player!");
@@ -91,7 +95,7 @@ public class ImgMap extends JavaPlugin {
 			
 			if(cs instanceof Player){
 				if(args.length > 0){
-					Player plyr = (Player)cs;
+					Player plyr = (Player) cs;
 					
 					if(plyr.getItemInHand().getType() == Material.MAP){
 						MapView view = Bukkit.getMap(plyr.getItemInHand().getDurability());
@@ -99,7 +103,11 @@ public class ImgMap extends JavaPlugin {
 						GifRenderer renderer;
 						
 						try{
-							renderer = new GifRenderer(args[0], view.getId());
+							if(ArrayUtils.contains(args, "-l")){
+								renderer = new GifRenderer(new File(this.localImages, args[0]), view.getId());
+							}else{
+								renderer = new GifRenderer(args[0], view.getId());
+							}
 						}catch (IOException e){
 							cs.sendMessage(ChatColor.RED + "[ImgMap] An error occured! Is the URL correct?");
 							e.printStackTrace();
@@ -117,8 +125,7 @@ public class ImgMap extends JavaPlugin {
 					}else{
 						cs.sendMessage(ChatColor.RED + "[ImgMap] You must be holding a map!");
 					}
-				}else{
-					cs.sendMessage(ChatColor.RED + c.getUsage());
+					return true;
 				}
 			}else{
 				cs.sendMessage(ChatColor.RED + "[ImgMap] You need to be a player!");
@@ -129,7 +136,7 @@ public class ImgMap extends JavaPlugin {
 			}
 			
 			if(cs instanceof Player){
-				Player plyr = (Player)cs;
+				Player plyr = (Player) cs;
 				
 				if(plyr.getItemInHand().getType() == Material.MAP){
 					MapView view = Bukkit.getMap(plyr.getItemInHand().getDurability());
@@ -141,6 +148,7 @@ public class ImgMap extends JavaPlugin {
 				}else{
 					cs.sendMessage(ChatColor.RED + "[ImgMap] You must be holding a map!");
 				}
+				return true;
 			}else{
 				cs.sendMessage(ChatColor.RED + "[ImgMap] You need to be a player!");
 			}
@@ -151,7 +159,7 @@ public class ImgMap extends JavaPlugin {
 			
 			if(args.length > 0){
 				try{
-					Player plyr = (Player)cs;
+					Player plyr = (Player) cs;
 					short id = Short.parseShort(args[0]);
 					MapView view = Bukkit.getMap(id);
 					ItemStack map = new ItemStack(Material.MAP);
@@ -163,6 +171,7 @@ public class ImgMap extends JavaPlugin {
 				}catch (NumberFormatException e){
 					cs.sendMessage(ChatColor.RED + "[ImgMap] That isn't a number!");
 				}
+				return true;
 			}else{
 				cs.sendMessage(ChatColor.RED + "[ImgMap] Please provide a map id!");
 			}
@@ -171,7 +180,7 @@ public class ImgMap extends JavaPlugin {
 				return true;
 			}
 			
-			Player plyr = (Player)cs;
+			Player plyr = (Player) cs;
 			ItemStack stack = new ItemStack(Material.MAP, 1);
 			stack.setDurability(Short.valueOf(args[0]));
 			plyr.setItemInHand(stack);

@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -48,31 +51,43 @@ public class BufferedGif {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void bufferData() throws IOException{
+	public void bufferData() throws IOException, InterruptedException{
 		InputStream io = this.url.openStream();
 		ImageInputStream stream = ImageIO.createImageInputStream(io);
+		ExecutorService executors = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		
 		this.reader = this.useSun ? SunReader.setupImageReader() : ImageIO.getImageReadersBySuffix("GIF").next();
-		this.reader.setInput(stream);
+		this.reader.setInput(stream, false, false);
 		this.frameCount = this.reader.getNumImages(true);
 		this.frames = new byte[this.frameCount][128][128];
 		
-		for(int index = 0; index < this.frameCount; index++){
-			BufferedImage image = this.reader.read(index);
-			RenderUtils.resizeImage(image);
+		for(int index = 0; index < this.frames.length; index++){
+			// TODO: Find a way to put this into the executor.
+			final BufferedImage image = BufferedGif.this.reader.read(index);
+			// Crude way of working around the whole "variable must be final" thing.
+			final int indexCopy = index;
 			
-			for(int x = 0; x < 128; x++){
-				for(int y = 0; y < 128; y++){
-					try{
-						this.frames[index][x][y] = MapPalette.matchColor(new Color(image.getRGB(x, y)));
-					}catch (ArrayIndexOutOfBoundsException e){
-						this.frames[index][x][y] = MapPalette.TRANSPARENT;
-						// ImgMap.logMessage("Failed to match byte color for coords x=" + x + " y=" + y + "! Defaulted to transparent!");
+			executors.execute(new Runnable() {
+				@Override
+				public void run(){
+					// inb4fails
+					RenderUtils.resizeImageNoEditing(image);
+					
+					for(int x = 0; x < 128; x++){
+						for(int y = 0; y < 128; y++){
+							try{
+								BufferedGif.this.frames[indexCopy][x][y] = MapPalette.matchColor(new Color(image.getRGB(x, y)));
+							}catch (ArrayIndexOutOfBoundsException e){
+								BufferedGif.this.frames[indexCopy][x][y] = MapPalette.TRANSPARENT;
+							}
+						}
 					}
 				}
-			}
+			});
 		}
 		
+		executors.shutdown();
+		executors.awaitTermination(1, TimeUnit.HOURS); // Overly stupid to have an hour.
 		this.getMilliDelay();
 		stream.close();
 		io.close();

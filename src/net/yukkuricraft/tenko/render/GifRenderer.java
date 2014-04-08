@@ -3,9 +3,11 @@ package net.yukkuricraft.tenko.render;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import net.minecraft.server.v1_7_R1.PacketPlayOutMap;
+import net.minecraft.server.v1_7_R2.PacketPlayOutMap;
 import net.yukkuricraft.tenko.ImgMap;
 import net.yukkuricraft.tenko.objs.BufferedGif;
 import net.yukkuricraft.tenko.threading.AbstractSafeRunnable;
@@ -21,7 +23,7 @@ public class GifRenderer extends MapRenderer {
 	
 	public final static int TOLERANCE = 10;
 	
-	private List<String> watchers;
+	private Set<String> watchers;
 	private List<AbstractSafeRunnable> running;
 	private PacketPlayOutMap[][] cache;
 	private int delayMilli;
@@ -30,7 +32,6 @@ public class GifRenderer extends MapRenderer {
 	
 	// Spinning thing: /drawanimatedimage http://www.thisiscolossal.com/wp-content/uploads/2013/01/4.gif
 	// Transforming gel: /drawanimatedimage http://i.imgur.com/vzzoyGs.gif
-	// Tenshi Tambourine: /drawanimatedimage http://24.media.tumblr.com/tumblr_mcbqgdaKRT1qasv9zo1_500.gif
 	// Experimental packet caching.
 	// The world is waiting~
 	public GifRenderer(String str, short id) throws IOException {
@@ -47,7 +48,7 @@ public class GifRenderer extends MapRenderer {
 		
 		this.gif = new BufferedGif(str, useSun);
 		this.setupCache(id);
-		this.watchers = new ArrayList<>();
+		this.watchers = new HashSet<>();
 		this.running = new ArrayList<>();
 	}
 	
@@ -65,7 +66,8 @@ public class GifRenderer extends MapRenderer {
 		
 		this.gif = new BufferedGif(file, useSun);
 		this.setupCache(id);
-		this.watchers = new ArrayList<>();
+		this.watchers = new HashSet<>();
+		this.running = new ArrayList<>();
 	}
 	
 	public BufferedGif getBufferedGif(){
@@ -111,14 +113,15 @@ public class GifRenderer extends MapRenderer {
 		if(this.running == null){
 			System.out.println("Called to stop renderer on " + this.toString() + " but returned had a null renderRunnable!");
 		}else{
-			// Safely stops it.
 			for(AbstractSafeRunnable renderRunnable : this.running){
 				renderRunnable.stopRunning();
-				System.out.println("Safely stopped runnable.");
+				
 				if(renderRunnable.isRunning()){
-					System.out.println("renderRunnable is still running!");
+					System.out.println(renderRunnable + " failed to stop!");
 				}
 			}
+			
+			running.clear();
 		}
 	}
 	

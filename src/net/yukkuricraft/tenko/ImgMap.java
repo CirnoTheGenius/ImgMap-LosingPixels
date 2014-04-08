@@ -6,9 +6,11 @@ import java.util.logging.Logger;
 
 import net.minecraft.util.org.apache.commons.lang3.ArrayUtils;
 import net.yukkuricraft.tenko.objs.Database;
+import net.yukkuricraft.tenko.render.DummyRenderer;
 import net.yukkuricraft.tenko.render.GifRenderer;
 import net.yukkuricraft.tenko.render.ImageRenderer;
 import net.yukkuricraft.tenko.render.RenderUtils;
+import net.yukkuricraft.tenko.video.YTAPIVideoObj;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,28 +22,79 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
+//TODO NOW: Cleanup this class.
+//Jesus christ; this thing is messy.
 public class ImgMap extends JavaPlugin {
 	
 	private static Logger pluginLogger;
 	private Database database; // Just living in the database~ Wo-oh!
 	private File localImages = new File(this.getDataFolder(), "localImgs");
+	private File localVideos = new File(this.getDataFolder(), "localVids");
+	private static File ffmpeg;
+	private boolean allowVideos = false;
 	
 	@Override
 	public void onEnable(){
 		ImgMap.pluginLogger = this.getLogger();
 		this.getDataFolder().mkdir();
+		
 		this.database = new Database(new File(this.getDataFolder(), "maps.dat"));
 		this.database.loadImages();
+		
+		if(!this.localImages.exists()){
+			this.localImages.mkdir();
+		}
+		
+		if(!this.localVideos.exists()){
+			this.localVideos.mkdir();
+		}
+		
+		this.saveDefaultConfig();
+		this.allowVideos = getConfig().getBoolean("AllowVideos");
+		
+		if(allowVideos){
+			ImgMap.ffmpeg = new File(this.localVideos, "ffmpeg.exe");
+			if(ImgMap.ffmpeg.exists()){
+				ImgMap.logMessage("Detected Windows FFmpeg! Videos are safe to use!");
+			}else{
+				ImgMap.ffmpeg = new File(this.localVideos, "ffmpeg");
+				if(ffmpeg.exists()){
+					ImgMap.logMessage("Detected Linux FFmpeg! Videos are safe to use!");
+				} else {
+					ImgMap.logMessage("Did not detect FFmpeg! Don't use videos!");				
+				}
+			}
+		}
+		
+		ImgMap.logMessage("Successfully loaded ImgMap!");
+	}
+	
+	public static File getFFmpeg(){
+		return ImgMap.ffmpeg;
 	}
 	
 	@Override
 	public void onDisable(){
 		ImgMap.pluginLogger = null;
+		ImgMap.ffmpeg = null;
 	}
 	
 	@Override
 	@SuppressWarnings("deprecation")
-	public boolean onCommand(CommandSender cs, Command c, String label, String[] args){
+	public boolean onCommand(final CommandSender cs, Command c, String label, String[] args){
+		if(c.getName().equalsIgnoreCase("imgmap")){
+			if(args.length == 0){
+				cs.sendMessage(ChatColor.YELLOW + "ImgMap by Evangon, Maximdv, and JohnnyBlu");
+				cs.sendMessage(ChatColor.YELLOW + this.getDescription().getVersion());
+				return true;
+			} else {
+				if(args[0].equalsIgnoreCase("reload")){
+					this.database.loadImages();
+					cs.sendMessage(ChatColor.GREEN + "Reloaded image map database.");
+				}
+			}
+		}
+		
 		if(c.getName().equalsIgnoreCase("drawimage")){
 			if(!c.testPermission(cs)){
 				return true;
@@ -105,6 +158,8 @@ public class ImgMap extends JavaPlugin {
 						try{
 							if(ArrayUtils.contains(args, "-l")){
 								renderer = new GifRenderer(new File(this.localImages, args[0]), view.getId());
+							}else if(ArrayUtils.contains(args, "-v")){
+								renderer = new GifRenderer(new File(this.localVideos, args[0]), view.getId());
 							}else{
 								renderer = new GifRenderer(args[0], view.getId());
 							}
@@ -115,7 +170,7 @@ public class ImgMap extends JavaPlugin {
 						}
 						
 						view.addRenderer(renderer);
-						cs.sendMessage(ChatColor.AQUA + "[ImgMap] Rendering " + args[0] + "!");
+						cs.sendMessage(ChatColor.AQUA + "[ImgMap] Rendering " + args[0] + "! Please wait as it caches the converted video's data.");
 						
 						if(ArrayUtils.contains(args, "-s")){
 							this.database.saveImage(view.getId(), args[0], true);
@@ -130,6 +185,23 @@ public class ImgMap extends JavaPlugin {
 			}else{
 				cs.sendMessage(ChatColor.RED + "[ImgMap] You need to be a player!");
 			}
+		}else if(c.getName().equalsIgnoreCase("drawytvideo")){
+			if(!c.testPermission(cs)){
+				return true;
+			}
+			
+			if(allowVideos){
+				MapView view = Bukkit.getMap(((Player)cs).getItemInHand().getDurability());
+				RenderUtils.removeRenderers(view);
+				YTAPIVideoObj obj = new YTAPIVideoObj(new File(this.localVideos, args[0] + ".gif"), args[0]);
+				
+				obj.startDownload(cs);
+				cs.sendMessage(ChatColor.AQUA + "[ImgMap] Downloading " + args[0] + "! Please wait.");
+				view.addRenderer(new DummyRenderer());
+			} else {
+				cs.sendMessage(ChatColor.RED + "[ImgMap] Videos are disabled by default! Enable them in the configuration file.");
+			}
+			return true;
 		}else if(c.getName().equalsIgnoreCase("clearmap")){
 			if(!c.testPermission(cs)){
 				return true;
@@ -159,14 +231,13 @@ public class ImgMap extends JavaPlugin {
 			
 			if(args.length > 0){
 				try{
-					Player plyr = (Player) cs;
 					short id = Short.parseShort(args[0]);
 					MapView view = Bukkit.getMap(id);
 					ItemStack map = new ItemStack(Material.MAP);
 					map.setDurability(id);
 					map.setAmount(1);
 					RenderUtils.removeRenderers(view);
-					view.addRenderer(RenderUtils.getRendererForWorld(map, plyr.getWorld()));
+					view.addRenderer(RenderUtils.getRendererForWorld(map, Bukkit.getWorlds().get(0)));
 					cs.sendMessage(ChatColor.AQUA + "[ImgMap] Attempted to remove all renderers for map ID#" + args[0]);
 				}catch (NumberFormatException e){
 					cs.sendMessage(ChatColor.RED + "[ImgMap] That isn't a number!");

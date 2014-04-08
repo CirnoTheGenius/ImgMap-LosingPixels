@@ -2,7 +2,7 @@ package net.yukkuricraft.tenko.threading;
 
 import java.io.IOException;
 
-import net.minecraft.server.v1_7_R1.PacketPlayOutMap;
+import net.minecraft.server.v1_7_R2.PacketPlayOutMap;
 import net.yukkuricraft.tenko.objs.BufferedGif;
 import net.yukkuricraft.tenko.render.GifRenderer;
 
@@ -11,6 +11,10 @@ public class CachingRunnable implements Runnable {
 	private GifRenderer renderer;
 	private BufferedGif gif;
 	private int id;
+	
+	public static void main(String[] args){
+		System.out.println(Math.round(((float) 1 / (float) 4) * 100.0) / 100.0);
+	}
 	
 	public CachingRunnable(int id, GifRenderer renderer) {
 		this.renderer = renderer;
@@ -26,15 +30,15 @@ public class CachingRunnable implements Runnable {
 			this.gif.bufferData();
 			this.renderer.setMillisecondDelay(this.gif.getMilliDelay());
 			frames = this.gif.getFrames();
-		}catch (IOException e){
+		}catch (IOException | InterruptedException e){
 			e.printStackTrace();
 			return;
 		}
 		
+		System.out.println("Finished buffering GIF. Now caching.");
 		// Supposed to be 128 packets.
 		PacketPlayOutMap[][] packets = this.renderer.initializeCache(frames.length);
 		byte[][] lastFrame = frames[0];
-		
 		for(int index = 1; index < frames.length; index++){
 			byte[][] currentFrame = frames[index];
 			
@@ -50,7 +54,6 @@ public class CachingRunnable implements Runnable {
 				}
 			}
 		}
-		
 		// Ready to rumble!
 		System.out.println("Let's do this!");
 		this.renderer.setCache(packets);
@@ -73,4 +76,5 @@ public class CachingRunnable implements Runnable {
 		
 		return null;
 	}
+	
 }

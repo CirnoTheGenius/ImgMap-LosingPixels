@@ -11,8 +11,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.zip.GZIPOutputStream;
 
-import net.minecraft.server.v1_7_R1.NBTBase;
-import net.minecraft.server.v1_7_R1.NBTTagCompound;
+import net.minecraft.server.v1_7_R2.NBTBase;
+import net.minecraft.server.v1_7_R2.NBTTagCompound;
 import net.yukkuricraft.tenko.render.RenderUtils;
 
 import org.bukkit.Bukkit;
@@ -51,7 +51,7 @@ public class NMSImg2Disk {
 		short width = nbtTag.getShort("width");
 		short height = nbtTag.getShort("height");
 		
-		if(width == 128 && height == 128){
+		if((width == 128) && (height == 128)){
 			colors = nbtTag.getByteArray("colors");
 		}else{
 			// This part made me pull my hairs out.
@@ -61,15 +61,15 @@ public class NMSImg2Disk {
 			int newWidth = (128 - width) / 2;
 			int newHeight = (128 - height) / 2;
 			
-			for (int looper1 = 0; looper1 < newHeight; looper1++){
+			for(int looper1 = 0; looper1 < newHeight; looper1++){
 				int x = looper1 + newHeight;
 				
-				if(x >= 0 || x < 128){
-					for (int looper2 = 0; looper2 < newWidth; looper2++){
+				if((x >= 0) || (x < 128)){
+					for(int looper2 = 0; looper2 < newWidth; looper2++){
 						int y = looper2 + looper1;
 						
-						if(y >= 0 || y < 128){
-							colors[y + x * 128] = newColors[looper2 + looper1 * width];
+						if((y >= 0) || (y < 128)){
+							colors[y + (x * 128)] = newColors[looper2 + (looper1 * width)];
 						}
 					}
 				}
@@ -96,9 +96,9 @@ public class NMSImg2Disk {
 		data.setByte("dimension", dimension);
 		data.setInt("xCenter", 10);
 		data.setInt("zCenter", 20);
-		data.setByte("scale", (byte)5);
-		data.setShort("width", (short)128);
-		data.setShort("height", (short)128);
+		data.setByte("scale", (byte) 5);
+		data.setShort("width", (short) 128);
+		data.setShort("height", (short) 128);
 		RenderUtils.resizeImage(io);
 		data.setByteArray("colors", MapPalette.imageToBytes(io));
 		data.set("data", data);

@@ -47,7 +47,6 @@ public class RenderUtils {
 			MapRenderer mr = iter.next();
 			view.removeRenderer(mr);
 			
-			
 			if(mr instanceof GifRenderer){
 				((GifRenderer) mr).stopRendering();
 			}

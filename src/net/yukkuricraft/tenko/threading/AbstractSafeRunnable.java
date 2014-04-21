@@ -16,7 +16,7 @@ public abstract class AbstractSafeRunnable implements Runnable {
 		
 		this.isRunning.set(true);
 		
-		while(this.isRunning.get()){			
+		while(this.isRunning.get()){
 			try{
 				this.running();
 			}catch (Throwable e){

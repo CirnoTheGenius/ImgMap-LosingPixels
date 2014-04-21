@@ -10,7 +10,7 @@ import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class AnimationRunnable extends AbstractSafeRunnable {
-
+	
 	// Likely only shaving off a couple of nano seconds.
 	// Edit: Switched PlayerConnection -> Getting the channel directly!
 	// Less nanoseconds!
@@ -18,7 +18,7 @@ public class AnimationRunnable extends AbstractSafeRunnable {
 	private PacketPlayOutMap[][] cache;
 	private int delay;
 	private int index = 0;
-
+	
 	public AnimationRunnable(Player plyr, PacketPlayOutMap[][] cache, int delay) {
 		try{
 			NetworkManager netty = ((CraftPlayer) plyr).getHandle().playerConnection.networkManager;
@@ -40,21 +40,24 @@ public class AnimationRunnable extends AbstractSafeRunnable {
 		this.cache = null;
 		this.oniichan = null;
 	}
-
+	
 	@Override
 	public void running(){
 		if(!this.oniichan.isOpen() || !this.isRunning()){
 			this.stopRunning();
 		}
 		
-		index++;
-
-		if(index >= cache.length){
-			return;
+		this.index++;
+		
+		if(this.index >= this.cache.length){
+			this.stopRunning();
 		}
-
-		PacketPlayOutMap[] cachedFrame = cache[index];
+		
+		PacketPlayOutMap[] cachedFrame = this.cache[this.index];
 		if(cachedFrame != null){
+			// Flush all awaiting data and then send our data.
+			this.oniichan.flush();
+			
 			for(PacketPlayOutMap packet : cachedFrame){
 				if(packet != null){
 					AnimationRunnable.this.oniichan.write(packet);

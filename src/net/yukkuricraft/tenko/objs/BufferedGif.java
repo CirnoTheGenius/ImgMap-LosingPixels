@@ -2,10 +2,8 @@ package net.yukkuricraft.tenko.objs;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,30 +29,19 @@ public class BufferedGif {
 	private int frameCount = -1;
 	private boolean useSun;
 	
-	public BufferedGif(String url, boolean useSun) {
-		try{
-			this.url = new URL(url);
-			this.useSun = useSun;
-		}catch (MalformedURLException e){
-			e.printStackTrace();
-		}
-	}
-	
-	@SuppressWarnings("deprecation")
-	public BufferedGif(File file, boolean useSun) {
-		try{
-			this.url = file.toURL();
-			this.useSun = useSun;
-		}catch (MalformedURLException e){
-			e.printStackTrace();
-		}
+	public BufferedGif(URL toDraw, boolean useSun) {
+		this.url = toDraw;
+		this.useSun = useSun;
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void bufferData() throws IOException, InterruptedException{
 		InputStream io = this.url.openStream();
 		ImageInputStream stream = ImageIO.createImageInputStream(io);
-		ExecutorService executors = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		
+		// Fixed vs Cached...
+		// ExecutorService executors = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		ExecutorService executors = Executors.newCachedThreadPool();
 		
 		this.reader = this.useSun ? SunReader.setupImageReader() : ImageIO.getImageReadersBySuffix("GIF").next();
 		this.reader.setInput(stream, false, false);
@@ -62,8 +49,8 @@ public class BufferedGif {
 		this.frames = new byte[this.frameCount][128][128];
 		
 		for(int index = 0; index < this.frames.length; index++){
-			// TODO: Find a way to put this into the executor.
 			final BufferedImage image = BufferedGif.this.reader.read(index);
+			
 			// Crude way of working around the whole "variable must be final" thing.
 			final int indexCopy = index;
 			

@@ -1,7 +1,7 @@
 package net.yukkuricraft.tenko.render;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.bukkit.map.MapView;
 
 public class GifRenderer extends MapRenderer {
 	
-	public final static int TOLERANCE = 10;
+	public final static int TOLERANCE = 20;
 	
 	private Set<String> watchers;
 	private List<AbstractSafeRunnable> running;
@@ -34,7 +34,7 @@ public class GifRenderer extends MapRenderer {
 	// Transforming gel: /drawanimatedimage http://i.imgur.com/vzzoyGs.gif
 	// Experimental packet caching.
 	// The world is waiting~
-	public GifRenderer(String str, short id) throws IOException {
+	public GifRenderer(short id, URL toDraw) throws IOException {
 		boolean useSun = false;
 		
 		try{
@@ -46,25 +46,7 @@ public class GifRenderer extends MapRenderer {
 			ImgMap.logMessage("Using homemade GIF reader.");
 		}
 		
-		this.gif = new BufferedGif(str, useSun);
-		this.setupCache(id);
-		this.watchers = new HashSet<>();
-		this.running = new ArrayList<>();
-	}
-	
-	public GifRenderer(File file, short id) throws IOException {
-		boolean useSun = false;
-		
-		try{
-			Class.forName("com.sun.imageio.plugins.gif.GIFImageReader");
-			Class.forName("com.sun.imageio.plugins.gif.GIFImageReaderSpi");
-			ImgMap.logMessage("Using Sun GIF reader.");
-			useSun = true;
-		}catch (ClassNotFoundException e){
-			ImgMap.logMessage("Using homemade GIF reader.");
-		}
-		
-		this.gif = new BufferedGif(file, useSun);
+		this.gif = new BufferedGif(toDraw, useSun);
 		this.setupCache(id);
 		this.watchers = new HashSet<>();
 		this.running = new ArrayList<>();
@@ -113,7 +95,7 @@ public class GifRenderer extends MapRenderer {
 		if(this.running == null){
 			System.out.println("Called to stop renderer on " + this.toString() + " but returned had a null renderRunnable!");
 		}else{
-			for(AbstractSafeRunnable renderRunnable : this.running){
+			for (AbstractSafeRunnable renderRunnable : this.running){
 				renderRunnable.stopRunning();
 				
 				if(renderRunnable.isRunning()){
@@ -121,7 +103,7 @@ public class GifRenderer extends MapRenderer {
 				}
 			}
 			
-			running.clear();
+			this.running.clear();
 		}
 	}
 	

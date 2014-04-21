@@ -53,7 +53,10 @@ public class CachingRunnable implements Runnable {
 					packets[index][row] = new PacketPlayOutMap(this.id, packetData);
 				}
 			}
+			
+			lastFrame = currentFrame; // HURR DURR. Forgot this all this time.
 		}
+		
 		// Ready to rumble!
 		System.out.println("Let's do this!");
 		this.renderer.setCache(packets);
@@ -62,14 +65,11 @@ public class CachingRunnable implements Runnable {
 	
 	public byte[] getChangesFromColumn(int row, byte[] prev, byte[] curr){
 		for(int y = 0; y < 128; y++){
-			if(Math.abs(prev[y] - curr[y]) > GifRenderer.TOLERANCE){
+			if(Math.abs((prev[y] & 0xFF) - (curr[y] & 0xFF)) > GifRenderer.TOLERANCE){
 				byte[] packetData = new byte[131];
 				packetData[1] = (byte) row;
 				
-				for(int index = 0; index < 128; index++){
-					packetData[index + 3] = curr[index];
-				}
-				
+				System.arraycopy(curr, 0, packetData, 3, curr.length);
 				return packetData;
 			}
 		}

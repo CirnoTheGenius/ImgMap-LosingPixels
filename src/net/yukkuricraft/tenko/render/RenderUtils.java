@@ -1,19 +1,17 @@
 package net.yukkuricraft.tenko.render;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 
-import net.minecraft.server.v1_7_R2.ItemWorldMap;
+import net.minecraft.server.v1_7_R3.ItemWorldMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_7_R2.map.CraftMapRenderer;
-import org.bukkit.craftbukkit.v1_7_R2.map.CraftMapView;
+import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R3.map.CraftMapRenderer;
+import org.bukkit.craftbukkit.v1_7_R3.map.CraftMapView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -47,15 +45,15 @@ public class RenderUtils {
 			MapRenderer mr = iter.next();
 			view.removeRenderer(mr);
 			
-			if(mr instanceof GifRenderer){
-				((GifRenderer) mr).stopRendering();
+			if(mr instanceof StoppableRenderer){
+				((StoppableRenderer) mr).stopRendering();
 			}
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
 	public static MapRenderer getRendererForWorld(ItemStack bukkitStack, World world){
-		net.minecraft.server.v1_7_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(bukkitStack);
+		net.minecraft.server.v1_7_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(bukkitStack);
 		CraftMapView view = (CraftMapView) Bukkit.getMap(bukkitStack.getDurability());
 		MapRenderer worldRenderer = new CraftMapRenderer(view, ((ItemWorldMap) nmsStack.getItem()).getSavedMap(nmsStack, ((CraftWorld) world).getHandle()));
 		return worldRenderer;

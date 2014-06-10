@@ -19,7 +19,7 @@ import org.bukkit.map.MapView;
 public class DrawImageCommand extends AbstractCommandHandler {
 	
 	public DrawImageCommand() {
-		super(true, true, 1);
+		super(true, true, 1, "imgmap.drawimage");
 	}
 	
 	@Override

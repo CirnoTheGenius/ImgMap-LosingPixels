@@ -1,6 +1,6 @@
-package net.yukkuricraft.tenko.emunew;
+package net.yukkuricraft.tenko.gbemulator;
 
-import static net.yukkuricraft.tenko.emunew.BitConstants.*;
+import static net.yukkuricraft.tenko.gbemulator.BitConstants.*;
 
 public class Interpreter {
 	
@@ -15,8 +15,8 @@ public class Interpreter {
 		this.ram = mpu.getRAM();
 	}
 	
-	public void interpret() {
-		switch (ram.readMemory(mpu.pcReg++)) {
+	public void interpret(){
+		switch(ram.readMemory(mpu.pcReg++)){
 		case 0x00: // NOP
 			mpu.incrementCycleCount(1);
 			break;
@@ -35,7 +35,7 @@ public class Interpreter {
 		case 0x03: // INC BC
 			mpu.incrementCycleCount(2);
 			mpu.cReg++;
-			if (mpu.cReg > 0xFF) {
+			if(mpu.cReg > 0xFF){
 				mpu.cReg = 0;
 				mpu.bReg = (mpu.bReg + 1) & 0xFF;
 			}
@@ -77,7 +77,7 @@ public class Interpreter {
 			mpu.lReg += mpu.cReg;
 			mpu.hReg += mpu.bReg + (mpu.lReg >> 8);
 			mpu.lReg &= 0xFF;
-			if (mpu.hReg > 0xFF) {
+			if(mpu.hReg > 0xFF){
 				mpu.hReg &= 0xFF;
 				mpu.fReg |= CARRY;
 			}
@@ -91,7 +91,7 @@ public class Interpreter {
 		case 0x0B: // DEC BC
 			mpu.incrementCycleCount(2);
 			mpu.cReg--;
-			if (mpu.cReg < 0) {
+			if(mpu.cReg < 0){
 				mpu.cReg = 0xFF;
 				mpu.bReg = (mpu.bReg - 1) & 0xFF;
 			}
@@ -139,7 +139,7 @@ public class Interpreter {
 		case 0x13: // INC DE
 			mpu.incrementCycleCount(2);
 			mpu.eReg++;
-			if (mpu.eReg > 0xFF) {
+			if(mpu.eReg > 0xFF){
 				mpu.eReg = 0;
 				mpu.dReg = (mpu.dReg + 1) & 0xFF;
 			}
@@ -181,7 +181,7 @@ public class Interpreter {
 			mpu.lReg += mpu.eReg;
 			mpu.hReg += mpu.dReg + (mpu.lReg >> 8);
 			mpu.lReg &= 0xFF;
-			if (mpu.hReg > 0xFF) {
+			if(mpu.hReg > 0xFF){
 				mpu.hReg &= 0xFF;
 				mpu.fReg |= CARRY;
 			}
@@ -195,7 +195,7 @@ public class Interpreter {
 		case 0x1B: // DEC DE
 			mpu.incrementCycleCount(2);
 			mpu.eReg--;
-			if (mpu.eReg < 0) {
+			if(mpu.eReg < 0){
 				mpu.eReg = 0xFF;
 				mpu.dReg = (mpu.dReg - 1) & 0xFF;
 			}
@@ -226,11 +226,11 @@ public class Interpreter {
 			break;
 		
 		case 0x20: // JR NZ,n
-			if ((mpu.fReg & ZERO) == 0) {
+			if((mpu.fReg & ZERO) == 0){
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += (byte) ram.readMemory(mpu.pcReg) + 1; // signed
 																	// immediate
-			} else {
+			}else{
 				mpu.incrementCycleCount(2);
 				mpu.pcReg++;
 			}
@@ -254,7 +254,7 @@ public class Interpreter {
 		case 0x23: // INC HL
 			mpu.incrementCycleCount(2);
 			mpu.lReg++;
-			if (mpu.lReg > 0xFF) {
+			if(mpu.lReg > 0xFF){
 				mpu.lReg = 0;
 				mpu.hReg = (mpu.hReg + 1) & 0xFF;
 			}
@@ -279,42 +279,42 @@ public class Interpreter {
 		
 		case 0x27: // DAA
 			mpu.incrementCycleCount(1);
-			if ((mpu.fReg & SUBTRACT) != 0) {
-				if ((mpu.aReg & 0x0F) > 0x09 || (mpu.fReg & HALF_CARRY) != 0) {
+			if((mpu.fReg & SUBTRACT) != 0){
+				if((mpu.aReg & 0x0F) > 0x09 || (mpu.fReg & HALF_CARRY) != 0){
 					mpu.aReg -= 0x06;
 				}
-				if ((mpu.aReg & 0xF0) > 0x90 || (mpu.fReg & CARRY) != 0) {
+				if((mpu.aReg & 0xF0) > 0x90 || (mpu.fReg & CARRY) != 0){
 					mpu.aReg -= 0x60;
 					mpu.fReg |= CARRY;
-				} else {
+				}else{
 					mpu.fReg &= ~CARRY;
 				}
-			} else {
-				if ((mpu.aReg & 0x0F) > 0x09 || (mpu.fReg & HALF_CARRY) != 0) {
+			}else{
+				if((mpu.aReg & 0x0F) > 0x09 || (mpu.fReg & HALF_CARRY) != 0){
 					mpu.aReg += 0x06;
 				}
-				if ((mpu.aReg & 0xF0) > 0x90 || (mpu.fReg & CARRY) != 0) {
+				if((mpu.aReg & 0xF0) > 0x90 || (mpu.fReg & CARRY) != 0){
 					mpu.aReg += 0x60;
 					mpu.fReg |= CARRY;
-				} else {
+				}else{
 					mpu.fReg &= ~CARRY;
 				}
 			}
 			mpu.fReg &= ~HALF_CARRY;
 			mpu.aReg &= 0xFF;
-			if (mpu.aReg == 0) {
+			if(mpu.aReg == 0){
 				mpu.fReg |= ZERO;
-			} else {
+			}else{
 				mpu.fReg &= ~ZERO;
 			}
 			break;
 		
 		case 0x28: // JR Z,n
-			if ((mpu.fReg & ZERO) != 0) {
+			if((mpu.fReg & ZERO) != 0){
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += (byte) ram.readMemory(mpu.pcReg) + 1; // signed
 																	// immediate
-			} else {
+			}else{
 				mpu.incrementCycleCount(2);
 				mpu.pcReg++;
 			}
@@ -326,7 +326,7 @@ public class Interpreter {
 			mpu.lReg += mpu.lReg;
 			mpu.hReg += mpu.hReg + (mpu.lReg >> 8);
 			mpu.lReg &= 0xFF;
-			if (mpu.hReg > 0xFF) {
+			if(mpu.hReg > 0xFF){
 				mpu.hReg &= 0xFF;
 				mpu.fReg |= CARRY;
 			}
@@ -344,7 +344,7 @@ public class Interpreter {
 		case 0x2B: // DEC HL
 			mpu.incrementCycleCount(2);
 			mpu.lReg--;
-			if (mpu.lReg < 0) {
+			if(mpu.lReg < 0){
 				mpu.lReg = 0xFF;
 				mpu.hReg = (mpu.hReg - 1) & 0xFF;
 			}
@@ -374,11 +374,11 @@ public class Interpreter {
 			break;
 		
 		case 0x30: // JR NC,n
-			if ((mpu.fReg & CARRY) == 0) {
+			if((mpu.fReg & CARRY) == 0){
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += (byte) ram.readMemory(mpu.pcReg) + 1; // signed
 																	// immediate
-			} else {
+			}else{
 				mpu.incrementCycleCount(2);
 				mpu.pcReg++;
 			}
@@ -431,11 +431,11 @@ public class Interpreter {
 			break;
 		
 		case 0x38: // JR C,n
-			if ((mpu.fReg & CARRY) != 0) {
+			if((mpu.fReg & CARRY) != 0){
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += (byte) ram.readMemory(mpu.pcReg) + 1; // signed
 																	// immediate
-			} else {
+			}else{
 				mpu.incrementCycleCount(2);
 				mpu.pcReg++;
 			}
@@ -445,7 +445,7 @@ public class Interpreter {
 			mpu.incrementCycleCount(2);
 			mpu.fReg &= ZERO;
 			val = ((mpu.hReg << 8) | mpu.lReg) + mpu.spReg;
-			if (val > 0xFFFF) {
+			if(val > 0xFFFF){
 				val &= 0xFFFF;
 				mpu.fReg |= CARRY;
 			}
@@ -755,11 +755,11 @@ public class Interpreter {
 			break;
 		
 		case 0x76: // HALT
-			if (mpu.ime) {
+			if(mpu.ime){
 				mpu.pcReg--;
 				mpu.halt();
 				mpu.setCycles(mpu.getNextHBlank());
-			} else {
+			}else{
 				mpu.incrementCycleCount(1);
 			}
 			break;
@@ -1205,10 +1205,10 @@ public class Interpreter {
 			break;
 		
 		case 0xC0: // RET NZ
-			if ((mpu.fReg & ZERO) == 0) {
+			if((mpu.fReg & ZERO) == 0){
 				mpu.incrementCycleCount(5);
 				mpu.pcReg = ram.readMemory(mpu.spReg++) | (ram.readMemory(mpu.spReg++) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(2);
 			}
 			break;
@@ -1220,10 +1220,10 @@ public class Interpreter {
 			break;
 		
 		case 0xC2: // JP NZ,nn
-			if ((mpu.fReg & ZERO) == 0) {
+			if((mpu.fReg & ZERO) == 0){
 				mpu.incrementCycleCount(4);
 				mpu.pcReg = ram.readMemory(mpu.pcReg) | (ram.readMemory(mpu.pcReg + 1) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += 2;
 			}
@@ -1235,12 +1235,12 @@ public class Interpreter {
 			break;
 		
 		case 0xC4: // CALL NZ,nn
-			if ((mpu.fReg & ZERO) == 0) {
+			if((mpu.fReg & ZERO) == 0){
 				mpu.incrementCycleCount(6);
 				ram.writeMemory(mpu.spReg = (mpu.spReg - 1) & 0xFFFF, (mpu.pcReg + 2) >> 8);
 				ram.writeMemory(mpu.spReg = (mpu.spReg - 1) & 0xFFFF, (mpu.pcReg + 2) & 0x00FF);
 				mpu.pcReg = ram.readMemory(mpu.pcReg) | (ram.readMemory(mpu.pcReg + 1) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += 2;
 			}
@@ -1267,10 +1267,10 @@ public class Interpreter {
 			break;
 		
 		case 0xC8: // RET Z
-			if ((mpu.fReg & ZERO) != 0) {
+			if((mpu.fReg & ZERO) != 0){
 				mpu.incrementCycleCount(5);
 				mpu.pcReg = ram.readMemory(mpu.spReg++) | (ram.readMemory(mpu.spReg++) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(2);
 			}
 			break;
@@ -1281,22 +1281,22 @@ public class Interpreter {
 			break;
 		
 		case 0xCA: // JP Z,nn
-			if ((mpu.fReg & ZERO) != 0) {
+			if((mpu.fReg & ZERO) != 0){
 				mpu.incrementCycleCount(4);
 				mpu.pcReg = ram.readMemory(mpu.pcReg) | (ram.readMemory(mpu.pcReg + 1) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += 2;
 			}
 			break;
 		
 		case 0xCB: // 2-byte ompu.pcRegodes
-			switch (ram.readMemory(mpu.pcReg++)) {
+			switch(ram.readMemory(mpu.pcReg++)){
 			case 0x00: // RLC B
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.bReg & BIT7) >> 3;
 				mpu.bReg = ((mpu.bReg << 1) | (mpu.bReg >> 7)) & 0xFF;
-				if (mpu.bReg == 0) {
+				if(mpu.bReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1305,7 +1305,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.cReg & BIT7) >> 3;
 				mpu.cReg = ((mpu.cReg << 1) | (mpu.cReg >> 7)) & 0xFF;
-				if (mpu.cReg == 0) {
+				if(mpu.cReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1314,7 +1314,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.dReg & BIT7) >> 3;
 				mpu.dReg = ((mpu.dReg << 1) | (mpu.dReg >> 7)) & 0xFF;
-				if (mpu.dReg == 0) {
+				if(mpu.dReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1323,7 +1323,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.eReg & BIT7) >> 3;
 				mpu.eReg = ((mpu.eReg << 1) | (mpu.eReg >> 7)) & 0xFF;
-				if (mpu.eReg == 0) {
+				if(mpu.eReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1332,7 +1332,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.hReg & BIT7) >> 3;
 				mpu.hReg = ((mpu.hReg << 1) | (mpu.hReg >> 7)) & 0xFF;
-				if (mpu.hReg == 0) {
+				if(mpu.hReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1341,7 +1341,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.lReg & BIT7) >> 3;
 				mpu.lReg = ((mpu.lReg << 1) | (mpu.lReg >> 7)) & 0xFF;
-				if (mpu.lReg == 0) {
+				if(mpu.lReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1351,7 +1351,7 @@ public class Interpreter {
 				index = (mpu.hReg << 8) | mpu.lReg;
 				memval = ram.readMemory(index);
 				mpu.fReg = (memval & BIT7) >> 3;
-				if (ram.writeMemory(index, ((memval << 1) | (memval >> 7)) & 0xFF) == 0) {
+				if(ram.writeMemory(index, ((memval << 1) | (memval >> 7)) & 0xFF) == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1360,7 +1360,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.aReg & BIT7) >> 3;
 				mpu.aReg = ((mpu.aReg << 1) | (mpu.aReg >> 7)) & 0xFF;
-				if (mpu.aReg == 0) {
+				if(mpu.aReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1369,7 +1369,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.bReg & BIT0) << 4;
 				mpu.bReg = ((mpu.bReg >> 1) | (mpu.bReg << 7)) & 0xFF;
-				if (mpu.bReg == 0) {
+				if(mpu.bReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1378,7 +1378,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.cReg & BIT0) << 4;
 				mpu.cReg = ((mpu.cReg >> 1) | (mpu.cReg << 7)) & 0xFF;
-				if (mpu.cReg == 0) {
+				if(mpu.cReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1387,7 +1387,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.dReg & BIT0) << 4;
 				mpu.dReg = ((mpu.dReg >> 1) | (mpu.dReg << 7)) & 0xFF;
-				if (mpu.dReg == 0) {
+				if(mpu.dReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1396,7 +1396,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.eReg & BIT0) << 4;
 				mpu.eReg = ((mpu.eReg >> 1) | (mpu.eReg << 7)) & 0xFF;
-				if (mpu.eReg == 0) {
+				if(mpu.eReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1405,7 +1405,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.hReg & BIT0) << 4;
 				mpu.hReg = ((mpu.hReg >> 1) | (mpu.hReg << 7)) & 0xFF;
-				if (mpu.hReg == 0) {
+				if(mpu.hReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1414,7 +1414,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.lReg & BIT0) << 4;
 				mpu.lReg = ((mpu.lReg >> 1) | (mpu.lReg << 7)) & 0xFF;
-				if (mpu.lReg == 0) {
+				if(mpu.lReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1424,7 +1424,7 @@ public class Interpreter {
 				index = (mpu.hReg << 8) | mpu.lReg;
 				memval = ram.readMemory(index);
 				mpu.fReg = (memval & BIT0) << 4;
-				if (ram.writeMemory(index, ((memval >> 1) | (memval << 7)) & 0xFF) == 0) {
+				if(ram.writeMemory(index, ((memval >> 1) | (memval << 7)) & 0xFF) == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1433,7 +1433,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.aReg & BIT0) << 4;
 				mpu.aReg = ((mpu.aReg >> 1) | (mpu.aReg << 7)) & 0xFF;
-				if (mpu.aReg == 0) {
+				if(mpu.aReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1443,7 +1443,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) >> 4;
 				mpu.fReg = (mpu.bReg & BIT7) >> 3;
 				mpu.bReg = ((mpu.bReg << 1) | val) & 0xFF;
-				if (mpu.bReg == 0) {
+				if(mpu.bReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1453,7 +1453,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) >> 4;
 				mpu.fReg = (mpu.cReg & BIT7) >> 3;
 				mpu.cReg = ((mpu.cReg << 1) | val) & 0xFF;
-				if (mpu.cReg == 0) {
+				if(mpu.cReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1463,7 +1463,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) >> 4;
 				mpu.fReg = (mpu.dReg & BIT7) >> 3;
 				mpu.dReg = ((mpu.dReg << 1) | val) & 0xFF;
-				if (mpu.dReg == 0) {
+				if(mpu.dReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1473,7 +1473,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) >> 4;
 				mpu.fReg = (mpu.eReg & BIT7) >> 3;
 				mpu.eReg = ((mpu.eReg << 1) | val) & 0xFF;
-				if (mpu.eReg == 0) {
+				if(mpu.eReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1483,7 +1483,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) >> 4;
 				mpu.fReg = (mpu.hReg & BIT7) >> 3;
 				mpu.hReg = ((mpu.hReg << 1) | val) & 0xFF;
-				if (mpu.hReg == 0) {
+				if(mpu.hReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1493,7 +1493,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) >> 4;
 				mpu.fReg = (mpu.lReg & BIT7) >> 3;
 				mpu.lReg = ((mpu.lReg << 1) | val) & 0xFF;
-				if (mpu.lReg == 0) {
+				if(mpu.lReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1504,7 +1504,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) >> 4;
 				memval = ram.readMemory(index);
 				mpu.fReg = (memval & BIT7) >> 3;
-				if (ram.writeMemory(index, ((memval << 1) | val) & 0xFF) == 0) {
+				if(ram.writeMemory(index, ((memval << 1) | val) & 0xFF) == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1514,7 +1514,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) >> 4;
 				mpu.fReg = (mpu.aReg & BIT7) >> 3;
 				mpu.aReg = ((mpu.aReg << 1) | val) & 0xFF;
-				if (mpu.aReg == 0) {
+				if(mpu.aReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1524,7 +1524,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) << 3;
 				mpu.fReg = (mpu.bReg & BIT0) << 4;
 				mpu.bReg = (mpu.bReg >> 1) | val;
-				if (mpu.bReg == 0) {
+				if(mpu.bReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1534,7 +1534,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) << 3;
 				mpu.fReg = (mpu.cReg & BIT0) << 4;
 				mpu.cReg = (mpu.cReg >> 1) | val;
-				if (mpu.cReg == 0) {
+				if(mpu.cReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1544,7 +1544,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) << 3;
 				mpu.fReg = (mpu.dReg & BIT0) << 4;
 				mpu.dReg = (mpu.dReg >> 1) | val;
-				if (mpu.dReg == 0) {
+				if(mpu.dReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1554,7 +1554,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) << 3;
 				mpu.fReg = (mpu.eReg & BIT0) << 4;
 				mpu.eReg = (mpu.eReg >> 1) | val;
-				if (mpu.eReg == 0) {
+				if(mpu.eReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1564,7 +1564,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) << 3;
 				mpu.fReg = (mpu.hReg & BIT0) << 4;
 				mpu.hReg = (mpu.hReg >> 1) | val;
-				if (mpu.hReg == 0) {
+				if(mpu.hReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1574,7 +1574,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) << 3;
 				mpu.fReg = (mpu.lReg & BIT0) << 4;
 				mpu.lReg = (mpu.lReg >> 1) | val;
-				if (mpu.lReg == 0) {
+				if(mpu.lReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1585,7 +1585,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) << 3;
 				memval = ram.readMemory(index);
 				mpu.fReg = (memval & BIT0) << 4;
-				if (ram.writeMemory(index, (memval >> 1) | val) == 0) {
+				if(ram.writeMemory(index, (memval >> 1) | val) == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1595,7 +1595,7 @@ public class Interpreter {
 				val = (mpu.fReg & CARRY) << 3;
 				mpu.fReg = (mpu.aReg & BIT0) << 4;
 				mpu.aReg = (mpu.aReg >> 1) | val;
-				if (mpu.aReg == 0) {
+				if(mpu.aReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1604,7 +1604,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.bReg & BIT7) >> 3;
 				mpu.bReg = (mpu.bReg << 1) & 0xFF;
-				if (mpu.bReg == 0) {
+				if(mpu.bReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1613,7 +1613,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.cReg & BIT7) >> 3;
 				mpu.cReg = (mpu.cReg << 1) & 0xFF;
-				if (mpu.cReg == 0) {
+				if(mpu.cReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1622,7 +1622,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.dReg & BIT7) >> 3;
 				mpu.dReg = (mpu.dReg << 1) & 0xFF;
-				if (mpu.dReg == 0) {
+				if(mpu.dReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1631,7 +1631,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.eReg & BIT7) >> 3;
 				mpu.eReg = (mpu.eReg << 1) & 0xFF;
-				if (mpu.eReg == 0) {
+				if(mpu.eReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1640,7 +1640,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.hReg & BIT7) >> 3;
 				mpu.hReg = (mpu.hReg << 1) & 0xFF;
-				if (mpu.hReg == 0) {
+				if(mpu.hReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1649,7 +1649,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.lReg & BIT7) >> 3;
 				mpu.lReg = (mpu.lReg << 1) & 0xFF;
-				if (mpu.lReg == 0) {
+				if(mpu.lReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1659,7 +1659,7 @@ public class Interpreter {
 				index = (mpu.hReg << 8) | mpu.lReg;
 				memval = ram.readMemory(index);
 				mpu.fReg = (memval & BIT7) >> 3;
-				if (ram.writeMemory(index, (memval << 1) & 0xFF) == 0) {
+				if(ram.writeMemory(index, (memval << 1) & 0xFF) == 0){
 					mpu.fReg |= 0;
 				}
 				break;
@@ -1668,7 +1668,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.aReg & BIT7) >> 3;
 				mpu.aReg = (mpu.aReg << 1) & 0xFF;
-				if (mpu.aReg == 0) {
+				if(mpu.aReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1677,7 +1677,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.bReg & BIT0) << 4;
 				mpu.bReg = (mpu.bReg & BIT7) | (mpu.bReg >> 1);
-				if (mpu.bReg == 0) {
+				if(mpu.bReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1686,7 +1686,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.cReg & BIT0) << 4;
 				mpu.cReg = (mpu.cReg & BIT7) | (mpu.cReg >> 1);
-				if (mpu.cReg == 0) {
+				if(mpu.cReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1695,7 +1695,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.dReg & BIT0) << 4;
 				mpu.dReg = (mpu.dReg & BIT7) | (mpu.dReg >> 1);
-				if (mpu.dReg == 0) {
+				if(mpu.dReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1704,7 +1704,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.eReg & BIT0) << 4;
 				mpu.eReg = (mpu.eReg & BIT7) | (mpu.eReg >> 1);
-				if (mpu.eReg == 0) {
+				if(mpu.eReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1713,7 +1713,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.hReg & BIT0) << 4;
 				mpu.hReg = (mpu.hReg & BIT7) | (mpu.hReg >> 1);
-				if (mpu.hReg == 0) {
+				if(mpu.hReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1722,7 +1722,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.lReg & BIT0) << 4;
 				mpu.lReg = (mpu.lReg & BIT7) | (mpu.lReg >> 1);
-				if (mpu.lReg == 0) {
+				if(mpu.lReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1732,7 +1732,7 @@ public class Interpreter {
 				index = (mpu.hReg << 8) | mpu.lReg;
 				memval = ram.readMemory(index);
 				mpu.fReg = (memval & BIT0) << 4;
-				if (ram.writeMemory(index, (memval & BIT7) | (memval >> 1)) == 0) {
+				if(ram.writeMemory(index, (memval & BIT7) | (memval >> 1)) == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1741,7 +1741,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.aReg & BIT0) << 4;
 				mpu.aReg = (mpu.aReg & BIT7) | (mpu.aReg >> 1);
-				if (mpu.aReg == 0) {
+				if(mpu.aReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1816,7 +1816,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.bReg & BIT0) << 4;
 				mpu.bReg >>= 1;
-				if (mpu.bReg == 0) {
+				if(mpu.bReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1825,7 +1825,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.cReg & BIT0) << 4;
 				mpu.cReg >>= 1;
-				if (mpu.cReg == 0) {
+				if(mpu.cReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1834,7 +1834,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.dReg & BIT0) << 4;
 				mpu.dReg >>= 1;
-				if (mpu.dReg == 0) {
+				if(mpu.dReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1843,7 +1843,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.eReg & BIT0) << 4;
 				mpu.eReg >>= 1;
-				if (mpu.eReg == 0) {
+				if(mpu.eReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1852,7 +1852,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.hReg & BIT0) << 4;
 				mpu.hReg >>= 1;
-				if (mpu.hReg == 0) {
+				if(mpu.hReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1861,7 +1861,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.lReg & BIT0) << 4;
 				mpu.lReg >>= 1;
-				if (mpu.lReg == 0) {
+				if(mpu.lReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1871,7 +1871,7 @@ public class Interpreter {
 				index = (mpu.hReg << 8) | mpu.lReg;
 				memval = ram.readMemory(index);
 				mpu.fReg = (memval & BIT0) << 4;
-				if (ram.writeMemory(index, memval >> 1) == 0) {
+				if(ram.writeMemory(index, memval >> 1) == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -1880,7 +1880,7 @@ public class Interpreter {
 				mpu.incrementCycleCount(2);
 				mpu.fReg = (mpu.aReg & BIT0) << 4;
 				mpu.aReg >>= 1;
-				if (mpu.aReg == 0) {
+				if(mpu.aReg == 0){
 					mpu.fReg |= ZERO;
 				}
 				break;
@@ -2867,12 +2867,12 @@ public class Interpreter {
 			break;
 		
 		case 0xCC: // CALL Z,nn
-			if ((mpu.fReg & ZERO) != 0) {
+			if((mpu.fReg & ZERO) != 0){
 				mpu.incrementCycleCount(6);
 				ram.writeMemory(mpu.spReg = (mpu.spReg - 1) & 0xFFFF, (mpu.pcReg + 2) >> 8);
 				ram.writeMemory(mpu.spReg = (mpu.spReg - 1) & 0xFFFF, (mpu.pcReg + 2) & 0x00FF);
 				mpu.pcReg = ram.readMemory(mpu.pcReg) | (ram.readMemory(mpu.pcReg + 1) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += 2;
 			}
@@ -2900,10 +2900,10 @@ public class Interpreter {
 			break;
 		
 		case 0xD0: // RET NC
-			if ((mpu.fReg & CARRY) == 0) {
+			if((mpu.fReg & CARRY) == 0){
 				mpu.incrementCycleCount(5);
 				mpu.pcReg = ram.readMemory(mpu.spReg++) | (ram.readMemory(mpu.spReg++) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(2);
 			}
 			break;
@@ -2915,22 +2915,22 @@ public class Interpreter {
 			break;
 		
 		case 0xD2: // JP NC,nn
-			if ((mpu.fReg & CARRY) == 0) {
+			if((mpu.fReg & CARRY) == 0){
 				mpu.incrementCycleCount(4);
 				mpu.pcReg = ram.readMemory(mpu.pcReg) | (ram.readMemory(mpu.pcReg + 1) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += 2;
 			}
 			break;
 		
 		case 0xD4: // CALL NC,nn
-			if ((mpu.fReg & CARRY) == 0) {
+			if((mpu.fReg & CARRY) == 0){
 				mpu.incrementCycleCount(6);
 				ram.writeMemory(mpu.spReg = (mpu.spReg - 1) & 0xFFFF, (mpu.pcReg + 2) >> 8);
 				ram.writeMemory(mpu.spReg = (mpu.spReg - 1) & 0xFFFF, (mpu.pcReg + 2) & 0x00FF);
 				mpu.pcReg = ram.readMemory(mpu.pcReg) | (ram.readMemory(mpu.pcReg + 1) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += 2;
 			}
@@ -2957,10 +2957,10 @@ public class Interpreter {
 			break;
 		
 		case 0xD8: // RET C
-			if ((mpu.fReg & CARRY) != 0) {
+			if((mpu.fReg & CARRY) != 0){
 				mpu.incrementCycleCount(5);
 				mpu.pcReg = ram.readMemory(mpu.spReg++) | (ram.readMemory(mpu.spReg++) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(2);
 			}
 			break;
@@ -2972,22 +2972,22 @@ public class Interpreter {
 			break;
 		
 		case 0xDA: // JP C,nn
-			if ((mpu.fReg & CARRY) != 0) {
+			if((mpu.fReg & CARRY) != 0){
 				mpu.incrementCycleCount(4);
 				mpu.pcReg = ram.readMemory(mpu.pcReg) | (ram.readMemory(mpu.pcReg + 1) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += 2;
 			}
 			break;
 		
 		case 0xDC: // CALL C,nn
-			if ((mpu.fReg & CARRY) != 0) {
+			if((mpu.fReg & CARRY) != 0){
 				mpu.incrementCycleCount(6);
 				ram.writeMemory(mpu.spReg = (mpu.spReg - 1) & 0xFFFF, (mpu.pcReg + 2) >> 8);
 				ram.writeMemory(mpu.spReg = (mpu.spReg - 1) & 0xFFFF, (mpu.pcReg + 2) & 0x00FF);
 				mpu.pcReg = ram.readMemory(mpu.pcReg) | (ram.readMemory(mpu.pcReg + 1) << 8);
-			} else {
+			}else{
 				mpu.incrementCycleCount(3);
 				mpu.pcReg += 2;
 			}
@@ -3045,10 +3045,10 @@ public class Interpreter {
 		case 0xE8: // ADD mpu.spReg,n **ignores half-carry**
 			mpu.incrementCycleCount(4);
 			mpu.spReg += (byte) ram.readMemory(mpu.pcReg++); // signed immediate
-			if (mpu.spReg > 0xFFFF) {
+			if(mpu.spReg > 0xFFFF){
 				mpu.spReg &= 0xFFFF;
 				mpu.fReg = CARRY;
-			} else {
+			}else{
 				mpu.fReg = 0;
 			}
 			break;
@@ -3122,10 +3122,10 @@ public class Interpreter {
 			mpu.incrementCycleCount(3);
 			val = mpu.spReg + (byte) ram.readMemory(mpu.pcReg++); // signed
 																	// immediate
-			if (val > 0xFFFF) {
+			if(val > 0xFFFF){
 				val &= 0xFFFF;
 				mpu.fReg = CARRY;
-			} else {
+			}else{
 				mpu.fReg = 0;
 			}
 			mpu.hReg = (val >> 8);
@@ -3162,7 +3162,7 @@ public class Interpreter {
 			break;
 		
 		default:
-			throw new AssertionError("Unsupported ompu.pcRegode");
+			throw new AssertionError("Unsupported opcode");
 		}
 	}
 }

@@ -16,7 +16,7 @@ import org.bukkit.map.MapView;
 public class DrawYTVideoCommand extends AbstractCommandHandler {
 	
 	public DrawYTVideoCommand() {
-		super(true, true, 1);
+		super(true, true, 1, "imgmap.drawytvideo");
 	}
 	
 	@Override
@@ -32,7 +32,7 @@ public class DrawYTVideoCommand extends AbstractCommandHandler {
 			view.addRenderer(new DummyRenderer());
 			return true;
 		}else{
-			cs.sendMessage(ChatColor.RED + "[ImgMap] Videos are disabled by default! Enable them in the configuration file.");
+			cs.sendMessage(ChatColor.RED + "[ImgMap] Videos are disabled by default and/or I couldn't find FFmpeg in ImgMap's plugin folder!");
 			return true;
 		}
 	}

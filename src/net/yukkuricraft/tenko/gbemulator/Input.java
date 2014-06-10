@@ -1,4 +1,4 @@
-package net.yukkuricraft.tenko.emunew;
+package net.yukkuricraft.tenko.gbemulator;
 
 //Eh. Sure, screw getter/setters.
 public class Input {
@@ -11,5 +11,11 @@ public class Input {
 	public boolean up;
 	public boolean left;
 	public boolean right;
+	
+	// Hold
+	public boolean hleft;
+	public boolean hright;
+	public boolean hup;
+	public boolean hdown;
 	
 }

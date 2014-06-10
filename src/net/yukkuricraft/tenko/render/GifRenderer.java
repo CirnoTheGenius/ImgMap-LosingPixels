@@ -2,30 +2,20 @@ package net.yukkuricraft.tenko.render;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import net.minecraft.server.v1_7_R2.PacketPlayOutMap;
-import net.yukkuricraft.tenko.ImgMap;
+import net.minecraft.server.v1_7_R3.PacketPlayOutMap;
 import net.yukkuricraft.tenko.objs.BufferedGif;
-import net.yukkuricraft.tenko.threading.AbstractSafeRunnable;
-import net.yukkuricraft.tenko.threading.AnimationRunnable;
-import net.yukkuricraft.tenko.threading.CachingRunnable;
+import net.yukkuricraft.tenko.threading.*;
 
 import org.bukkit.entity.Player;
-import org.bukkit.map.MapCanvas;
-import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
+import org.bukkit.map.*;
 
-public class GifRenderer extends MapRenderer {
+public class GifRenderer extends MapRenderer implements StoppableRenderer {
 	
 	public final static int TOLERANCE = 20;
 	
-	private Set<String> watchers;
-	private List<AbstractSafeRunnable> running;
 	private PacketPlayOutMap[][] cache;
+	private GroupWatchRunnable uiThread;
 	private int delayMilli;
 	private boolean ready = false;
 	private BufferedGif gif;
@@ -35,21 +25,8 @@ public class GifRenderer extends MapRenderer {
 	// Experimental packet caching.
 	// The world is waiting~
 	public GifRenderer(short id, URL toDraw) throws IOException {
-		boolean useSun = false;
-		
-		try{
-			Class.forName("com.sun.imageio.plugins.gif.GIFImageReader");
-			Class.forName("com.sun.imageio.plugins.gif.GIFImageReaderSpi");
-			ImgMap.logMessage("Using Sun GIF reader.");
-			useSun = true;
-		}catch (ClassNotFoundException e){
-			ImgMap.logMessage("Using homemade GIF reader.");
-		}
-		
-		this.gif = new BufferedGif(toDraw, useSun);
+		this.gif = new BufferedGif(toDraw);
 		this.setupCache(id);
-		this.watchers = new HashSet<>();
-		this.running = new ArrayList<>();
 	}
 	
 	public BufferedGif getBufferedGif(){
@@ -64,10 +41,6 @@ public class GifRenderer extends MapRenderer {
 		this.ready = true;
 	}
 	
-	public void setCache(PacketPlayOutMap[][] a){
-		this.cache = a;
-	}
-	
 	public PacketPlayOutMap[][] initializeCache(int length){
 		return this.cache = new PacketPlayOutMap[length][];
 	}
@@ -79,32 +52,21 @@ public class GifRenderer extends MapRenderer {
 	}
 	
 	@Override
-	public void render(MapView view, MapCanvas canvas, Player player){
-		if(this.watchers.contains(player.getName()) || !this.ready){
-			return;
+	public void render(MapView view, MapCanvas canvas, Player plyr){
+		if(ready && uiThread == null){
+			uiThread = new AnimationRunnable(this.cache, this.delayMilli);
+			uiThread.addPlayer(plyr);
+			uiThread.start();
 		}
 		
-		this.watchers.add(player.getName());
-		AbstractSafeRunnable run = new AnimationRunnable(player, this.cache, this.delayMilli);
-		this.running.add(run);
-		Thread thread = new Thread(run);
-		thread.start();
+		if(uiThread != null && !uiThread.isPlayerWatching(plyr)){
+			uiThread.addPlayer(plyr);
+		}
 	}
 	
+	@Override
 	public void stopRendering(){
-		if(this.running == null){
-			System.out.println("Called to stop renderer on " + this.toString() + " but returned had a null renderRunnable!");
-		}else{
-			for (AbstractSafeRunnable renderRunnable : this.running){
-				renderRunnable.stopRunning();
-				
-				if(renderRunnable.isRunning()){
-					System.out.println(renderRunnable + " failed to stop!");
-				}
-			}
-			
-			this.running.clear();
-		}
+		uiThread.stopRunning();
 	}
 	
 }

@@ -15,7 +15,7 @@ import org.bukkit.map.MapView;
 public class ClearMapCommand extends AbstractCommandHandler {
 	
 	public ClearMapCommand() {
-		super(false, false, 0);
+		super(false, false, 0, "imgmap.clearmap");
 	}
 	
 	@Override

@@ -1,8 +1,7 @@
 package net.yukkuricraft.tenko.threading;
 
-import java.io.IOException;
-
-import net.minecraft.server.v1_7_R2.PacketPlayOutMap;
+import net.minecraft.server.v1_7_R3.PacketPlayOutMap;
+import net.yukkuricraft.tenko.ImgMap;
 import net.yukkuricraft.tenko.objs.BufferedGif;
 import net.yukkuricraft.tenko.render.GifRenderer;
 
@@ -12,10 +11,6 @@ public class CachingRunnable implements Runnable {
 	private BufferedGif gif;
 	private int id;
 	
-	public static void main(String[] args){
-		System.out.println(Math.round(((float) 1 / (float) 4) * 100.0) / 100.0);
-	}
-	
 	public CachingRunnable(int id, GifRenderer renderer) {
 		this.renderer = renderer;
 		this.id = id;
@@ -24,42 +19,44 @@ public class CachingRunnable implements Runnable {
 	
 	@Override
 	public void run(){
-		// This can't be byte[0][0][0] because if we catch IO, we return.
-		byte[][][] frames;
-		try{
-			this.gif.bufferData();
-			this.renderer.setMillisecondDelay(this.gif.getMilliDelay());
-			frames = this.gif.getFrames();
-		}catch (IOException | InterruptedException e){
-			e.printStackTrace();
+		byte[][][] frames = gif.buffer();
+		
+		if(frames == null){
+			ImgMap.logMessage("Failed to buffer frames.");
 			return;
 		}
 		
-		System.out.println("Finished buffering GIF. Now caching.");
-		// Supposed to be 128 packets.
 		PacketPlayOutMap[][] packets = this.renderer.initializeCache(frames.length);
 		byte[][] lastFrame = frames[0];
+		
+		// Initialize the first frame.
+		packets[0] = new PacketPlayOutMap[128];
+		for(int x = 0; x < 128; x++){
+			byte[] packetData = new byte[131];
+			packetData[1] = (byte) x;
+			System.arraycopy(frames[0][x], 0, packetData, 3, 131);
+			
+			packets[0][x] = new PacketPlayOutMap(id, packetData);
+		}
+		
+		// Render the rest of the frames.
 		for(int index = 1; index < frames.length; index++){
 			byte[][] currentFrame = frames[index];
 			
-			for(int row = 0; row < 128; row++){
-				byte[] packetData = this.getChangesFromColumn(row, lastFrame[row], currentFrame[row]);
-				
+			for(int x = 0; x < 128; x++){
+				byte[] packetData = this.getChangesFromColumn(x, lastFrame[x], currentFrame[x]);
 				if(packetData != null){
 					if(packets[index] == null){
 						packets[index] = new PacketPlayOutMap[128];
 					}
 					
-					packets[index][row] = new PacketPlayOutMap(this.id, packetData);
+					packets[index][x] = new PacketPlayOutMap(this.id, packetData);
 				}
 			}
 			
-			lastFrame = currentFrame; // HURR DURR. Forgot this all this time.
+			lastFrame = currentFrame;
 		}
 		
-		// Ready to rumble!
-		System.out.println("Let's do this!");
-		this.renderer.setCache(packets);
 		this.renderer.MissionStarto();
 	}
 	

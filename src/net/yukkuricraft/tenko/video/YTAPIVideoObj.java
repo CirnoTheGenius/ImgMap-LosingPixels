@@ -1,9 +1,6 @@
 package net.yukkuricraft.tenko.video;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 import net.yukkuricraft.tenko.ImgMap;
 import net.yukkuricraft.tenko.render.GifRenderer;
@@ -31,8 +28,14 @@ public class YTAPIVideoObj implements RemoteVideoObj {
 		@Override
 		public void run(){
 			try{
+				if(saveLocation.exists()){
+					return;
+				}
+				
 				ProcessBuilder builder = new ProcessBuilder();
-				builder.command(ImgMap.getFFmpeg().getAbsolutePath(), "-i", "http://www.ytapi.com/api/" + YTAPIVideoObj.this.id + "/direct/160/", "-r", "10", "-threads", "0", "-vf", "scale=128:128,format=rgb8,format=rgb24", "-y", YTAPIVideoObj.this.saveLocation.getAbsolutePath());
+				// If you ask:
+				// ffmpeg <url> -r 10 -threads 0 -vf scale=scale=128:128,format=rgb8,format=rgb24 -y -g 1 -keyint_min 1 <output.gif>
+				builder.command(ImgMap.getFFmpeg().getAbsolutePath(), "-i", "http://www.ytapi.com/?vid=" + YTAPIVideoObj.this.id + "&format=direct&itag=160", "-r", "10", "-threads", "0", "-vf", "scale=128:128,format=rgb8,format=rgb24", "-g", "1", "-keyint_min", "1", "-bf", "0", "-y", YTAPIVideoObj.this.saveLocation.getAbsolutePath());
 				builder.redirectErrorStream(true);
 				Process process = builder.start();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));

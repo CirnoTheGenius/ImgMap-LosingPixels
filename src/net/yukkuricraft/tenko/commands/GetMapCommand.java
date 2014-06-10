@@ -12,7 +12,7 @@ public class GetMapCommand extends AbstractCommandHandler {
 	
 	public GetMapCommand() {
 		// The only one with true and false params.
-		super(true, false, 1);
+		super(true, false, 1, "imgmap.debug.getmap");
 	}
 	
 	@Override

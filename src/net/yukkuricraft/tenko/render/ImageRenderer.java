@@ -7,9 +7,7 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 import org.bukkit.entity.Player;
-import org.bukkit.map.MapCanvas;
-import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
+import org.bukkit.map.*;
 
 public class ImageRenderer extends MapRenderer {
 	
@@ -27,12 +25,13 @@ public class ImageRenderer extends MapRenderer {
 	
 	@Override
 	public void render(MapView view, MapCanvas canvas, Player player){
-		if(this.hasRendered){
+		if(!this.hasRendered){
+			canvas.drawImage(0, 0, this.cacheImage);
+			this.hasRendered = true;
 			return;
+		}else{
+			player.sendMap(view);
 		}
-		
-		canvas.drawImage(0, 0, this.cacheImage);
-		this.hasRendered = true;
 	}
 	
 	public BufferedImage getImage(URL url) throws IOException{

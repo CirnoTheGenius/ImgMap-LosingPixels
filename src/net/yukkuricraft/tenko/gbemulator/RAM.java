@@ -1,13 +1,13 @@
-package net.yukkuricraft.tenko.emunew;
+package net.yukkuricraft.tenko.gbemulator;
 
-import static net.yukkuricraft.tenko.emunew.BitConstants.*;
+import static net.yukkuricraft.tenko.gbemulator.BitConstants.*;
 
 class RAM {
 	
-	private final int[][] banks = new int[8][0x2000];
+	private int[][] banks;
 	private final int[] dirtyTiles1 = new int[16];
 	private final int[] dirtyTiles2 = new int[16];
-	private final int[] color = { 0xFFFFFFFF, 0xFFC0C0C0, 0xFF404040, 0xFF000000 }; // WHITE,
+	private final int[] color = { 0xFFFFFFFF, 0xFFC0C0C0, 0xFF404040, 0xFF000000 };
 	private final int[] colorBG = new int[4];
 	private final int[] colorSP0 = new int[4];
 	private final int[] colorSP1 = new int[4];
@@ -16,60 +16,71 @@ class RAM {
 	private int[] vRAM;
 	
 	private ROM currentROM;
-	private int workingBank;
+	protected int workingROMBank;
+	protected int workingRAMBank;
+	
+	private int mbcSig;
+	private int mbcMode;
+	private int mbcLower;
+	
 	private Z80MPU cpu;
 	
 	public RAM(Z80MPU mpu) {
 		this.cpu = mpu;
+		this.currentROM = mpu.getCurrentROM();
 	}
 	
-	public Z80MPU getMPU() {
+	public Z80MPU getMPU(){
 		return cpu;
 	}
 	
-	public int[] getHRAM() {
+	public int[] getHRAM(){
 		return hRAM;
 	}
 	
-	public int[] getVRAM() {
+	public int[] getVRAM(){
 		return vRAM;
 	}
 	
-	public int[] getBGColors() {
+	public int[] getBGColors(){
 		return colorBG;
 	}
 	
-	public int[] getSPColor0() {
+	public int[] getSPColor0(){
 		return colorSP0;
 	}
 	
-	public int[] getSPColor1() {
+	public int[] getSPColor1(){
 		return colorSP1;
 	}
 	
-	public int[] getDirtyTiles1() {
+	public int[] getDirtyTiles1(){
 		return dirtyTiles1;
 	}
 	
-	public int[] getDirtyTiles2() {
+	public int[] getDirtyTiles2(){
 		return dirtyTiles2;
 	}
 	
-	public void setRAMs(int[]... rams) {
+	public void setRAMs(int[]... rams){
 		this.hRAM = rams[0];
 		this.vRAM = rams[1];
 	}
 	
-	public int[][] getMemory() {
+	public void setBanks(int[][] banks){
+		this.banks = banks;
+	}
+	
+	public int[][] getMemory(){
 		return banks;
 	}
 	
-	public int readMemory(int address) {
+	public int readMemory(int address){
 		return banks[address >> 13][address & 0x1FFF];
 	}
 	
-	public int writeMemory(int address, int value) {
-		switch (address >> 8) {
+	public int writeMemory(int address, int value){
+		switch(address >> 8){
 		
 		case 0x00:
 		case 0x01:
@@ -137,69 +148,64 @@ class RAM {
 		case 0x3D:
 		case 0x3E:
 		case 0x3F:
-			switch (currentROM.getBankType()) {
-			
+			switch(currentROM.getCartType()){
 			case 0:
 				break;
 			
 			case 1:
-				int previousLower = currentROM.getLBank();
-				int lower = currentROM.getLBank() & 0x1F;
-				if (lower == 0) {
-					currentROM.setLBank(1);
-				} else {
-					currentROM.setLBank(lower);
+				int prev = this.mbcLower;
+				this.mbcLower = (value & 0x1F);
+				if(this.mbcLower == 0){
+					this.mbcLower = 1;
 				}
-				
-				if ((currentROM.getBankSig() | lower) < currentROM.getBankCount()) {
-					workingBank = currentROM.getBankSig() | lower;
-					banks[2] = cpu.getManager().getROM(workingBank, 0).getData();
-					banks[3] = cpu.getManager().getROM(workingBank, 1).getData();
-				} else {
-					lower = previousLower;
+				if((this.mbcSig | this.mbcLower) < currentROM.getNumROMBanks()){
+					workingROMBank = (this.mbcSig | this.mbcLower);
+					banks[2] = currentROM.getROM(workingROMBank, 0);
+					banks[3] = currentROM.getROM(workingROMBank, 1);
+				}else{
+					this.mbcLower = prev;
 				}
 				break;
 			
 			case 2:
-				if ((address & 0x0100) == 0) {
+				if((address & 0x0100) == 0){
 					break;
 				}
-				previousLower = workingBank;
-				workingBank = address & 0x0F;
-				if (workingBank == 0) {
-					workingBank = 1;
+				prev = workingROMBank;
+				workingROMBank = (value & 0x0F);
+				if(workingROMBank == 0){
+					workingROMBank = 1;
 				}
-				
-				if (workingBank < this.currentROM.getBankCount()) {
-					banks[2] = cpu.getManager().getROM(workingBank, 0).getData();
-					banks[3] = cpu.getManager().getROM(workingBank, 1).getData();
-				} else {
-					this.workingBank = previousLower;
+				if(workingROMBank < currentROM.getNumROMBanks()){
+					banks[2] = currentROM.getROM(workingROMBank, 0);
+					banks[3] = currentROM.getROM(workingROMBank, 1);
+				}else{
+					workingROMBank = prev;
 				}
 				break;
 			
 			case 3:
-				previousLower = workingBank;
-				workingBank = address & 0x7F;
-				if (workingBank == 0) {
-					workingBank = 1;
+				prev = workingROMBank;
+				workingROMBank = (value & 0x7F);
+				if(workingROMBank == 0){
+					workingROMBank = 1;
 				}
-				
-				if (workingBank < currentROM.getBankCount()) {
-					banks[2] = cpu.getManager().getROM(workingBank, 0).getData();
-					banks[3] = cpu.getManager().getROM(workingBank, 1).getData();
-				} else {
-					workingBank = previousLower;
+				if(workingROMBank < currentROM.getNumROMBanks()){
+					banks[2] = currentROM.getROM(workingROMBank, 0);
+					banks[3] = currentROM.getROM(workingROMBank, 1);
+				}else{
+					workingROMBank = prev;
 				}
 				break;
 			
 			case 5:
-				// wat.
+				// ...
 				break;
 			
 			default:
-				throw new AssertionError("Invalid banksory type.");
+				throw new AssertionError("Illegal memory access.");
 			}
+			return banks[1][address & 0x1FFF];
 		case 0x40:
 		case 0x41:
 		case 0x42:
@@ -232,26 +238,26 @@ class RAM {
 		case 0x5D:
 		case 0x5E:
 		case 0x5F:
-			switch (currentROM.getBankType()) {
+			switch(currentROM.getCartType()){
 			
 			case 0:
 				break;
 			
 			case 1:
-				if (currentROM.getBankMode() == 0) {
-					int previousLower = this.currentROM.getBankSig();
-					currentROM.setBankSig((value & 0x03) << 5);
-					if ((currentROM.getBankSig() | currentROM.getLBank()) < currentROM.getBankCount()) {
-						workingBank = currentROM.getBankSig() | currentROM.getLBank();
-						banks[2] = cpu.getManager().getROM(workingBank, 0).getData();
-						banks[3] = cpu.getManager().getROM(workingBank, 1).getData();
-					} else {
-						currentROM.setBankSig(previousLower);
+				if(mbcMode == 0){
+					int previousLower = mbcSig;
+					mbcSig = (value & 0x03) << 5;
+					if((mbcSig | mbcLower) < currentROM.getNumROMBanks()){
+						workingROMBank = mbcSig | mbcLower;
+						banks[2] = currentROM.getROM(workingROMBank, 0);
+						banks[3] = currentROM.getROM(workingROMBank, 1);
+					}else{
+						mbcSig = previousLower;
 					}
-				} else {
-					if ((value & 0x03) < currentROM.getRAMSize()) {
-						workingBank = value & 0x03;
-						banks[5] = currentROM.getRAM()[workingBank];
+				}else{
+					if((value & 0x03) < currentROM.getRAMSize()){
+						workingRAMBank = value & 0x03;
+						banks[5] = currentROM.getRAM(workingRAMBank);
 					}
 				}
 				break;
@@ -260,9 +266,9 @@ class RAM {
 				break;
 			
 			case 3:
-				if ((value & 0x03) < currentROM.getRAMSize()) {
-					workingBank = value & 0x03;
-					banks[5] = currentROM.getRAM()[workingBank];
+				if((value & 0x03) < currentROM.getRAMSize()){
+					workingRAMBank = value & 0x03;
+					banks[5] = currentROM.getRAM(workingRAMBank);
 				}
 				break;
 			
@@ -271,7 +277,7 @@ class RAM {
 				break;
 			
 			default:
-				throw new AssertionError("Invalid banksory type.");
+				throw new AssertionError("Invalid bank type.");
 			}
 			
 			return banks[2][address & 0x1FFF];
@@ -307,21 +313,21 @@ class RAM {
 		case 0x7D:
 		case 0x7E:
 		case 0x7F:
-			switch (currentROM.getBankType()) {
+			switch(currentROM.getCartType()){
 			
 			case 0:
 				break;
 			
 			case 1:
-				currentROM.setBankMode(value & 0x01);
-				if (currentROM.getBankMode() == 0) {
-					workingBank = 0;
-					banks[5] = currentROM.getRAM()[0];
-				} else {
-					currentROM.setBankSig(0);
-					workingBank = currentROM.getLBank();
-					banks[2] = cpu.getManager().getROM(workingBank, 0).getData();
-					banks[3] = cpu.getManager().getROM(workingBank, 1).getData();
+				mbcMode = (value & 0x01);
+				if(mbcMode == 0){
+					workingRAMBank = 0;
+					banks[5] = currentROM.getRAM(0);
+				}else{
+					mbcSig = 0;
+					workingROMBank = mbcLower;
+					banks[2] = currentROM.getROM(workingROMBank, 0);
+					banks[3] = currentROM.getROM(workingROMBank, 1);
 				}
 				break;
 			
@@ -333,7 +339,7 @@ class RAM {
 				// wat.
 				break;
 			default:
-				throw new AssertionError("Invalid banksory type.");
+				throw new AssertionError("Invalid bank type.");
 				
 			}
 			return banks[3][address & 0x1FFF];
@@ -529,10 +535,10 @@ class RAM {
 			return banks[7][address & 0x1FFF] = value;
 			
 		case 0xFF:
-			switch (address) {
+			switch(address){
 			
 			case 0xFF00:
-				cpu.getInputHandler().handle(banks, value);
+				return cpu.getInputHandler().handle(banks, value);
 			case 0xFF01:
 				return banks[7][0x1F01];
 			case 0xFF02:
@@ -583,7 +589,9 @@ class RAM {
 			case 0xFF20:
 				return banks[7][0x1F20] = value;
 			case 0xFF21: // Channel 4 Volume Envelope
+				return banks[7][0x1F21] = value;
 			case 0xFF22:
+				return banks[7][0x1F22] = value;
 			case 0xFF23:
 				return banks[7][0x1F23] = value;
 			case 0xFF25: // Stereo select
@@ -621,7 +629,7 @@ class RAM {
 				return banks[7][0x1F45] = value;
 			case 0xFF46:
 				int start = value << 8;
-				for (int i = 0; i < 0xA0; i++) {
+				for(int i = 0; i < 0xA0; i++){
 					banks[7][0x1E00 | i] = readMemory(start | i);
 				}
 				return banks[7][0x1F46] = value;
@@ -656,7 +664,7 @@ class RAM {
 		}
 	}
 	
-	public void writeDefaults() {
+	public void writeDefaults(){
 		// Set default values on boot
 		writeMemory(0xFF05, 0x00); // TIMA
 		writeMemory(0xFF06, 0x00); // TMA

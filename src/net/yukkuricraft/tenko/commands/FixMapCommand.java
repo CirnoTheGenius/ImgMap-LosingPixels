@@ -13,7 +13,7 @@ import org.bukkit.map.MapView;
 public class FixMapCommand extends AbstractCommandHandler {
 	
 	public FixMapCommand() {
-		super(false, false, 1);
+		super(false, false, 1, "imgmap.debug.fixmap");
 	}
 	
 	@Override

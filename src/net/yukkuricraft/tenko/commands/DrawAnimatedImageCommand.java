@@ -19,7 +19,7 @@ import org.bukkit.map.MapView;
 public class DrawAnimatedImageCommand extends AbstractCommandHandler {
 	
 	public DrawAnimatedImageCommand() {
-		super(true, true, 1);
+		super(true, true, 1, "imgmap.drawanimatedimage");
 	}
 	
 	@Override
@@ -30,7 +30,7 @@ public class DrawAnimatedImageCommand extends AbstractCommandHandler {
 		GifRenderer renderer;
 		
 		try{
-			URL toDraw = ArrayUtils.contains(args, "-v") ? new File(ImgMap.getLocalVideosDir(), args[0]).toURL() : new URL(args[0]);
+			URL toDraw = ArrayUtils.contains(args, "-v") ? new File(ImgMap.getLocalImagesDir(), args[0]).toURL() : new URL(args[0]);
 			renderer = new GifRenderer(viewport.getId(), toDraw);
 			RenderUtils.removeRenderers(viewport);
 			viewport.addRenderer(renderer);

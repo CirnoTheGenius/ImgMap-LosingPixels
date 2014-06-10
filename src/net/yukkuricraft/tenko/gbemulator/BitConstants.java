@@ -1,4 +1,4 @@
-package net.yukkuricraft.tenko.emunew;
+package net.yukkuricraft.tenko.gbemulator;
 
 public final class BitConstants {
 	

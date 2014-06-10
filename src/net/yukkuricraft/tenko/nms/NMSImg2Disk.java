@@ -1,18 +1,13 @@
 package net.yukkuricraft.tenko.nms;
 
 import java.awt.image.BufferedImage;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.zip.GZIPOutputStream;
 
-import net.minecraft.server.v1_7_R2.NBTBase;
-import net.minecraft.server.v1_7_R2.NBTTagCompound;
+import net.minecraft.server.v1_7_R3.NBTBase;
+import net.minecraft.server.v1_7_R3.NBTTagCompound;
 import net.yukkuricraft.tenko.render.RenderUtils;
 
 import org.bukkit.Bukkit;
